@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Node,JavaScript," />
 
 
 
@@ -79,16 +79,17 @@
 
 
 
-<meta name="description" content="NodeJS模块机制categories:Node CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用   没有模块系统 标准库少。文件操作，I/O流都没有标准API 没有标准接口。与web服务器或者数据库的接口 缺乏包管理   具体规范 模块引用 require 模块定义 需要注意的是，上下文提供exports对象用于导出当前模块的方法和变量，并且它是唯一导">
+<meta name="description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用   没有模块系统 标准库少。文件操作，I/O流都没有标准API 没有标准接口。与web服务器或者数据库的接口 缺乏包管理   具体规范 模块引用 require 模块定义 需要注意的是，上下文提供exports对象用于导出当前模块的方法和变量，并且它是唯一导出的出口。而在模块中还存在一个module对象，它代">
+<meta name="keywords" content="Node,JavaScript">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Lynch">
+<meta property="og:title" content="NodeJS模块机制">
 <meta property="og:url" content="http://amazinglynch.com/2017/11/16/NodeJS模块机制/index.html">
 <meta property="og:site_name" content="Lynch">
-<meta property="og:description" content="NodeJS模块机制categories:Node CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用   没有模块系统 标准库少。文件操作，I/O流都没有标准API 没有标准接口。与web服务器或者数据库的接口 缺乏包管理   具体规范 模块引用 require 模块定义 需要注意的是，上下文提供exports对象用于导出当前模块的方法和变量，并且它是唯一导">
-<meta property="og:updated_time" content="2017-11-16T12:52:42.537Z">
+<meta property="og:description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用   没有模块系统 标准库少。文件操作，I/O流都没有标准API 没有标准接口。与web服务器或者数据库的接口 缺乏包管理   具体规范 模块引用 require 模块定义 需要注意的是，上下文提供exports对象用于导出当前模块的方法和变量，并且它是唯一导出的出口。而在模块中还存在一个module对象，它代">
+<meta property="og:updated_time" content="2017-11-16T14:18:47.697Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Lynch">
-<meta name="twitter:description" content="NodeJS模块机制categories:Node CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用   没有模块系统 标准库少。文件操作，I/O流都没有标准API 没有标准接口。与web服务器或者数据库的接口 缺乏包管理   具体规范 模块引用 require 模块定义 需要注意的是，上下文提供exports对象用于导出当前模块的方法和变量，并且它是唯一导">
+<meta name="twitter:title" content="NodeJS模块机制">
+<meta name="twitter:description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用   没有模块系统 标准库少。文件操作，I/O流都没有标准API 没有标准接口。与web服务器或者数据库的接口 缺乏包管理   具体规范 模块引用 require 模块定义 需要注意的是，上下文提供exports对象用于导出当前模块的方法和变量，并且它是唯一导出的出口。而在模块中还存在一个module对象，它代">
 
 
 
@@ -124,7 +125,7 @@
 
 
 
-  <title> | Lynch</title>
+  <title>NodeJS模块机制 | Lynch</title>
   
 
 
@@ -189,6 +190,16 @@
         </li>
       
         
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -248,7 +259,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">NodeJS模块机制</h1>
         
 
         <div class="post-meta">
@@ -260,7 +271,7 @@
               
                 <span class="post-meta-item-text">Veröffentlicht am</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-16T20:52:38+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-16T22:13:32+08:00">
                 2017-11-16
               </time>
             
@@ -270,6 +281,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Node/" itemprop="url" rel="index">
+                    <span itemprop="name">Node</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -309,8 +342,7 @@
       
 
       
-        <h1 id="NodeJS模块机制"><a href="#NodeJS模块机制" class="headerlink" title="NodeJS模块机制"></a>NodeJS模块机制</h1><p>categories:Node</p>
-<h2 id="CommonJS规范"><a href="#CommonJS规范" class="headerlink" title="CommonJS规范"></a>CommonJS规范</h2><h3 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h3><p>JavaScript存在缺陷，导致在后端其无法用来开发大型应用</p>
+        <h2 id="CommonJS规范"><a href="#CommonJS规范" class="headerlink" title="CommonJS规范"></a>CommonJS规范</h2><h3 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h3><p>JavaScript存在缺陷，导致在后端其无法用来开发大型应用</p>
 <blockquote>
 <ul>
 <li>没有模块系统</li>
@@ -387,7 +419,7 @@
 </blockquote>
 </li>
 </ul>
-<h4 id="NPM的问题"><a href="#NPM的问题" class="headerlink" title="NPM的问题"></a>NPM的问题</h4><p>每个人都可以向npm仓库发布包，导致包的质量良莠不齐，一个可靠的，优秀的包必须有良好的测试，良好的文档，良好的测试覆盖率，良好的编码规范等等<br><a href="https://github.com/iissnan/hexo-theme-next.git" target="_blank" rel="external">https://github.com/iissnan/hexo-theme-next.git</a></p>
+<h4 id="NPM的问题"><a href="#NPM的问题" class="headerlink" title="NPM的问题"></a>NPM的问题</h4><p>每个人都可以向npm仓库发布包，导致包的质量良莠不齐，一个可靠的，优秀的包必须有良好的测试，良好的文档，良好的测试覆盖率，良好的编码规范等等</p>
 
       
     </div>
@@ -402,6 +434,14 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Node/" rel="tag"># Node</a>
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
       
 
       
@@ -518,7 +558,25 @@
             
 
             
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">Kategorien</span>
+                
+              </div>
+            
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">Tags</span>
+                
+              </div>
             
 
           </nav>
@@ -550,7 +608,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#NodeJS模块机制"><span class="nav-number">1.</span> <span class="nav-text">NodeJS模块机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CommonJS规范"><span class="nav-number">1.1.</span> <span class="nav-text">CommonJS规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#出发点"><span class="nav-number">1.1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体规范"><span class="nav-number">1.1.2.</span> <span class="nav-text">具体规范</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Node实现"><span class="nav-number">1.2.</span> <span class="nav-text">Node实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#路径分析"><span class="nav-number">1.2.1.</span> <span class="nav-text">路径分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件定位"><span class="nav-number">1.2.2.</span> <span class="nav-text">文件定位</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#扩展名分析"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">扩展名分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目录分析和包"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">目录分析和包</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块编译"><span class="nav-number">1.2.3.</span> <span class="nav-text">模块编译</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模块的载入（模块的读取）"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">模块的载入（模块的读取）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JavaScript模块的编译"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">JavaScript模块的编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c-c-模块编译"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">c/c++模块编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON文件的编译"><span class="nav-number">1.2.3.4.</span> <span class="nav-text">JSON文件的编译</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#包和NPM"><span class="nav-number">1.3.</span> <span class="nav-text">包和NPM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CommonJS规范定义的包结构"><span class="nav-number">1.3.1.</span> <span class="nav-text">CommonJS规范定义的包结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CommonJS和NPM的包描述文件"><span class="nav-number">1.3.2.</span> <span class="nav-text">CommonJS和NPM的包描述文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#几个字段解释"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">几个字段解释</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NPM常用功能"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">NPM常用功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NPM的问题"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">NPM的问题</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CommonJS规范"><span class="nav-number">1.</span> <span class="nav-text">CommonJS规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#出发点"><span class="nav-number">1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体规范"><span class="nav-number">1.2.</span> <span class="nav-text">具体规范</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Node实现"><span class="nav-number">2.</span> <span class="nav-text">Node实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#路径分析"><span class="nav-number">2.1.</span> <span class="nav-text">路径分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件定位"><span class="nav-number">2.2.</span> <span class="nav-text">文件定位</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#扩展名分析"><span class="nav-number">2.2.1.</span> <span class="nav-text">扩展名分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目录分析和包"><span class="nav-number">2.2.2.</span> <span class="nav-text">目录分析和包</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块编译"><span class="nav-number">2.3.</span> <span class="nav-text">模块编译</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模块的载入（模块的读取）"><span class="nav-number">2.3.1.</span> <span class="nav-text">模块的载入（模块的读取）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JavaScript模块的编译"><span class="nav-number">2.3.2.</span> <span class="nav-text">JavaScript模块的编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c-c-模块编译"><span class="nav-number">2.3.3.</span> <span class="nav-text">c/c++模块编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON文件的编译"><span class="nav-number">2.3.4.</span> <span class="nav-text">JSON文件的编译</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#包和NPM"><span class="nav-number">3.</span> <span class="nav-text">包和NPM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CommonJS规范定义的包结构"><span class="nav-number">3.1.</span> <span class="nav-text">CommonJS规范定义的包结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CommonJS和NPM的包描述文件"><span class="nav-number">3.2.</span> <span class="nav-text">CommonJS和NPM的包描述文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#几个字段解释"><span class="nav-number">3.2.1.</span> <span class="nav-text">几个字段解释</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NPM常用功能"><span class="nav-number">3.2.2.</span> <span class="nav-text">NPM常用功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NPM的问题"><span class="nav-number">3.2.3.</span> <span class="nav-text">NPM的问题</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -722,7 +780,7 @@
         var disqus_config = function () {
           this.page.url = 'http://amazinglynch.com/2017/11/16/NodeJS模块机制/';
           this.page.identifier = '2017/11/16/NodeJS模块机制/';
-          this.page.title = '';
+          this.page.title = 'NodeJS模块机制';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://lynchblog.disqus.com/embed.js';
