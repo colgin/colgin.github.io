@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://amazinglynch.com/2017/11/16/NodeJS模块机制/index.html">
 <meta property="og:site_name" content="Lynch">
 <meta property="og:description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用">
-<meta property="og:updated_time" content="2017-11-16T15:04:11.236Z">
+<meta property="og:updated_time" content="2017-11-17T03:08:20.574Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NodeJS模块机制">
 <meta name="twitter:description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用">
@@ -183,7 +183,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             首页
           </a>
@@ -191,9 +191,9 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
+          <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
           </a>
@@ -201,9 +201,9 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories" rel="section">
+          <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-categories"></i> <br />
             
             分类
           </a>
@@ -392,10 +392,10 @@
 <h3 id="模块编译"><a href="#模块编译" class="headerlink" title="模块编译"></a>模块编译</h3><p>Node中每个文件模块都是一个对象。构造函数定义如下<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Module</span>(<span class="params">id,parent</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.id = id;</div><div class="line">    <span class="keyword">this</span>.export = &#123;&#125;;</div><div class="line">    <span class="keyword">this</span>.parent = parent;</div><div class="line">    <span class="keyword">if</span>(parent &amp;&amp; parent.children) &#123;</div><div class="line">        parent.children.push(<span class="keyword">this</span>)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">this</span>.filename = <span class="literal">null</span>;</div><div class="line">    <span class="keyword">this</span>.loaded = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">this</span>.children = [];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>不同类型的文件（扩展名不一样），Node会采用不同的读取方式</p>
 <h4 id="模块的载入（模块的读取）"><a href="#模块的载入（模块的读取）" class="headerlink" title="模块的载入（模块的读取）"></a>模块的载入（模块的读取）</h4><ul>
-<li>[ ] .js文件。通过fs模块同步读取文件</li>
-<li>[ ] .node文件。用c/c++编写的扩展文件，通过dlopen()方法加载最后编译生成文件</li>
-<li>[ ] .json文件。通过fs模块同步读取后，用JSON.parse()解析并且返回结果</li>
-<li>[ ] 其他类型 。按照js文件方法载入</li>
+<li>.js文件。通过fs模块同步读取文件</li>
+<li>.node文件。用c/c++编写的扩展文件，通过dlopen()方法加载最后编译生成文件</li>
+<li>.json文件。通过fs模块同步读取后，用JSON.parse()解析并且返回结果</li>
+<li>其他类型 。按照js文件方法载入</li>
 </ul>
 <h4 id="JavaScript模块的编译"><a href="#JavaScript模块的编译" class="headerlink" title="JavaScript模块的编译"></a>JavaScript模块的编译</h4><p>Node会对获取的JavaScript文件进行头尾包装<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params">exports,require,module,__filename,__dirname</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> math = <span class="built_in">require</span>(<span class="string">'math'</span>)</div><div class="line">    exports.add = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    </div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
 <p>然后通过vm原生模块的runInThisContenxt()方法执行（类似eval，但是有明确上下文，不污染全局环境），返回一个function对象，最后将当前模块对象的exports，require…等参数传入这个function()执行。执行之后，模块的exports属性会返回给调用方</p>
@@ -405,20 +405,20 @@
 <h4 id="c-c-模块编译"><a href="#c-c-模块编译" class="headerlink" title="c/c++模块编译"></a>c/c++模块编译</h4><p>Node会调用process.dlopen()方法进行加载和执行。Node架构下，dlopen()方法在windows和Linux平台下分别有不同实现。通过libuv兼容层进行了封装</p>
 <h4 id="JSON文件的编译"><a href="#JSON文件的编译" class="headerlink" title="JSON文件的编译"></a>JSON文件的编译</h4><p>通过JSON.parse()把通过fs模块异步读取的内容传入，即可得到对象，然后将对象赋给模块对象的exports，以供外部使用。一般对于配置文件，可以直接require(),无需fs读取。</p>
 <h2 id="包和NPM"><a href="#包和NPM" class="headerlink" title="包和NPM"></a>包和NPM</h2><h3 id="CommonJS规范定义的包结构"><a href="#CommonJS规范定义的包结构" class="headerlink" title="CommonJS规范定义的包结构"></a>CommonJS规范定义的包结构</h3><ul>
-<li>[ ] package.json：包描述文件</li>
-<li>[ ] bin ：存放可执行二进制文件</li>
-<li>[ ] lib：存放JS代码</li>
-<li>[ ] doc：存放文档</li>
-<li>[ ] test：存放单元测试代码</li>
+<li>package.json：包描述文件</li>
+<li>bin ：存放可执行二进制文件</li>
+<li>lib：存放JS代码</li>
+<li>doc：存放文档</li>
+<li>test：存放单元测试代码</li>
 </ul>
 <h3 id="CommonJS和NPM的包描述文件"><a href="#CommonJS和NPM的包描述文件" class="headerlink" title="CommonJS和NPM的包描述文件"></a>CommonJS和NPM的包描述文件</h3><blockquote>
 <p>需要注意的是，CommonJS规范的package.json字段和NPM所实现的package.json字段略微有些差别。NPM在CommonJS的基础上添加了一些字段</p>
 </blockquote>
 <h4 id="几个字段解释"><a href="#几个字段解释" class="headerlink" title="几个字段解释"></a>几个字段解释</h4><ul>
-<li>[ ] bin：一些包作者希望包可以作为命令行工具使用，配置好bin字段后，通过npm install package_name -g命令可以将脚本添加到执行路径中，之后可以在命令行中直接执行</li>
-<li>[ ] main：模板引入方法require()在引入包时，会有限检查这个字段，并将其作为包中其余模块的入口</li>
-<li>[ ] devDependencies：一些模块只在开发时需要依赖</li>
-<li>[ ] engine：支持的JavaScript引擎列表，ejs，ppc，mips，jsc，node，v8等</li>
+<li>bin：一些包作者希望包可以作为命令行工具使用，配置好bin字段后，通过npm install package_name -g命令可以将脚本添加到执行路径中，之后可以在命令行中直接执行</li>
+<li>main：模板引入方法require()在引入包时，会有限检查这个字段，并将其作为包中其余模块的入口</li>
+<li>devDependencies：一些模块只在开发时需要依赖</li>
+<li>engine：支持的JavaScript引擎列表，ejs，ppc，mips，jsc，node，v8等</li>
 </ul>
 <h4 id="NPM常用功能"><a href="#NPM常用功能" class="headerlink" title="NPM常用功能"></a>NPM常用功能</h4><ul>
 <li>安装依赖包：npm install<blockquote>
