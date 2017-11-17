@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/assets/img/favicon.ico?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Node,JavaScript," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用">
+<meta name="keywords" content="Node,JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NodeJS模块机制">
+<meta property="og:url" content="http://amazinglynch.com/2017/11/16/NodeJS模块机制/index.html">
+<meta property="og:site_name" content="Lynch">
+<meta property="og:description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用">
+<meta property="og:updated_time" content="2017-11-16T15:04:11.236Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NodeJS模块机制">
+<meta name="twitter:description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://amazinglynch.com/2017/11/16/NodeJS模块机制/"/>
+
+
+
+
+
+  <title>NodeJS模块机制 | Lynch</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lynch</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录生活与学习的点点滴滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://amazinglynch.com/2017/11/16/NodeJS模块机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AmazingLynch">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://yiweifen.com/UploadFiles/haotu/20170504/ywwrz1vcaau1305.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lynch">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">NodeJS模块机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-16T22:13:32+08:00">
+                2017-11-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Node/" itemprop="url" rel="index">
+                    <span itemprop="name">Node</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/16/NodeJS模块机制/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/11/16/NodeJS模块机制/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="CommonJS规范"><a href="#CommonJS规范" class="headerlink" title="CommonJS规范"></a>CommonJS规范</h2><h3 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h3><p>JavaScript存在缺陷，导致在后端其无法用来开发大型应用<br><a id="more"></a></p>
+<blockquote>
+<ul>
+<li>没有模块系统</li>
+<li>标准库少。文件操作，I/O流都没有标准API</li>
+<li>没有标准接口。与web服务器或者数据库的接口</li>
+<li>缺乏包管理</li>
+</ul>
+</blockquote>
+<h3 id="具体规范"><a href="#具体规范" class="headerlink" title="具体规范"></a>具体规范</h3><ol>
+<li>模块引用 <strong>require</strong></li>
+<li>模块定义<blockquote>
+<p>需要注意的是，上下文提供exports对象用于导出当前模块的方法和变量，并且它是唯一导出的出口。而在模块中<br>还存在一个module对象，它代表模块自身，exports是module的属性。在Node中，一个文件就是一个模块，可以将方法挂载在exports对象上作为属性即可定义导出的方式。</p>
+</blockquote>
+</li>
+<li>模块标识<br>模块标识就是require()方法的参数，必须是符合小驼峰命名的字符串，或者以 .、..开头的相对路径。可以没有文件后缀.js</li>
+</ol>
+<h2 id="Node实现"><a href="#Node实现" class="headerlink" title="Node实现"></a>Node实现</h2><p>引入模块的三个步骤</p>
+<ol>
+<li>路径分析</li>
+<li>文件定位</li>
+<li>编译执行<br>不同类别模块加载的区别</li>
+<li>核心模块(<em>Node提供</em>)：在Node源代码编译过程中，编译进了二进制执行文件。在Node进程启动时，部分核心模块直接被加载进内存中(没有文件定位和编译执行的过程)，加载速度很快</li>
+<li>文件模块(<em>用户编写</em>)：在运行时动态加载，需要历经路径分析，文件定位，编译执行过程，比核心模块慢一些</li>
+</ol>
+<h3 id="路径分析"><a href="#路径分析" class="headerlink" title="路径分析"></a>路径分析</h3><p>. 核心模块：优先级仅次于缓存加载，被编译成二进制<br>. 路径形式的文件模块(相对定位OR绝对定位)：当成文件模块来处理。转化成真实路径，并且将编译执行后的结果放入缓存中<br>. 自定义模块</p>
+<blockquote>
+<p>自定义模块指的是非核心模块，同时也不是路径形式的标识符。可以认为是一种特殊的文件模块，可能是一个文件或者包的形式，查找比较费时。</p>
+</blockquote>
+<p>查找策略</p>
+<ul>
+<li>当前目录下的node_modules</li>
+<li>父目录下的node_modules</li>
+<li>沿路径向上递归，知道根目录下的node_modules</li>
+</ul>
+<h3 id="文件定位"><a href="#文件定位" class="headerlink" title="文件定位"></a>文件定位</h3><h4 id="扩展名分析"><a href="#扩展名分析" class="headerlink" title="扩展名分析"></a>扩展名分析</h4><p>标识符不包含文件名，Node会按照.js、.node、.json的次序补足，依次尝试</p>
+<h4 id="目录分析和包"><a href="#目录分析和包" class="headerlink" title="目录分析和包"></a>目录分析和包</h4><p>分析完加扩展名的标识符后，可能还没有找到对应文件，但可以得到一个目录。Node会自动将该目录当做一个包来处理。Node（CommonJS规范）首先会在当前目录下找到package.json文件，找到main字段，对该文件名进行定位。如果没有找到，则会将index作为默认文件名，依次查找index.js、index.node、index.json。如果还没有找到则进入下一个模块路径进行同样方式的查找</p>
+<h3 id="模块编译"><a href="#模块编译" class="headerlink" title="模块编译"></a>模块编译</h3><p>Node中每个文件模块都是一个对象。构造函数定义如下<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Module</span>(<span class="params">id,parent</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.id = id;</div><div class="line">    <span class="keyword">this</span>.export = &#123;&#125;;</div><div class="line">    <span class="keyword">this</span>.parent = parent;</div><div class="line">    <span class="keyword">if</span>(parent &amp;&amp; parent.children) &#123;</div><div class="line">        parent.children.push(<span class="keyword">this</span>)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">this</span>.filename = <span class="literal">null</span>;</div><div class="line">    <span class="keyword">this</span>.loaded = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">this</span>.children = [];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>不同类型的文件（扩展名不一样），Node会采用不同的读取方式</p>
+<h4 id="模块的载入（模块的读取）"><a href="#模块的载入（模块的读取）" class="headerlink" title="模块的载入（模块的读取）"></a>模块的载入（模块的读取）</h4><ul>
+<li>[ ] .js文件。通过fs模块同步读取文件</li>
+<li>[ ] .node文件。用c/c++编写的扩展文件，通过dlopen()方法加载最后编译生成文件</li>
+<li>[ ] .json文件。通过fs模块同步读取后，用JSON.parse()解析并且返回结果</li>
+<li>[ ] 其他类型 。按照js文件方法载入</li>
+</ul>
+<h4 id="JavaScript模块的编译"><a href="#JavaScript模块的编译" class="headerlink" title="JavaScript模块的编译"></a>JavaScript模块的编译</h4><p>Node会对获取的JavaScript文件进行头尾包装<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params">exports,require,module,__filename,__dirname</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> math = <span class="built_in">require</span>(<span class="string">'math'</span>)</div><div class="line">    exports.add = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    </div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>然后通过vm原生模块的runInThisContenxt()方法执行（类似eval，但是有明确上下文，不污染全局环境），返回一个function对象，最后将当前模块对象的exports，require…等参数传入这个function()执行。执行之后，模块的exports属性会返回给调用方</p>
+<blockquote>
+<p>这也是为什么这些变量没有定义在模块文件，却可以使用的原因。<br>同时需要注意的是这里的module.exports 和 exports之间的关系。在模块内部是不能直接将值赋给exports对象，因为exports对象是通过形参的方式传入函数的，直接赋值会改变形参的引用，但并不能改变作用域外的值。所以应该将值以属性的方式赋进去，或者直接赋值给module.exports对象</p>
+</blockquote>
+<h4 id="c-c-模块编译"><a href="#c-c-模块编译" class="headerlink" title="c/c++模块编译"></a>c/c++模块编译</h4><p>Node会调用process.dlopen()方法进行加载和执行。Node架构下，dlopen()方法在windows和Linux平台下分别有不同实现。通过libuv兼容层进行了封装</p>
+<h4 id="JSON文件的编译"><a href="#JSON文件的编译" class="headerlink" title="JSON文件的编译"></a>JSON文件的编译</h4><p>通过JSON.parse()把通过fs模块异步读取的内容传入，即可得到对象，然后将对象赋给模块对象的exports，以供外部使用。一般对于配置文件，可以直接require(),无需fs读取。</p>
+<h2 id="包和NPM"><a href="#包和NPM" class="headerlink" title="包和NPM"></a>包和NPM</h2><h3 id="CommonJS规范定义的包结构"><a href="#CommonJS规范定义的包结构" class="headerlink" title="CommonJS规范定义的包结构"></a>CommonJS规范定义的包结构</h3><ul>
+<li>[ ] package.json：包描述文件</li>
+<li>[ ] bin ：存放可执行二进制文件</li>
+<li>[ ] lib：存放JS代码</li>
+<li>[ ] doc：存放文档</li>
+<li>[ ] test：存放单元测试代码</li>
+</ul>
+<h3 id="CommonJS和NPM的包描述文件"><a href="#CommonJS和NPM的包描述文件" class="headerlink" title="CommonJS和NPM的包描述文件"></a>CommonJS和NPM的包描述文件</h3><blockquote>
+<p>需要注意的是，CommonJS规范的package.json字段和NPM所实现的package.json字段略微有些差别。NPM在CommonJS的基础上添加了一些字段</p>
+</blockquote>
+<h4 id="几个字段解释"><a href="#几个字段解释" class="headerlink" title="几个字段解释"></a>几个字段解释</h4><ul>
+<li>[ ] bin：一些包作者希望包可以作为命令行工具使用，配置好bin字段后，通过npm install package_name -g命令可以将脚本添加到执行路径中，之后可以在命令行中直接执行</li>
+<li>[ ] main：模板引入方法require()在引入包时，会有限检查这个字段，并将其作为包中其余模块的入口</li>
+<li>[ ] devDependencies：一些模块只在开发时需要依赖</li>
+<li>[ ] engine：支持的JavaScript引擎列表，ejs，ppc，mips，jsc，node，v8等</li>
+</ul>
+<h4 id="NPM常用功能"><a href="#NPM常用功能" class="headerlink" title="NPM常用功能"></a>NPM常用功能</h4><ul>
+<li>安装依赖包：npm install<blockquote>
+<p>全局模式并不是将一个模块包安装为一个全局包的意思，它并不意味着可以在任何地方通过require()都能引用到它。实际上，全局安装时将一个包安装为全局可用的可执行命令，它根据包描述文件中的bin字段配置，将实际脚本链接到与Node可执行文件相同路径下（全局模式安装的所有模块宝都被安装进了一个统一的目录下，这个目录是<code>path.resolve(process,execPath,&#39;..&#39;,&#39;..&#39;,&#39;lib&#39;,&#39;node_modules&#39;)</code>这里process.execPath是node的安装目录，由于环境变量的作用，在任何目录下执行node命令都会链接到node安装目录）</p>
+<ul>
+<li>查看可用包：npm ls 分析出当前路径通过模块路径找到的所有包，并生成依赖树</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h4 id="NPM的问题"><a href="#NPM的问题" class="headerlink" title="NPM的问题"></a>NPM的问题</h4><p>每个人都可以向npm仓库发布包，导致包的质量良莠不齐，一个可靠的，优秀的包必须有良好的测试，良好的文档，良好的测试覆盖率，良好的编码规范等等</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Node/" rel="tag"># Node</a>
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/23/为Hexo-Yilia的博客上添加livere-来必利-作为评论支持/" rel="next" title="为Hexo + Yilia的博客上添加livere(来必利)作为评论支持">
+                <i class="fa fa-chevron-left"></i> 为Hexo + Yilia的博客上添加livere(来必利)作为评论支持
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://yiweifen.com/UploadFiles/haotu/20170504/ywwrz1vcaau1305.jpg"
+                alt="AmazingLynch" />
+            
+              <p class="site-author-name" itemprop="name">AmazingLynch</p>
+              <p class="site-description motion-element" itemprop="description">个人博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CommonJS规范"><span class="nav-number">1.</span> <span class="nav-text">CommonJS规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#出发点"><span class="nav-number">1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体规范"><span class="nav-number">1.2.</span> <span class="nav-text">具体规范</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Node实现"><span class="nav-number">2.</span> <span class="nav-text">Node实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#路径分析"><span class="nav-number">2.1.</span> <span class="nav-text">路径分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件定位"><span class="nav-number">2.2.</span> <span class="nav-text">文件定位</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#扩展名分析"><span class="nav-number">2.2.1.</span> <span class="nav-text">扩展名分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目录分析和包"><span class="nav-number">2.2.2.</span> <span class="nav-text">目录分析和包</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块编译"><span class="nav-number">2.3.</span> <span class="nav-text">模块编译</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模块的载入（模块的读取）"><span class="nav-number">2.3.1.</span> <span class="nav-text">模块的载入（模块的读取）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JavaScript模块的编译"><span class="nav-number">2.3.2.</span> <span class="nav-text">JavaScript模块的编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c-c-模块编译"><span class="nav-number">2.3.3.</span> <span class="nav-text">c/c++模块编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON文件的编译"><span class="nav-number">2.3.4.</span> <span class="nav-text">JSON文件的编译</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#包和NPM"><span class="nav-number">3.</span> <span class="nav-text">包和NPM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CommonJS规范定义的包结构"><span class="nav-number">3.1.</span> <span class="nav-text">CommonJS规范定义的包结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CommonJS和NPM的包描述文件"><span class="nav-number">3.2.</span> <span class="nav-text">CommonJS和NPM的包描述文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#几个字段解释"><span class="nav-number">3.2.1.</span> <span class="nav-text">几个字段解释</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NPM常用功能"><span class="nav-number">3.2.2.</span> <span class="nav-text">NPM常用功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NPM的问题"><span class="nav-number">3.2.3.</span> <span class="nav-text">NPM的问题</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AmazingLynch</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://lynchblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://amazinglynch.com/2017/11/16/NodeJS模块机制/';
+          this.page.identifier = '2017/11/16/NodeJS模块机制/';
+          this.page.title = 'NodeJS模块机制';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://lynchblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
