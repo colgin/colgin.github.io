@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法12345var isType = function(type) &amp;#123;    return function(obj) &amp;#123;        return Object.prototype.toString.call">
+<meta name="description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
 <meta name="keywords" content="Node,JavaScript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="异步编程">
 <meta property="og:url" content="http://amazinglynch.com/2017/11/18/异步编程/index.html">
 <meta property="og:site_name" content="Lynch&#39;s Blogs">
-<meta property="og:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法12345var isType = function(type) &amp;#123;    return function(obj) &amp;#123;        return Object.prototype.toString.call">
-<meta property="og:updated_time" content="2017-11-22T07:46:38.485Z">
+<meta property="og:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
+<meta property="og:updated_time" content="2017-11-22T07:49:27.801Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="异步编程">
-<meta name="twitter:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法12345var isType = function(type) &amp;#123;    return function(obj) &amp;#123;        return Object.prototype.toString.call">
+<meta name="twitter:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
 
 
 
@@ -352,9 +352,11 @@
       
 
       
-        <h2 id="函数式编程"><a href="#函数式编程" class="headerlink" title="函数式编程"></a>函数式编程</h2><ul>
+        <ul>
+<li><h2 id="函数式编程"><a href="#函数式编程" class="headerlink" title="函数式编程"></a>函数式编程</h2><ul>
 <li>高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回</li>
-<li>偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isType = <span class="function"><span class="keyword">function</span>(<span class="params">type</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.call(obj) === [<span class="string">'Object'</span> + type]</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<li>偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法<a id="more"></a>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isType = <span class="function"><span class="keyword">function</span>(<span class="params">type</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.call(obj) === [<span class="string">'Object'</span> + type]</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>由上诉代码可知，这种通过指定部分参数来产生一个新的定制函数的形式就是偏函数。这样就不用挨个去实现isFunction()、isString()这样的函数，只需要在isType函数传入参数即可得到定制函数</p>
@@ -368,11 +370,14 @@
 <li>多线程编程：单线程无法高效利用多核cpu的服务器，因为单个Node进程实质上没有充分利用多核cpu。web workers。</li>
 </ul>
 <h3 id="异步编程解决方案"><a href="#异步编程解决方案" class="headerlink" title="异步编程解决方案"></a>异步编程解决方案</h3><h4 id="事件发布-订阅模式"><a href="#事件发布-订阅模式" class="headerlink" title="事件发布/订阅模式"></a>事件发布/订阅模式</h4><p>依赖于Node自身提供的event模块，回调函数事件化。Node对事件的发布订阅机制做了一些小的限制。比如说对一个事件添加的侦听器不能超过10个（这个限制也可以自己修改）为了防止内存泄漏以及过多占用cpu</p>
-<h4 id="Promise-Deferred模式"><a href="#Promise-Deferred模式" class="headerlink" title="Promise/Deferred模式"></a>Promise/Deferred模式</h4><p>这种模式可以先执行异步调用，延迟传递处理函数。这种方式比预先传入回调更好看一些。在原始API里一个事件只能处理一个回调，而通过deferred对象，可以对事件加入任意的业务处理逻辑。CommonJS的Promise/A就是这种模式的一种实现。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$.get('/api)</div><div class="line"> .success(onSuccess)</div><div class="line"> .error(onErroe)</div><div class="line"> .complete(onComplete)</div></pre></td></tr></table></figure></p>
+<h4 id="Promise-Deferred模式"><a href="#Promise-Deferred模式" class="headerlink" title="Promise/Deferred模式"></a>Promise/Deferred模式</h4><p>这种模式可以先执行异步调用，延迟传递处理函数。这种方式比预先传入回调更好看一些。在原始API里一个事件只能处理一个回调，而通过deferred对象，可以对事件加入任意的业务处理逻辑。CommonJS的Promise/A就是这种模式的一种实现。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$.get('/api)</div><div class="line"> .success(onSuccess)</div><div class="line"> .error(onErroe)</div><div class="line"> .complete(onComplete)</div></pre></td></tr></table></figure>
 <h4 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h4><h5 id="async"><a href="#async" class="headerlink" title="async"></a>async</h5><ul>
 <li>async.series()：异步的串行执行</li>
 <li>async.parallel()：异步的并行执行</li>
 <li>async.waterfall()：异步调用的依赖处理</li>
+</ul>
+</li>
 </ul>
 
       
