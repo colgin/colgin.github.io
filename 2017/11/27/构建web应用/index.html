@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/assets/img/favicon.ico?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaScript,Node,web后台," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前面几章介绍了一些Node的基本知识，这里开始介绍如何用Node去构建一个web应用。包括请求的解析，数据上传，路由解析，中间件的知识，这些知识是Node中HTTP模块提供的最基础的功能，同时也是如今众多框架的基础。">
+<meta name="keywords" content="JavaScript,Node,web后台">
+<meta property="og:type" content="article">
+<meta property="og:title" content="构建web应用">
+<meta property="og:url" content="http://amazinglynch.com/2017/11/27/构建web应用/index.html">
+<meta property="og:site_name" content="Lynch&#39;s Blogs">
+<meta property="og:description" content="前面几章介绍了一些Node的基本知识，这里开始介绍如何用Node去构建一个web应用。包括请求的解析，数据上传，路由解析，中间件的知识，这些知识是Node中HTTP模块提供的最基础的功能，同时也是如今众多框架的基础。">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/0060lm7Tly1flwp693x3xj30b60cydg9.jpg">
+<meta property="og:updated_time" content="2017-11-27T15:39:13.766Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="构建web应用">
+<meta name="twitter:description" content="前面几章介绍了一些Node的基本知识，这里开始介绍如何用Node去构建一个web应用。包括请求的解析，数据上传，路由解析，中间件的知识，这些知识是Node中HTTP模块提供的最基础的功能，同时也是如今众多框架的基础。">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/large/0060lm7Tly1flwp693x3xj30b60cydg9.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://amazinglynch.com/2017/11/27/构建web应用/"/>
+
+
+
+
+
+  <title>构建web应用 | Lynch's Blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lynch's Blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录生活与学习的点点滴滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://amazinglynch.com/2017/11/27/构建web应用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AmazingLynch">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://yiweifen.com/UploadFiles/haotu/20170504/ywwrz1vcaau1305.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lynch's Blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">构建web应用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-27T09:46:31+08:00">
+                2017-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Node/" itemprop="url" rel="index">
+                    <span itemprop="name">Node</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/27/构建web应用/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/11/27/构建web应用/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面几章介绍了一些Node的基本知识，这里开始介绍如何用Node去构建一个web应用。包括请求的解析，数据上传，路由解析，中间件的知识，这些知识是Node中HTTP模块提供的最基础的功能，同时也是如今众多框架的基础。<br><a id="more"></a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>)</div><div class="line">http.createServer(<span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>) </span>&#123;</div><div class="line">    res.writeHead(<span class="number">200</span>,&#123;<span class="string">'Content-Type'</span>:<span class="string">'text/plain'</span>&#125;)</div><div class="line">    res.end(<span class="string">'Hello world'</span>)</div><div class="line">&#125;).listen(<span class="number">8080</span>)</div></pre></td></tr></table></figure>
+<p>真实的业务场景还需要大量的工作，但是所有的一切都基于request事件处理函数展开,把最终结果返回一个上面的函数作为参数即可。在具体业务开始前，需要为业务预处理一些细节，这些细节将会挂载上req或者res对象上，供业务代码使用</p>
+<h2 id="基础功能"><a href="#基础功能" class="headerlink" title="基础功能"></a>基础功能</h2><h3 id="请求方法"><a href="#请求方法" class="headerlink" title="请求方法"></a>请求方法</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">function(req,res) &#123;</div><div class="line">    switch(req.method) &#123;</div><div class="line">    case "POST":</div><div class="line">        update(req,res)</div><div class="line">        break'</div><div class="line">    case "DELETE":</div><div class="line">        remove(req,res)</div><div class="line">        break'</div><div class="line">    case "PUT":</div><div class="line">        create(req,res)</div><div class="line">        break'</div><div class="line">    case "GET":</div><div class="line">    default:</div><div class="line">        get(req,res)</div><div class="line">        break'</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="路径解析"><a href="#路径解析" class="headerlink" title="路径解析"></a>路径解析</h3><p>HTTP_Parser会将请求路径解析为req.url。</p>
+<blockquote>
+<p>需要注意的是客户端代理（浏览器）会将地址解析成报文将路径和查询部分放在报文的第一行。二hash部分会被丢弃，不会存在于报文的任何地方。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//静态文件服务器</span></div><div class="line"><span class="keyword">var</span> url = <span class="built_in">require</span>(<span class="string">'url'</span>)</div><div class="line"><span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> pathname = url.parse(req.url).pathname</div><div class="line">    fs.readFile(path.join(ROOT,pathname),<span class="function"><span class="keyword">function</span>(<span class="params">err,file</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span>(err) &#123;</div><div class="line">            res.writeHead(<span class="number">400</span>)</div><div class="line">            res.end(<span class="string">'找不到相关文件'</span>)</div><div class="line">            <span class="keyword">return</span></div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            res.writeHead(<span class="number">200</span>)</div><div class="line">            res.end(file)</div><div class="line">        &#125;</div><div class="line">    &#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="查询字符串"><a href="#查询字符串" class="headerlink" title="查询字符串"></a>查询字符串</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> url = <span class="built_in">require</span>(<span class="string">'url'</span>)</div><div class="line"><span class="keyword">var</span> querystring = <span class="built_in">require</span>(<span class="string">'querystring'</span>)</div><div class="line"><span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> query = querystring.parse(url.parse(req.url).query)</div><div class="line">    <span class="comment">/*</span></div><div class="line">    也可以通过url.parse()的第二个参数parseQueryString &lt;boolean&gt; 如果为 true，则 query 属性总会通过 querystring 模块的 parse() 方法生成一个对象。 如果为 false，则返回的 URL 对象上的 query 属性会是一个未解析、未解码的字符串。 默认为 false。</div><div class="line">    var query = url.parse(req.url,true)</div><div class="line">    */</div><div class="line">    handle(query)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h3><p>HTTP是一个无状态的歇协议，而真实的业务场景确是需要一定的状态的，否则无法区分用户之间的身份。<br>Cookie的处理分为以下几步</p>
+<ol>
+<li>服务器向客户端发送Cookie</li>
+<li>浏览器将Cookie保存</li>
+<li>之后每次浏览器都会讲Cookie发现服务器</li>
+</ol>
+<p>cookie被HTTP_Parser解析到req.header上，可以通过req.headers.cookie访问(key=value;key=value),一般来说在业务逻辑代码执行前，要将转化好的Cookie对象挂载到req对象上，让之后的业务代码可以直接访问<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>) </span>&#123;</div><div class="line">    req.cookies = parseCookie(req.header.cookie)</div><div class="line">    handle(req,res)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>服务器通过Set-Cookie字段来写Cookie。写一个完整的cookie字段格式如下<br><em>Set-Cookie:name=value;Path=/;Expires=Sun,23-Apr-23 22.02.33 GMT;Domain=.domain.com</em><br>其中name=value是必须的，其他诸多选项用来控制之后浏览器向服务器发送cookie的行为的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">var serialize = function(name,value,option) &#123;</div><div class="line">    var pairs = [name + &apos;=&apos; + encode(val)];</div><div class="line">    opt = opt || &#123;&#125;</div><div class="line">    if(opt.maxAge) pairs.push(&apos;Max-Age=&apos; + option.maxage)</div><div class="line">    if(opt.domain) pairs.push(&apos;Domain=&apos; + option.domain)</div><div class="line">    if(opt.path) pairs.push(&apos;Path=&apos; + option.path)</div><div class="line">    if(opt.expires) pairs.push(&apos;Expires=&apos; + option.opt.expires.toUTCString())</div><div class="line">    if(opt.httpOnly) pairs.push(&apos;HttpOnly&apos;)</div><div class="line">    if(opt.secure) pairs.push(&apos;Secure&apos;)</div><div class="line">    return pairs.join(&apos;;&apos;)</div><div class="line">&#125;</div><div class="line">var handle = function(req,res) &#123;</div><div class="line">    if(!req.cookies.isVisit) &#123;</div><div class="line">        res.setHeader(&apos;Set-Cookie&apos;,serialize(&apos;isVisit&apos;,&apos;1&apos;))</div><div class="line">        res.writeHead(200)</div><div class="line">        res.end(&apos;欢迎你第一次来&apos;)</div><div class="line">    &#125; else &#123;</div><div class="line">        res.writeHead(200)</div><div class="line">        res.end(&apos;欢迎你再次到来&apos;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>前端脚本也可以修改Cookie，Cookie在没有过期的时候，之后会随着http请求发送给服务器，如果Cookie太多，会造成浪费。另外如果将Cookie的域设置在根节点，几乎所有的子节点都会带上这些Cookie。而一些静态文件用不着，所以可以为静态文件设置一个不同的域名。或者给cookie设置适当的域。</p>
+<blockquote>
+<p>为静态文件设置不同的域名还有一个好处就是可以突破浏览器下载线程数量的限制，因为域名不同，可以将下载线程数翻倍。但是多一个域名，也会多一次DNS查询</p>
+</blockquote>
+<h3 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h3><p>Cookie的问题在于容易变得体积过大，而且前后端都可以修改，数据很容易被篡改，其对敏感数据的保护是无效的。<br>Session就是为了解决上述问题而生的，Session数据只保留在服务器端，客户端无法修改，数据安全，而且也无须在协议中每次传递。但是如何将每个客户和服务器中的数据对应起来呢？</p>
+<h4 id="基于Cookie来实现用户和数据的映射"><a href="#基于Cookie来实现用户和数据的映射" class="headerlink" title="基于Cookie来实现用户和数据的映射"></a>基于Cookie来实现用户和数据的映射</h4><p>依赖于Cookie,口令放在cookie中。session有效期通常很短，普遍设置为20分钟，如果20分钟内客户端和浏览器没有交互，服务器就把数据删除<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//生成session</span></div><div class="line"><span class="keyword">var</span> session = &#123;&#125;</div><div class="line"><span class="comment">//key就是Cookie中session的口令，可以约定</span></div><div class="line"><span class="keyword">var</span> key = <span class="string">'session_id'</span></div><div class="line"><span class="keyword">var</span> EXPIRES = <span class="number">20</span>*<span class="number">60</span>*<span class="number">1000</span></div><div class="line"><span class="keyword">var</span> generate = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> session = &#123;&#125;</div><div class="line">    session.id = (<span class="keyword">new</span> <span class="built_in">Date</span>().getTime() + <span class="built_in">Math</span>.random())</div><div class="line">    session.cookie = &#123;</div><div class="line">        <span class="attr">expire</span>:(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime()) + EXPIRES</div><div class="line">    &#125;</div><div class="line">    sessions[session.id] = session</div><div class="line">    <span class="keyword">return</span> session</div><div class="line">&#125;</div><div class="line"><span class="comment">//请求到来时，检查cooke中的口令和服务器端的数据</span></div><div class="line"><span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> id = req.cookie[key]</div><div class="line">    <span class="keyword">if</span>(!id) &#123;</div><div class="line">        req.session = generate()</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">var</span> session = sessions[id]</div><div class="line">        <span class="keyword">if</span>(session) &#123;</div><div class="line">            <span class="keyword">if</span>(session.cookie.expire &gt; (<span class="keyword">new</span> <span class="built_in">Date</span>()).getTime()) &#123;</div><div class="line">                <span class="comment">//更新超时时间</span></div><div class="line">                session.cookie.expire = (<span class="keyword">new</span> <span class="built_in">Date</span>()).getTime() + EXPIRES;</div><div class="line">                req.session = session</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">//超时了，删除旧的数据，并重新生成</span></div><div class="line">                <span class="keyword">delete</span> session[id]</div><div class="line">                req.session = generate()</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">//如果session过期或口令不对，重新生成session</span></div><div class="line">            req.session = generate()</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    handle(req,res)</div><div class="line">&#125;</div><div class="line"><span class="comment">//响应给客户端时设置新的值，hack响应对象的writeHead()方法，在其内部注入Cookie逻辑</span></div><div class="line"><span class="keyword">var</span> writeHead = res.writeHead</div><div class="line">res.writeHead = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> cookies = res.getHeader(<span class="string">'Set-Cookie'</span>)</div><div class="line">    <span class="keyword">var</span> session = serialize(<span class="string">'Set-Cookie'</span>,req.session.id)</div><div class="line">    cookies = <span class="built_in">Array</span>.isArray(cookies) ? cookies.concat(session) : [cookies,session]</div><div class="line">    res.setHeader(<span class="string">'Set-Cookie'</span>,cookies)</div><div class="line">    <span class="keyword">return</span> writeHead.apply(<span class="keyword">this</span>,<span class="built_in">arguments</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">var</span> handle = <span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span>(!req.session.isVisit) &#123;</div><div class="line">        res.session.isVisit = <span class="literal">true</span></div><div class="line">        res.writeHead(<span class="number">200</span>)</div><div class="line">        res.end(<span class="string">'欢迎你第一次来'</span>)</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        res.writeHead(<span class="number">200</span>)</div><div class="line">        res.end(<span class="string">'再次欢迎你'</span>)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="通过查询字符串实现浏览器和服务器端数据的对应"><a href="#通过查询字符串实现浏览器和服务器端数据的对应" class="headerlink" title="通过查询字符串实现浏览器和服务器端数据的对应"></a>通过查询字符串实现浏览器和服务器端数据的对应</h4><p>检查请求的查询字符串，如果没有值，会先生成新的带值得url<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> getURL = <span class="function"><span class="keyword">function</span>(<span class="params">_url,key,value</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> obj = url.parse(_url,parse)</div><div class="line">    obj.query[key] = value</div><div class="line">    <span class="keyword">return</span> url.format(obj)</div><div class="line">&#125;</div><div class="line"><span class="comment">//形成跳转，让客户端重新发起请求</span></div><div class="line"><span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> redirct = <span class="function"><span class="keyword">function</span>(<span class="params">url</span>) </span>&#123;</div><div class="line">        res.setHeader(<span class="string">'Location'</span>,url)</div><div class="line">        res.writeHead(<span class="number">302</span>)</div><div class="line">        res.end()</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">var</span> id = req.query[key]</div><div class="line">    <span class="keyword">if</span>(!id) &#123;</div><div class="line">        <span class="keyword">var</span> session = generate()</div><div class="line">        redirect(getURL(req.url,key,session.id))</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">var</span> session = sessions[id]</div><div class="line">        <span class="keyword">if</span>(session) &#123;</div><div class="line">            <span class="keyword">if</span>(session.cookie.expire &gt; (<span class="keyword">new</span> <span class="built_in">Date</span>()).getTime()) &#123;</div><div class="line">                <span class="comment">//更新超时时间</span></div><div class="line">                session.cookie.expire = (<span class="keyword">new</span> <span class="built_in">Date</span>()).getTime() + EXPIRES;</div><div class="line">                req.session = session</div><div class="line">                handle(req,res)</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">//超时了，删除旧的数据，并重新生成</span></div><div class="line">                <span class="keyword">delete</span> session[id]</div><div class="line">                <span class="keyword">var</span> session =  req.session = generate()</div><div class="line">                redirect(getURL(req.url,key,session.id))</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">//如果session过期或口令不对，重新生成session</span></div><div class="line">            <span class="keyword">var</span> session = req.session = generate()</div><div class="line">            redirect(getURL(req.url,key,session.id))</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上诉这种方案没有第一种方案好，因为这种使用查询字符串的方式，如果你复制了url给别人，别人就拥有和你一样的身份了。</p>
+<h3 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h3><ul>
+<li>添加Expires和Cache-Control到报文头</li>
+<li>配置Etags</li>
+<li>让Ajax缓存<br>通常来说，POST、DELETE、PUT这类行为性的请求操作不做缓存，大多数缓存只应用在GET请求中。<img src="http://ww1.sinaimg.cn/large/0060lm7Tly1flwp693x3xj30b60cydg9.jpg" alt="此处输入图片的描述"></li>
+</ul>
+<p>  关于是否可用查询。浏览器如果不能确认这份本地文件可以直接使用，会想服务器发送一次条件请求。有两种方式，时间戳和ETag</p>
+<ul>
+<li>时间戳：浏览器会在普通的get请求报文中，附带If-Modified-Since字段。<em>If-Modified-Since:Sun,03 Feb 2013 06:01:22 GMT</em>。服务器如果没有新的版本就会响应304，如果有新版本就发送新版本。问题在于这种方式只能精确到秒，而且文件时间戳改变了，内容却不定改动。（使用touch命令）</li>
+<li>ETag：服务端生成，服务端可以决定他的生成规则。一般是内容的散列值。请求响应头是If-None-Match/ETag字段。<em>If-None-Match:”82-1524485454000”</em>,<em>ETag:”82-1524485454000”</em></li>
+</ul>
+<p>上诉两种方式都需要重新请求服务器，可以使用Expires或者Cache-Control字段让浏览器进行缓存，一定条件下可以不用再向服务器请求。Expires会有浏览器和服务器不同步的问题，如服务器提前过期。而Cache-Control可以有效避免这个问题。</p>
+<h3 id="清除缓存"><a href="#清除缓存" class="headerlink" title="清除缓存"></a>清除缓存</h3><p>当服务器意外更新了资源，又无法通知客户端更新。由于浏览器是根据URL进行缓存，一般解决方案是每次发布，路径中跟随web应用的版本号或者文件内容的hash值。</p>
+<h3 id="Basic认证"><a href="#Basic认证" class="headerlink" title="Basic认证"></a>Basic认证</h3><p>Basic 认证是HTTP 中非常简单的认证方式，因为简单（近乎于明文，一般只有https才会使用），所以不是很安全，不过仍然非常常用。<br>当一个客户端向一个需要认证的HTTP服务器进行数据请求时，如果之前没有认证过，HTTP服务器会返回401状态码，要求客户端输入用户名和密码。用户输入用户名和密码后，用户名和密码会经过BASE64加密附加到请求信息中再次请求HTTP服务器，HTTP服务器会根据请求头携带的认证信息，决定是否认证成功及做出相应的响应。<em>Authorization:Basic dXNlcjpwYXNz</em><br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">function encode(username,password) &#123;</div><div class="line">    return new Buffer(username + ":" + password).toString('base64)</div><div class="line">&#125;</div><div class="line">funtion(req,res) &#123;</div><div class="line">    var auth = req.headers['authorization'] || ''</div><div class="line">    var parts = auth.split(' ')</div><div class="line">    var method = part[0] || ''//Basic</div><div class="line">    var encoded = part[1] || '' </div><div class="line">    var decoded = new Buffer(encoded,'base64').toString('utf8').split(':')</div><div class="line">    var user = decoded[0]</div><div class="line">    var pass = decoded[1]</div><div class="line">    if(!checkUser(user,pass)) &#123;</div><div class="line">        res.setHeader('WWW-Authenticate','Basic realm="Secure Area"')</div><div class="line">        res.writeHead(401)</div><div class="line">        res.end()</div><div class="line">    &#125; else &#123;</div><div class="line">        handle(req,res)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="数据上传"><a href="#数据上传" class="headerlink" title="数据上传"></a>数据上传</h2><p>如果请求中还带有Transfer-Encoding或Content-Length即可判断请求中带有内容</p>
+<blockquote>
+<p>HTTP_Parser解析完请求头之后触发’request’事件，如果有请求体的话，报文内容会通过data事件从触发，我们需要以流的方式处理</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> hasBody = <span class="function"><span class="keyword">function</span>(<span class="params">req</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span>(<span class="string">'transfer-encoding'</span> <span class="keyword">in</span> req.headers || <span class="string">'content-length'</span> <span class="keyword">in</span> req.headers)</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span>(hasBody(req)) &#123;</div><div class="line">        <span class="keyword">var</span> buffers = []</div><div class="line">        req.on(<span class="string">'data'</span>,<span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">            buffers.push(chunk)</div><div class="line">        &#125;)</div><div class="line">        req.on(<span class="string">'end'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            req.raw.rawBody = Buffer.concat(buffers).toString()</div><div class="line">            handle(req,res)</div><div class="line">        &#125;)</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        handle(req,res)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>### </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Node/" rel="tag"># Node</a>
+          
+            <a href="/tags/web后台/" rel="tag"># web后台</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/25/Node中的网络编程/" rel="next" title="Node中的网络编程">
+                <i class="fa fa-chevron-left"></i> Node中的网络编程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://yiweifen.com/UploadFiles/haotu/20170504/ywwrz1vcaau1305.jpg"
+                alt="AmazingLynch" />
+            
+              <p class="site-author-name" itemprop="name">AmazingLynch</p>
+              <p class="site-description motion-element" itemprop="description">个人博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:skyran1995@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://weibo.com/5357700121/profile" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础功能"><span class="nav-number">1.</span> <span class="nav-text">基础功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#请求方法"><span class="nav-number">1.1.</span> <span class="nav-text">请求方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路径解析"><span class="nav-number">1.2.</span> <span class="nav-text">路径解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询字符串"><span class="nav-number">1.3.</span> <span class="nav-text">查询字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cookie"><span class="nav-number">1.4.</span> <span class="nav-text">Cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Session"><span class="nav-number">1.5.</span> <span class="nav-text">Session</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基于Cookie来实现用户和数据的映射"><span class="nav-number">1.5.1.</span> <span class="nav-text">基于Cookie来实现用户和数据的映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过查询字符串实现浏览器和服务器端数据的对应"><span class="nav-number">1.5.2.</span> <span class="nav-text">通过查询字符串实现浏览器和服务器端数据的对应</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存"><span class="nav-number">1.6.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清除缓存"><span class="nav-number">1.7.</span> <span class="nav-text">清除缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Basic认证"><span class="nav-number">1.8.</span> <span class="nav-text">Basic认证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据上传"><span class="nav-number">2.</span> <span class="nav-text">数据上传</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AmazingLynch</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://lynchblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://amazinglynch.com/2017/11/27/构建web应用/';
+          this.page.identifier = '2017/11/27/构建web应用/';
+          this.page.title = '构建web应用';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://lynchblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
