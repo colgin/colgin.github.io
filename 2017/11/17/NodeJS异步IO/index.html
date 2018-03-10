@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Lynch&#39;s Blogs">
 <meta property="og:description" content="提到Node，我们很容易想到异步IO，但是什么是异步IO？为什么要用异步IO？异步IO执行流程是怎么样的？你真的了解Node中的异步IO吗？">
 <meta property="og:image" content="http://ww3.sinaimg.cn/large/0060lm7Tly1flld44wuxyj30n10m5wj1.jpg">
-<meta property="og:updated_time" content="2017-11-17T14:33:28.899Z">
+<meta property="og:updated_time" content="2018-03-10T08:33:52.504Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NodeJS异步IO">
 <meta name="twitter:description" content="提到Node，我们很容易想到异步IO，但是什么是异步IO？为什么要用异步IO？异步IO执行流程是怎么样的？你真的了解Node中的异步IO吗？">
@@ -359,7 +359,7 @@
 <h2 id="为什么需要异步I-O"><a href="#为什么需要异步I-O" class="headerlink" title="为什么需要异步I/O"></a>为什么需要异步I/O</h2><h3 id="用户体验"><a href="#用户体验" class="headerlink" title="用户体验"></a>用户体验</h3><p>首先我们要知道的是浏览器中的JavaScript是在单线程上执行，而且它还是与UI渲染共用一个线程。这就意味着JavaScript在执行过程的时候UI渲染和响应处于停滞状态（所以脚本执行时间不能过长）。需要注意的是B/S模型总，网络速度会给用户体验带来很大麻烦。如果以同步方式获取服务器上的资源，JavaScript会停住等待，这期间UI会停顿，交互不能响应。</p>
 <h4 id="同步和异步运行时间比较"><a href="#同步和异步运行时间比较" class="headerlink" title="同步和异步运行时间比较"></a>同步和异步运行时间比较</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//同步方式运行，总共耗时M+N</span></div><div class="line">getDate(url1) <span class="comment">//耗时M</span></div><div class="line">getDate(url2) <span class="comment">//耗时N</span></div><div class="line"></div><div class="line"><span class="comment">//异步方式运行，总共耗时max(M,N)</span></div><div class="line">getDate(url1,<span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;&#125;)<span class="comment">//耗时M</span></div><div class="line">getDate(url2,<span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;&#125;)<span class="comment">//耗时N</span></div></pre></td></tr></table></figure>
 <h3 id="资源分配"><a href="#资源分配" class="headerlink" title="资源分配"></a>资源分配</h3><blockquote>
-<p>需要了解的是，如果有一组互不相关的任务需要完成，主流的方法有两个，单线程串行执行和多线程并行的区别。多线程的代价在于执行期线程上下文切换开销比较大。在业务复杂的时候，还经常面临锁，状态同步的问题。有点在于在多核cpu上能够有效提升cpu利用率。单线程优点在于编程方式比较符合人的思维习惯，易于表达。缺点在于其性能不是很好，一个略慢的任务会导致后续执行代码被阻塞。在计算机资源中，通常I/O与CPU计算之间是可以并行进行的。但是同步编程却使得I/O操作让后续任务等待，造成资源不能很好的利用。</p>
+<p>需要了解的是，如果有一组互不相关的任务需要完成，主流的方法有两个，单线程串行执行和多线程并行的区别。多线程的代价在于执行期线程上下文切换开销比较大。在业务复杂的时候，还经常面临锁，状态同步的问题。优点在于在多核cpu上能够有效提升cpu利用率。单线程优点在于编程方式比较符合人的思维习惯，易于表达。缺点在于其性能不是很好，一个略慢的任务会导致后续执行代码被阻塞。在计算机资源中，通常I/O与CPU计算之间是可以并行进行的。但是同步编程却使得I/O操作让后续任务等待，造成资源不能很好的利用。</p>
 </blockquote>
 <p>Node在单线程同步和多线程并行之间选择的方案是：利用单线程，远离死锁，状态同步的问题，利用异步，远离单线程阻塞的问题，更好利用cpu。</p>
 <blockquote>
@@ -522,7 +522,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -613,7 +613,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2017</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

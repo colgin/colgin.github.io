@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://amazinglynch.com/2017/11/16/NodeJS模块机制/index.html">
 <meta property="og:site_name" content="Lynch&#39;s Blogs">
 <meta property="og:description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用">
-<meta property="og:updated_time" content="2017-11-17T03:08:20.574Z">
+<meta property="og:updated_time" content="2018-03-10T07:51:00.451Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NodeJS模块机制">
 <meta name="twitter:description" content="CommonJS规范出发点JavaScript存在缺陷，导致在后端其无法用来开发大型应用">
@@ -379,7 +379,7 @@
 </ol>
 <h3 id="路径分析"><a href="#路径分析" class="headerlink" title="路径分析"></a>路径分析</h3><p>. 核心模块：优先级仅次于缓存加载，被编译成二进制<br>. 路径形式的文件模块(相对定位OR绝对定位)：当成文件模块来处理。转化成真实路径，并且将编译执行后的结果放入缓存中<br>. 自定义模块</p>
 <blockquote>
-<p>自定义模块指的是非核心模块，同时也不是路径形式的标识符。可以认为是一种特殊的文件模块，可能是一个文件或者包的形式，查找比较费时。</p>
+<p>自定义模块指的是非核心模块，同时也不是路径形式的标识符。可以认为是一种特殊的文件模块，可能是一个文件或者包的形式，查找比较费时。其实可以理解为你在网络上安装的第三方包。</p>
 </blockquote>
 <p>查找策略</p>
 <ul>
@@ -422,7 +422,7 @@
 </ul>
 <h4 id="NPM常用功能"><a href="#NPM常用功能" class="headerlink" title="NPM常用功能"></a>NPM常用功能</h4><ul>
 <li>安装依赖包：npm install<blockquote>
-<p>全局模式并不是将一个模块包安装为一个全局包的意思，它并不意味着可以在任何地方通过require()都能引用到它。实际上，全局安装时将一个包安装为全局可用的可执行命令，它根据包描述文件中的bin字段配置，将实际脚本链接到与Node可执行文件相同路径下（全局模式安装的所有模块宝都被安装进了一个统一的目录下，这个目录是<code>path.resolve(process,execPath,&#39;..&#39;,&#39;..&#39;,&#39;lib&#39;,&#39;node_modules&#39;)</code>这里process.execPath是node的安装目录，由于环境变量的作用，在任何目录下执行node命令都会链接到node安装目录）</p>
+<p>全局模式并不是将一个模块包安装为一个全局包的意思，它并不意味着可以在任何地方通过require()都能引用到它。实际上，全局安装时将一个包安装为全局可用的可执行命令，它根据包描述文件中的bin字段配置，将实际脚本链接到与Node可执行文件相同路径下（全局模式安装的所有模块宝都被安装进了一个统一的目录下，这个目录是<code>path.resolve(process.execPath,&#39;..&#39;,&#39;..&#39;,&#39;lib&#39;,&#39;node_modules&#39;)</code>这里process.execPath是node的安装目录，由于环境变量的作用，在任何目录下执行node命令都会链接到node安装目录）</p>
 <ul>
 <li>查看可用包：npm ls 分析出当前路径通过模块路径找到的所有包，并生成依赖树</li>
 </ul>
@@ -565,7 +565,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -656,7 +656,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2017</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
