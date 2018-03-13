@@ -86,13 +86,14 @@
 <meta property="og:url" content="http://amazinglynch.com/2017/12/02/构建web应用/index.html">
 <meta property="og:site_name" content="Lynch&#39;s Blogs">
 <meta property="og:description" content="构建web应用前面几章介绍了一些Node的基本知识，这里开始介绍如何用Node去构建一个web应用。包括请求的解析，数据上传，路由解析，中间件的知识，这些知识是Node中HTTP模块提供的最基础的功能，同时也是如今众多框架的基础。">
+<meta property="og:image" content="https://i.loli.net/2018/03/11/5aa53a3c334a7.png">
 <meta property="og:image" content="http://ww2.sinaimg.cn/large/0060lm7Tly1flxt8gnykgj30fj07f0su.jpg">
 <meta property="og:image" content="http://ww2.sinaimg.cn/large/0060lm7Tly1flxwgrijt5j30jx03dglo.jpg">
-<meta property="og:updated_time" content="2018-03-11T14:17:35.876Z">
+<meta property="og:updated_time" content="2018-03-13T05:23:19.747Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="构建web应用">
 <meta name="twitter:description" content="构建web应用前面几章介绍了一些Node的基本知识，这里开始介绍如何用Node去构建一个web应用。包括请求的解析，数据上传，路由解析，中间件的知识，这些知识是Node中HTTP模块提供的最基础的功能，同时也是如今众多框架的基础。">
-<meta name="twitter:image" content="http://ww2.sinaimg.cn/large/0060lm7Tly1flxt8gnykgj30fj07f0su.jpg">
+<meta name="twitter:image" content="https://i.loli.net/2018/03/11/5aa53a3c334a7.png">
 
 
 
@@ -387,7 +388,7 @@
 <h3 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h3><ul>
 <li>添加Expires和Cache-Control到报文头</li>
 <li>配置Etags</li>
-<li>让Ajax缓存<br>通常来说，POST、DELETE、PUT这类行为性的请求操作不做缓存，大多数缓存只应用在GET请求中。![此处输入图片的描述][<a href="https://i.loli.net/2018/03/11/5aa53a3c334a7.png" target="_blank" rel="external">https://i.loli.net/2018/03/11/5aa53a3c334a7.png</a>]</li>
+<li>让Ajax缓存<br>通常来说，POST、DELETE、PUT这类行为性的请求操作不做缓存，大多数缓存只应用在GET请求中。<img src="https://i.loli.net/2018/03/11/5aa53a3c334a7.png" alt="缓存"></li>
 </ul>
 <p>  关于是否可用查询。浏览器如果不能确认这份本地文件可以直接使用，会想服务器发送一次条件请求。有两种方式，时间戳和ETag</p>
 <ul>
@@ -414,7 +415,7 @@
 </li>
 </ul>
 <h2 id="路由解析"><a href="#路由解析" class="headerlink" title="路由解析"></a>路由解析</h2><h3 id="文件路径型"><a href="#文件路径型" class="headerlink" title="文件路径型"></a>文件路径型</h3><p>url路径和网站目录一直，无须转换，非常直观。通过url直接请求静态源文件，通过url找到对应脚本，web服务器根据文件后缀去好脚本解析器，并传入http上下文，执行脚本，发出响应。</p>
-<h3 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h3><p>用户请求的URL和具体脚本所在路径没有任何关系<br><img src="http://ww2.sinaimg.cn/large/0060lm7Tly1flxt8gnykgj30fj07f0su.jpg" alt="此处输入图片的描述"></p>
+<h3 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h3><p>用户请求的URL和具体脚本所在路径没有任何关系<br><img src="http://ww2.sinaimg.cn/large/0060lm7Tly1flxt8gnykgj30fj07f0su.jpg" alt="MVC"></p>
 <ul>
 <li>控制器（Controller）,一组行为的集合</li>
 <li>模型（Model），数据相关的操作和封装</li>
