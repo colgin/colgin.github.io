@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Node,JavaScript,">
+  <meta name="keywords" content="package.json,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
-<meta name="keywords" content="Node,JavaScript">
+<meta name="description" content="package.json中的browser字段有时候，我们想要写一个能够跑在浏览器上和node上的包，但是由于二者在执行环境上有微弱的区别，比如浏览器上请求数据是用XMLHttpRequest对象，但是node上用的确是http或者https，诸如此类的差异还有很多。这就导致了我们要为浏览器端和node端准备不同的源文件，那我们要怎么区分不同的环境呢？">
+<meta name="keywords" content="package.json">
 <meta property="og:type" content="article">
-<meta property="og:title" content="异步编程">
-<meta property="og:url" content="http://amazinglynch.com/2017/11/18/异步编程/index.html">
+<meta property="og:title" content="package.json中的browser字段">
+<meta property="og:url" content="http://amazinglynch.com/2019/06/30/package-json中的browser字段/index.html">
 <meta property="og:site_name" content="Lynch&#39;s Blogs">
-<meta property="og:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
+<meta property="og:description" content="package.json中的browser字段有时候，我们想要写一个能够跑在浏览器上和node上的包，但是由于二者在执行环境上有微弱的区别，比如浏览器上请求数据是用XMLHttpRequest对象，但是node上用的确是http或者https，诸如此类的差异还有很多。这就导致了我们要为浏览器端和node端准备不同的源文件，那我们要怎么区分不同的环境呢？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-30T03:19:22.278Z">
+<meta property="og:updated_time" content="2019-06-30T03:21:38.920Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="异步编程">
-<meta name="twitter:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
+<meta name="twitter:title" content="package.json中的browser字段">
+<meta name="twitter:description" content="package.json中的browser字段有时候，我们想要写一个能够跑在浏览器上和node上的包，但是由于二者在执行环境上有微弱的区别，比如浏览器上请求数据是用XMLHttpRequest对象，但是node上用的确是http或者https，诸如此类的差异还有很多。这就导致了我们要为浏览器端和node端准备不同的源文件，那我们要怎么区分不同的环境呢？">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://amazinglynch.com/2017/11/18/异步编程/">
+  <link rel="canonical" href="http://amazinglynch.com/2019/06/30/package-json中的browser字段/">
 
 
 
 
 
-  <title>异步编程 | Lynch's Blogs</title>
+  <title>package.json中的browser字段 | Lynch's Blogs</title>
   
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://amazinglynch.com/2017/11/18/异步编程/">
+    <link itemprop="mainEntityOfPage" href="http://amazinglynch.com/2019/06/30/package-json中的browser字段/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="AmazingLynch">
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">异步编程</h1>
+          <h1 class="post-title" itemprop="name headline">package.json中的browser字段</h1>
         
 
         <div class="post-meta">
@@ -282,8 +282,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-18T16:11:41+08:00">
-                2017-11-18
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-30T11:13:24+08:00">
+                2019-06-30
               </time>
             
 
@@ -305,8 +305,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Node/" itemprop="url" rel="index">
-                    <span itemprop="name">Node</span>
+                  <a href="/categories/工程化/" itemprop="url" rel="index">
+                    <span itemprop="name">工程化</span>
                   </a>
                 </span>
 
@@ -323,8 +323,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/11/18/异步编程/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/11/18/异步编程/" itemprop="commentCount"></span>
+                <a href="/2019/06/30/package-json中的browser字段/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/30/package-json中的browser字段/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -352,33 +352,32 @@
       
 
       
-        <ul>
-<li><h2 id="函数式编程"><a href="#函数式编程" class="headerlink" title="函数式编程"></a>函数式编程</h2><ul>
-<li>高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回</li>
-<li>偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法<a id="more"></a>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isType = <span class="function"><span class="keyword">function</span>(<span class="params">type</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.call(obj) === [<span class="string">'Object'</span> + type]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>由上诉代码可知，这种通过指定部分参数来产生一个新的定制函数的形式就是偏函数。这样就不用挨个去实现isFunction()、isString()这样的函数，只需要在isType函数传入参数即可得到定制函数</p>
-<h2 id="异步编程的优势和难点"><a href="#异步编程的优势和难点" class="headerlink" title="异步编程的优势和难点"></a>异步编程的优势和难点</h2><h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><p>利用事件循环的方式，JavaScript线程像一个分配任务和处理结果的大管家，I/O线程池里的各个I/O线程都是小二，负责兢兢业业地完成分配来的工作，小二与管家互不依赖，所以可以保持整体的高效率。这个模型的缺点在于管家无法承担过多的细节性任务，如果承担过多，则会影响到任务的分配和调度，管家忙个不停，小二却没有活干，这样效率就会降低。Node是为了解决编程模型中阻塞I/O的性能问题的，采用了单线程模型，这导致Node更新一个处理I/O密集问题的能手，cpu密集型则取决于管家能耐。由于海量请求同时作用在单线程上，需要防止任何计算耗费过多的cpu时间片。所以无论是I/O密集型还是计算密集型，只要计算不影响异步I/O的调度，都不会有问题。所以可以将海量计算分解为诸多小量计算，通过setImmediate()进行调度。</p>
-<h3 id="难点"><a href="#难点" class="headerlink" title="难点"></a>难点</h3><ul>
-<li>异常处理:不能像同步代码那样使用try…catch，因为异步I/O分为两步，提交请求，和处理结果。try…catch只能捕获提交请求这个阶段的错误（只能捕捉当前这个事件循环的错误），因为处理结果（回调函数的执行）是在下一个事件循环才会执行，try…catch捕捉不到callback执行时抛出的异常。<blockquote>
-<p>在Node中，我们在处理异常时形成了一种规定，会将异常放在回调的一个实参传递，如果不为空，则说明有异常。</p>
+        <h2 id="package-json中的browser字段"><a href="#package-json中的browser字段" class="headerlink" title="package.json中的browser字段"></a>package.json中的browser字段</h2><p>有时候，我们想要写一个能够跑在浏览器上和node上的包，但是由于二者在执行环境上有微弱的区别，比如浏览器上请求数据是用XMLHttpRequest对象，但是node上用的确是http或者https，诸如此类的差异还有很多。这就导致了我们要为浏览器端和node端准备不同的源文件，那我们要怎么区分不同的环境呢？<br><a id="more"></a></p>
+<h3 id="依赖打包器的process-browser"><a href="#依赖打包器的process-browser" class="headerlink" title="依赖打包器的process.browser"></a>依赖打包器的process.browser</h3><p>在此，以实现base64编码为例，在同一个入口文件，可以根据打包器提供的process.browser字段（在浏览器环境下为true，在node环境下为false）<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (process.browser) &#123;</span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> (<span class="params">string</span>) </span>&#123;</span><br><span class="line"><span class="keyword">return</span> btoa(string)</span><br><span class="line">&#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> (<span class="params">string</span>) </span>&#123;</span><br><span class="line"><span class="keyword">return</span> Buffer.from(string, <span class="string">'binary'</span>).toString(<span class="string">'base64'</span>)</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>但是这种方式有一个很大的问题，打包器会在执行上诉代码中会为包引入polyfill，在这个例子中就是在浏览器中的Buffer实现<a href="https://github.com/feross/buffer" target="_blank" rel="noopener">buffer</a>。这样打包出来的体积就会很大</p>
+<h3 id="使用package-json的browser字段"><a href="#使用package-json的browser字段" class="headerlink" title="使用package.json的browser字段"></a>使用package.json的browser字段</h3><p><a href="https://docs.npmjs.com/files/package.json" target="_blank" rel="noopener">npm doc</a>上的解释如下</p>
+<blockquote>
+<p>If your module is meant to be used client-side the browser field should be used instead of the main field. This is helpful to hint users that it might rely on primitives that aren’t available in Node.js modules. (e.g. window)</p>
 </blockquote>
+<p>总而言之就是在浏览器环境下用来替换main字段，包的作者可以通过browser字段提示包中要替换掉哪些模块或者要替换掉哪些源文件的实现。</p>
+<p>browser的用法有以下几种</p>
+<ol>
+<li><p>browser为某一个单个的字符串<br>替换main成为浏览器环境的入口文件</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"browser": "./lib/browser/main.js"</span><br></pre></td></tr></table></figure>
 </li>
-<li>函数嵌套过深：多个异步调用</li>
-<li>多线程编程：单线程无法高效利用多核cpu的服务器，因为单个Node进程实质上没有充分利用多核cpu。web workers。</li>
-</ul>
-<h3 id="异步编程解决方案"><a href="#异步编程解决方案" class="headerlink" title="异步编程解决方案"></a>异步编程解决方案</h3><h4 id="事件发布-订阅模式"><a href="#事件发布-订阅模式" class="headerlink" title="事件发布/订阅模式"></a>事件发布/订阅模式</h4><p>依赖于Node自身提供的event模块，回调函数事件化。Node对事件的发布订阅机制做了一些小的限制。比如说对一个事件添加的侦听器不能超过10个（这个限制也可以自己修改）为了防止内存泄漏以及过多占用cpu</p>
-<h4 id="Promise-Deferred模式"><a href="#Promise-Deferred模式" class="headerlink" title="Promise/Deferred模式"></a>Promise/Deferred模式</h4><p>这种模式可以先执行异步调用，延迟传递处理函数。这种方式比预先传入回调更好看一些。在原始API里一个事件只能处理一个回调，而通过deferred对象，可以对事件加入任意的业务处理逻辑。CommonJS的Promise/A就是这种模式的一种实现。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$.<span class="keyword">get</span>('/api)</span><br><span class="line"> .success(onSuccess)</span><br><span class="line"> .error(onErroe)</span><br><span class="line"> .complete(onComplete)</span><br></pre></td></tr></table></figure>
-<h4 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h4><h5 id="async"><a href="#async" class="headerlink" title="async"></a>async</h5><ul>
-<li>async.series()：异步的串行执行</li>
-<li>async.parallel()：异步的并行执行</li>
-<li>async.waterfall()：异步调用的依赖处理</li>
-</ul>
+<li><p>browser为一个对象，声明要替换或者忽略的文件<br>这种形式比较适合替换部分文件，不需要创建新的入口。key是要替换的module或者文件名，右侧是替换的</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">"browser": &#123;</span><br><span class="line">"module-a": "./browser/module-a.js",</span><br><span class="line">"./server/module-b.js": "./browser/module-b.js"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-</ul>
+</ol>
+<p>打包器在打包到浏览器环境时，会将来自module-a的替换为’./browser/module-a.js’。将文件’./server/module-b.js’的引入替换为’./browser/module-b.js’。</p>
+<p>还可以使用布尔值防止将module加载到包中<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">"browser": &#123;</span><br><span class="line">"module-a":false,</span><br><span class="line">"./server/only.js":"./shims/server-only.js"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这种写法module-a在浏览器环境中将不会被打包。</p>
+<p>上面的所有写法的路径都是基于package.json文件地址。</p>
+<p>需要注意的是如果你的包能在浏览器和node上无差异化地实现，就不需要browser字段了。</p>
+<p>参考资料:</p>
+<p><a href="https://zhuanlan.zhihu.com/p/25215447" target="_blank" rel="noopener">[译] 怎样写一个能同时用于 Node 和浏览器的 JavaScript 包？</a></p>
+<p><a href="https://juejin.im/post/5cfe6d3be51d454d544abf30" target="_blank" rel="noopener">package.json 中 你还不清楚的 browser，module，main 字段优先级</a></p>
+<p><a href="https://www.helplib.com/GitHub/article_134305" target="_blank" rel="noopener">package-browser-field-spec, 在 package.json 中，’browser’字段的规范文档</a></p>
 
       
     </div>
@@ -396,9 +395,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Node/" rel="tag"># Node</a>
-          
-            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+            <a href="/tags/package-json/" rel="tag"># package.json</a>
           
         </div>
       
@@ -411,8 +408,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/11/17/NodeJS异步IO/" rel="next" title="NodeJS异步IO">
-                <i class="fa fa-chevron-left"></i> NodeJS异步IO
+              <a href="/2017/12/06/Redis-初体验/" rel="next" title="Redis 初体验">
+                <i class="fa fa-chevron-left"></i> Redis 初体验
               </a>
             
           </div>
@@ -420,10 +417,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/11/22/你真的了解JavaScript中的异步吗/" rel="prev" title="你真的了解JavaScript中的异步吗">
-                你真的了解JavaScript中的异步吗 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -583,7 +576,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#函数式编程"><span class="nav-number">1.</span> <span class="nav-text">函数式编程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步编程的优势和难点"><span class="nav-number">2.</span> <span class="nav-text">异步编程的优势和难点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优势"><span class="nav-number">2.1.</span> <span class="nav-text">优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#难点"><span class="nav-number">2.2.</span> <span class="nav-text">难点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异步编程解决方案"><span class="nav-number">2.3.</span> <span class="nav-text">异步编程解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#事件发布-订阅模式"><span class="nav-number">2.3.1.</span> <span class="nav-text">事件发布/订阅模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Promise-Deferred模式"><span class="nav-number">2.3.2.</span> <span class="nav-text">Promise/Deferred模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流程控制"><span class="nav-number">2.3.3.</span> <span class="nav-text">流程控制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#async"><span class="nav-number">2.3.3.1.</span> <span class="nav-text">async</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#package-json中的browser字段"><span class="nav-number">1.</span> <span class="nav-text">package.json中的browser字段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖打包器的process-browser"><span class="nav-number">1.1.</span> <span class="nav-text">依赖打包器的process.browser</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用package-json的browser字段"><span class="nav-number">1.2.</span> <span class="nav-text">使用package.json的browser字段</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -753,9 +746,9 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://amazinglynch.com/2017/11/18/异步编程/';
-          this.page.identifier = '2017/11/18/异步编程/';
-          this.page.title = '异步编程';
+          this.page.url = 'http://amazinglynch.com/2019/06/30/package-json中的browser字段/';
+          this.page.identifier = '2019/06/30/package-json中的browser字段/';
+          this.page.title = 'package.json中的browser字段';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://lynchblog.disqus.com/embed.js';
