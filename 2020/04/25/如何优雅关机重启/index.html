@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/assets/img/favicon.ico?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Golang,后端,web,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="背景web项目有时候需要更新迭代或者更新项目的配置文件，这时候需要重启web服务，然而不能简单粗暴的关机，这样会导致当前接受到的socket会处理失败。优雅的关机应该是拒绝新的socket连接，等待正在处理的socket连接处理完成再退出。">
+<meta name="keywords" content="Golang,后端,web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何优雅关机重启.md">
+<meta property="og:url" content="http://amazinglynch.com/2020/04/25/如何优雅关机重启/index.html">
+<meta property="og:site_name" content="colgin&#39;s Blogs">
+<meta property="og:description" content="背景web项目有时候需要更新迭代或者更新项目的配置文件，这时候需要重启web服务，然而不能简单粗暴的关机，这样会导致当前接受到的socket会处理失败。优雅的关机应该是拒绝新的socket连接，等待正在处理的socket连接处理完成再退出。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-04-24T16:07:18.385Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何优雅关机重启.md">
+<meta name="twitter:description" content="背景web项目有时候需要更新迭代或者更新项目的配置文件，这时候需要重启web服务，然而不能简单粗暴的关机，这样会导致当前接受到的socket会处理失败。优雅的关机应该是拒绝新的socket连接，等待正在处理的socket连接处理完成再退出。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://amazinglynch.com/2020/04/25/如何优雅关机重启/">
+
+
+
+
+
+  <title>如何优雅关机重启.md | colgin's Blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">colgin's Blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录生活与学习的点点滴滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://amazinglynch.com/2020/04/25/如何优雅关机重启/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="colginh">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/18627853">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="colgin's Blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何优雅关机重启.md</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-25T00:01:41+08:00">
+                2020-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Golang/" itemprop="url" rel="index">
+                    <span itemprop="name">Golang</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/04/25/如何优雅关机重启/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/25/如何优雅关机重启/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>web项目有时候需要更新迭代或者更新项目的配置文件，这时候需要重启web服务，然而不能简单粗暴的关机，这样会导致当前接受到的socket会处理失败。优雅的关机应该是拒绝新的socket连接，等待正在处理的socket连接处理完成再退出。</p>
+<a id="more"></a>
+<h2 id="优雅的关机"><a href="#优雅的关机" class="headerlink" title="优雅的关机"></a>优雅的关机</h2><p>在go 1.8之后，net/http包有一个<a href="https://golang.org/pkg/net/http/#Server.Shutdown" target="_blank" rel="noopener">Shutdown</a>方法。这个方法能够优雅的在不中断正在处理的请求连接的情况下关掉服务。实质上是通过关掉服务上的监听，关掉空闲的连接，然后无限制地等待正在处理的连接完成再关掉服务。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 来自官网的例子</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"context"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"os/signal"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> srv http.Server</span><br><span class="line"></span><br><span class="line">	idleConnsClosed := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		sigint := <span class="built_in">make</span>(<span class="keyword">chan</span> os.Signal, <span class="number">1</span>)</span><br><span class="line">		signal.Notify(sigint, os.Interrupt)</span><br><span class="line">		&lt;-sigint</span><br><span class="line"></span><br><span class="line">		<span class="comment">// We received an interrupt signal, shut down.</span></span><br><span class="line">		<span class="keyword">if</span> err := srv.Shutdown(context.Background()); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="comment">// Error from closing listeners, or context timeout:</span></span><br><span class="line">			log.Printf(<span class="string">"HTTP server Shutdown: %v"</span>, err)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">close</span>(idleConnsClosed)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := srv.ListenAndServe(); err != http.ErrServerClosed &#123;</span><br><span class="line">		<span class="comment">// Error starting or closing listener:</span></span><br><span class="line">		log.Fatalf(<span class="string">"HTTP server ListenAndServe: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&lt;-idleConnsClosed</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这里开启了一个goroutine接收操作系统的信号，一旦接收到<code>os.Interrupt</code>就调用<code>Shutdown()</code>，再把<code>idleConnsClosed</code>通道给关掉，这样外面的代码就不会阻塞了，至此，函数执行完成。</p>
+<p>上面的代码有几个可以优化点</p>
+<ol>
+<li>不需要开启新的goroutine，直接在main函数里阻塞就行，这样也就不用特地使用一个通道（上例的<code>idleConnsClosed</code>）来通知外层不再阻塞</li>
+<li>Shutdown()对于正在处理的请求，会无限期地等待连接被释放然后再关停。更好的方法是设置一个时间，恰好Shutdown()可以接收一个context,如果context比shutdown更早完成的话，就会返回一个context错误。</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> srv http.Server</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）</span></span><br><span class="line">	quit := <span class="built_in">make</span>(<span class="keyword">chan</span> os.Signal, <span class="number">1</span>)</span><br><span class="line">	signal.Notify(quit, os.Interrupt)</span><br><span class="line">	&lt;- quit <span class="comment">// 阻塞</span></span><br><span class="line">	log.Println(<span class="string">"Shutdown Server ..."</span>)</span><br><span class="line">	</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), <span class="number">5</span>*time.Second)</span><br><span class="line">	<span class="keyword">defer</span> cancel()</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 在5s内关闭服务，超过5s就超时退出</span></span><br><span class="line">	<span class="keyword">if</span> err := srv.Shutdown(ctx); err != <span class="literal">nil</span> &#123;</span><br><span class="line">	    log.Fatal(<span class="string">"Server Shutdown"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="string">"Server exiting"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>知识点补充：这里都是接受了<code>os.Interrupt</code>信号，其实在<code>os.Interrupt</code>就是<code>syscall.SIGINT</code></p>
+<p>除了<code>SIGINT</code>之外，还有很多其他的信号</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    <span class="comment">// More invented values for signals</span></span><br><span class="line">    SIGHUP  = Signal(<span class="number">0x1</span>)</span><br><span class="line">    SIGINT  = Signal(<span class="number">0x2</span>)</span><br><span class="line">    SIGQUIT = Signal(<span class="number">0x3</span>)</span><br><span class="line">    SIGILL  = Signal(<span class="number">0x4</span>)</span><br><span class="line">    SIGTRAP = Signal(<span class="number">0x5</span>)</span><br><span class="line">    SIGABRT = Signal(<span class="number">0x6</span>)</span><br><span class="line">    SIGBUS  = Signal(<span class="number">0x7</span>)</span><br><span class="line">    SIGFPE  = Signal(<span class="number">0x8</span>)</span><br><span class="line">    SIGKILL = Signal(<span class="number">0x9</span>)</span><br><span class="line">    SIGSEGV = Signal(<span class="number">0xb</span>)</span><br><span class="line">    SIGPIPE = Signal(<span class="number">0xd</span>)</span><br><span class="line">    SIGALRM = Signal(<span class="number">0xe</span>)</span><br><span class="line">    SIGTERM = Signal(<span class="number">0xf</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>可以在终端上执行<code>kill -l</code>查看系统支持的信号。我们常常通过<code>kill -9 pid</code>这种方式来强制关闭进程，本质上就是给进程发送一个<code>SIGKILL</code>信号（此信号不能被程序捕捉）。同理<code>kill -2 pid</code>就是发送<code>SIGINT</code>信号，<code>kill pid</code>默认会发送<code>SIGTERM</code>信号。有时候使用Ctrl+C来中止程序，其发送的是<code>SIGINT</code>信号。</p>
+<p>具体的请参考<a href="https://zh.wikipedia.org/wiki/Unix%E4%BF%A1%E5%8F%B7" target="_blank" rel="noopener">unix信号</a></p>
+<p>如果是在go1.8之前，可以使用一些库来实现优雅关机:</p>
+<ul>
+<li><a href="https://github.com/braintree/manners" target="_blank" rel="noopener">manners</a></li>
+<li><a href="https://github.com/tylerb/graceful" target="_blank" rel="noopener">graceful</a></li>
+</ul>
+<h2 id="优雅的重启"><a href="#优雅的重启" class="headerlink" title="优雅的重启"></a>优雅的重启</h2><p>可以使用<a href="https://github.com/fvbock/endless" target="_blank" rel="noopener">fvbock/endless</a>来替换默认的listener实现优雅重启。</p>
+<p>可以简单看一下endless源码<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">handleSignals listens for os Signals and calls any hooked in function that the</span></span><br><span class="line"><span class="comment">user had registered with the signal.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(srv *endlessServer)</span> <span class="title">handleSignals</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> sig os.Signal</span><br><span class="line"></span><br><span class="line">	signal.Notify(</span><br><span class="line">		srv.sigChan,</span><br><span class="line">		hookableSignals...,</span><br><span class="line">	)</span><br><span class="line"></span><br><span class="line">	pid := syscall.Getpid()</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		sig = &lt;-srv.sigChan</span><br><span class="line">		srv.signalHooks(PRE_SIGNAL, sig)</span><br><span class="line">		<span class="keyword">switch</span> sig &#123;</span><br><span class="line">		<span class="keyword">case</span> syscall.SIGHUP:</span><br><span class="line">			log.Println(pid, <span class="string">"Received SIGHUP. forking."</span>)</span><br><span class="line">			err := srv.fork()</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				log.Println(<span class="string">"Fork err:"</span>, err)</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">case</span> syscall.SIGUSR1:</span><br><span class="line">			log.Println(pid, <span class="string">"Received SIGUSR1."</span>)</span><br><span class="line">		<span class="keyword">case</span> syscall.SIGUSR2:</span><br><span class="line">			log.Println(pid, <span class="string">"Received SIGUSR2."</span>)</span><br><span class="line">			srv.hammerTime(<span class="number">0</span> * time.Second)</span><br><span class="line">		<span class="keyword">case</span> syscall.SIGINT:</span><br><span class="line">			log.Println(pid, <span class="string">"Received SIGINT."</span>)</span><br><span class="line">			srv.shutdown()</span><br><span class="line">		<span class="keyword">case</span> syscall.SIGTERM:</span><br><span class="line">			log.Println(pid, <span class="string">"Received SIGTERM."</span>)</span><br><span class="line">			srv.shutdown()</span><br><span class="line">		<span class="keyword">case</span> syscall.SIGTSTP:</span><br><span class="line">			log.Println(pid, <span class="string">"Received SIGTSTP."</span>)</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			log.Printf(<span class="string">"Received %v: nothing i care about...\n"</span>, sig)</span><br><span class="line">		&#125;</span><br><span class="line">		srv.signalHooks(POST_SIGNAL, sig)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到他就是监听了很多信号</p>
+<ul>
+<li>在接收到<code>SIGHUP</code>信号时候将会出发fork实现重启。</li>
+<li>在接收到<code>SIGINT</code>和<code>SIGTERM</code>时会触发优雅关机</li>
+<li>在接收到<code>SIGUSR2</code>时会调用hanmerTime</li>
+</ul>
+<p>这样的话，就可以通过发送<code>kill -1 pid</code>来实现优雅重启了。由于优雅重启使用的是fork，fork子进程处理新请求，待原进程处理完当前请求之后在退出。所以前后的pid会发生变化。</p>
+<p>除了<a href="https://github.com/fvbock/endless" target="_blank" rel="noopener">fvbock/endless</a>，还可使用<a href="https://github.com/facebookarchive/grace" target="_blank" rel="noopener">grace</a>来实现优雅关机和重启。</p>
+<p>参考资料</p>
+<ul>
+<li><a href="优雅地重启或停止">Gin Web Framework</a>(<a href="https://gin-gonic.com/zh-cn/docs/examples/graceful-restart-or-stop/" target="_blank" rel="noopener">https://gin-gonic.com/zh-cn/docs/examples/graceful-restart-or-stop/</a>)</li>
+<li><a href="https://www.liwenzhou.com/posts/Go/graceful_shutdown/" target="_blank" rel="noopener">优雅地关机或重启</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/Unix%E4%BF%A1%E5%8F%B7" target="_blank" rel="noopener">wikipedia unix信号</a></li>
+<li><a href="https://grisha.org/blog/2014/06/03/graceful-restart-in-golang/" target="_blank" rel="noopener">Graceful Restart in Golang</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Golang/" rel="tag"># Golang</a>
+          
+            <a href="/tags/后端/" rel="tag"># 后端</a>
+          
+            <a href="/tags/web/" rel="tag"># web</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/27/Vue中的Portal技术/" rel="next" title="Vue中的Portal技术">
+                <i class="fa fa-chevron-left"></i> Vue中的Portal技术
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars1.githubusercontent.com/u/18627853" alt="colginh">
+            
+              <p class="site-author-name" itemprop="name">colginh</p>
+              <p class="site-description motion-element" itemprop="description">个人博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:skyran1995@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://weibo.com/5357700121/profile" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优雅的关机"><span class="nav-number">2.</span> <span class="nav-text">优雅的关机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优雅的重启"><span class="nav-number">3.</span> <span class="nav-text">优雅的重启</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">colginh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://lynchblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://amazinglynch.com/2020/04/25/如何优雅关机重启/';
+          this.page.identifier = '2020/04/25/如何优雅关机重启/';
+          this.page.title = '如何优雅关机重启.md';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://lynchblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
