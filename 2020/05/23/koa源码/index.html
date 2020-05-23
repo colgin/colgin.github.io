@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/assets/img/favicon.ico?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Node,JavaScript,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Koa是Node应用广泛的后端框架，它的“洋葱”模型被人津津乐道，Koa源码实现也非常简练，那就一起来看下Koa的源码吧。">
+<meta name="keywords" content="Node,JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="koa源码">
+<meta property="og:url" content="http://colgin.com/2020/05/23/koa源码/index.html">
+<meta property="og:site_name" content="colgin&#39;s Blogs">
+<meta property="og:description" content="Koa是Node应用广泛的后端框架，它的“洋葱”模型被人津津乐道，Koa源码实现也非常简练，那就一起来看下Koa的源码吧。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/FBRVDXMQpwJny6e.png">
+<meta property="og:updated_time" content="2020-05-23T11:00:53.502Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="koa源码">
+<meta name="twitter:description" content="Koa是Node应用广泛的后端框架，它的“洋葱”模型被人津津乐道，Koa源码实现也非常简练，那就一起来看下Koa的源码吧。">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/23/FBRVDXMQpwJny6e.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://colgin.com/2020/05/23/koa源码/">
+
+
+
+
+
+  <title>koa源码 | colgin's Blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">colgin's Blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录生活与学习的点点滴滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://colgin.com/2020/05/23/koa源码/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="colginh">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/18627853">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="colgin's Blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">koa源码</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-23T18:51:26+08:00">
+                2020-05-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Node/" itemprop="url" rel="index">
+                    <span itemprop="name">Node</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/05/23/koa源码/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/05/23/koa源码/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Koa是Node应用广泛的后端框架，它的“洋葱”模型被人津津乐道，Koa源码实现也非常简练，那就一起来看下Koa的源码吧。</p>
+<a id="more"></a>
+<h2 id="工程化"><a href="#工程化" class="headerlink" title="工程化"></a>工程化</h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># .editorconfig</span><br><span class="line"># editorconfig.org</span><br><span class="line">root = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">[*]</span><br><span class="line">indent_style = space</span><br><span class="line">indent_size = <span class="number">2</span></span><br><span class="line">end_of_line = lf</span><br><span class="line">charset = utf<span class="number">-8</span></span><br><span class="line">trim_trailing_whitespace = <span class="literal">true</span></span><br><span class="line">insert_final_newline = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">[*.md]</span><br><span class="line">trim_trailing_whitespace = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">[Makefile]</span><br><span class="line">indent_style = tab</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .travis.yml</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"><span class="attr">node_js:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="number">8</span></span><br><span class="line"><span class="bullet">  -</span> <span class="number">10</span></span><br><span class="line"><span class="bullet">  -</span> <span class="number">12</span></span><br><span class="line"><span class="attr">cache:</span></span><br><span class="line"><span class="attr">  directories:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">wrk/bin</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">node_modules</span></span><br><span class="line"><span class="attr">before_script:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">prune</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">"[ ! -f wrk/bin/wrk ] &amp;&amp; rm -rf wrk &amp;&amp; git clone https://github.com/wg/wrk.git &amp;&amp; make -C wrk &amp;&amp; mkdir wrk/bin &amp;&amp; mv wrk/wrk wrk/bin || true"</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">export</span> <span class="string">PATH=$PATH:$PWD/wrk/bin/</span></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">lint</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">test-cov</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">bench</span></span><br><span class="line"><span class="attr">after_script:</span></span><br><span class="line">  <span class="comment"># only upload the coverage.json file</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">bash</span> <span class="string">&lt;(curl</span> <span class="bullet">-s</span> <span class="attr">https://codecov.io/bash)</span> <span class="bullet">-f</span> <span class="string">coverage/coverage-final.json</span></span><br></pre></td></tr></table></figure>
+<p>npm prune会移除无关的包，所谓无关指的是没有在父包的依赖关系列表中列出的包。参考<a href="https://www.npmjs.cn/cli/prune/" target="_blank" rel="noopener">npm prune</a></p>
+<p><a href="https://github.com/wg/wrk" target="_blank" rel="noopener">wrk</a>是一个http测试工具</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wrk -t12 -c400 -d30s http://127.0.0.1:8080/index.html</span><br></pre></td></tr></table></figure>
+<p>意思就是看看30s，用12个线程，开400个http连接能处理多少个http请求。</p>
+<p>再看<code>package.json</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"name"</span>: <span class="string">"koa"</span>,</span><br><span class="line">  <span class="string">"version"</span>: <span class="string">"2.12.0"</span>,</span><br><span class="line">  <span class="string">"description"</span>: <span class="string">"Koa web app framework"</span>,</span><br><span class="line">  <span class="string">"main"</span>: <span class="string">"lib/application.js"</span>,</span><br><span class="line">  <span class="string">"scripts"</span>: &#123;</span><br><span class="line">    <span class="string">"test"</span>: <span class="string">"egg-bin test test"</span>,</span><br><span class="line">    <span class="string">"test-cov"</span>: <span class="string">"egg-bin cov test"</span>,</span><br><span class="line">    <span class="string">"lint"</span>: <span class="string">"eslint benchmarks lib test"</span>,</span><br><span class="line">    <span class="string">"bench"</span>: <span class="string">"make -C benchmarks"</span>,</span><br><span class="line">    <span class="string">"authors"</span>: <span class="string">"git log --format='%aN &lt;%aE&gt;' | sort -u &gt; AUTHORS"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"repository"</span>: <span class="string">"koajs/koa"</span>,</span><br><span class="line">  <span class="string">"keywords"</span>: [</span><br><span class="line">    <span class="string">"web"</span>,</span><br><span class="line">    <span class="string">"app"</span>,</span><br><span class="line">    <span class="string">"http"</span>,</span><br><span class="line">    <span class="string">"application"</span>,</span><br><span class="line">    <span class="string">"framework"</span>,</span><br><span class="line">    <span class="string">"middleware"</span>,</span><br><span class="line">    <span class="string">"rack"</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="string">"license"</span>: <span class="string">"MIT"</span>,</span><br><span class="line">  <span class="string">"dependencies"</span>: &#123;</span><br><span class="line">    <span class="string">"accepts"</span>: <span class="string">"^1.3.5"</span>,</span><br><span class="line">    <span class="string">"cache-content-type"</span>: <span class="string">"^1.0.0"</span>,</span><br><span class="line">    <span class="string">"content-disposition"</span>: <span class="string">"~0.5.2"</span>,</span><br><span class="line">    <span class="string">"content-type"</span>: <span class="string">"^1.0.4"</span>,</span><br><span class="line">    <span class="string">"cookies"</span>: <span class="string">"~0.8.0"</span>,</span><br><span class="line">    <span class="string">"debug"</span>: <span class="string">"~3.1.0"</span>,</span><br><span class="line">    <span class="string">"delegates"</span>: <span class="string">"^1.0.0"</span>,</span><br><span class="line">    <span class="string">"depd"</span>: <span class="string">"^1.1.2"</span>,</span><br><span class="line">    <span class="string">"destroy"</span>: <span class="string">"^1.0.4"</span>,</span><br><span class="line">    <span class="string">"encodeurl"</span>: <span class="string">"^1.0.2"</span>,</span><br><span class="line">    <span class="string">"escape-html"</span>: <span class="string">"^1.0.3"</span>,</span><br><span class="line">    <span class="string">"fresh"</span>: <span class="string">"~0.5.2"</span>,</span><br><span class="line">    <span class="string">"http-assert"</span>: <span class="string">"^1.3.0"</span>,</span><br><span class="line">    <span class="string">"http-errors"</span>: <span class="string">"^1.6.3"</span>,</span><br><span class="line">    <span class="string">"is-generator-function"</span>: <span class="string">"^1.0.7"</span>,</span><br><span class="line">    <span class="string">"koa-compose"</span>: <span class="string">"^4.1.0"</span>,</span><br><span class="line">    <span class="string">"koa-convert"</span>: <span class="string">"^1.2.0"</span>,</span><br><span class="line">    <span class="string">"on-finished"</span>: <span class="string">"^2.3.0"</span>,</span><br><span class="line">    <span class="string">"only"</span>: <span class="string">"~0.0.2"</span>,</span><br><span class="line">    <span class="string">"parseurl"</span>: <span class="string">"^1.3.2"</span>,</span><br><span class="line">    <span class="string">"statuses"</span>: <span class="string">"^1.5.0"</span>,</span><br><span class="line">    <span class="string">"type-is"</span>: <span class="string">"^1.6.16"</span>,</span><br><span class="line">    <span class="string">"vary"</span>: <span class="string">"^1.1.2"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"devDependencies"</span>: &#123;</span><br><span class="line">    <span class="string">"egg-bin"</span>: <span class="string">"^4.13.0"</span>,</span><br><span class="line">    <span class="string">"eslint"</span>: <span class="string">"^6.5.1"</span>,</span><br><span class="line">    <span class="string">"eslint-config-koa"</span>: <span class="string">"^2.0.0"</span>,</span><br><span class="line">    <span class="string">"eslint-config-standard"</span>: <span class="string">"^14.1.0"</span>,</span><br><span class="line">    <span class="string">"eslint-plugin-import"</span>: <span class="string">"^2.18.2"</span>,</span><br><span class="line">    <span class="string">"eslint-plugin-node"</span>: <span class="string">"^10.0.0"</span>,</span><br><span class="line">    <span class="string">"eslint-plugin-promise"</span>: <span class="string">"^4.2.1"</span>,</span><br><span class="line">    <span class="string">"eslint-plugin-standard"</span>: <span class="string">"^4.0.1"</span>,</span><br><span class="line">    <span class="string">"mm"</span>: <span class="string">"^2.5.0"</span>,</span><br><span class="line">    <span class="string">"supertest"</span>: <span class="string">"^3.1.0"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"engines"</span>: &#123;</span><br><span class="line">    <span class="string">"node"</span>: <span class="string">"^4.8.4 || ^6.10.1 || ^7.10.1 || &gt;= 8.1.4"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"files"</span>: [</span><br><span class="line">    <span class="string">"lib"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里需要留意的是有一个<code>authors</code>命令, <code>git log --format=&#39;%aN &lt;%aE&gt;&#39; | sort -u &gt; AUTHORS</code></p>
+<p>这条命令是把git 提交记录的姓名和邮件排序输出到AUTHORS文件。</p>
+<h2 id="核心代码"><a href="#核心代码" class="headerlink" title="核心代码"></a>核心代码</h2><h3 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h3><p>入口是<a href="https://github.com/koajs/koa/blob/master/lib/application.js" target="_blank" rel="noopener">application.js</a></p>
+<p>先看构造函数</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="class"><span class="keyword">class</span> <span class="title">Application</span> <span class="keyword">extends</span> <span class="title">Emitter</span> </span>&#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Initialize a new `Application`.</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * @api public</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * @param &#123;object&#125; [options] Application options</span></span><br><span class="line"><span class="comment">    * @param &#123;string&#125; [options.env='development'] Environment</span></span><br><span class="line"><span class="comment">    * @param &#123;string[]&#125; [options.keys] Signed cookie keys</span></span><br><span class="line"><span class="comment">    * @param &#123;boolean&#125; [options.proxy] Trust proxy headers</span></span><br><span class="line"><span class="comment">    * @param &#123;number&#125; [options.subdomainOffset] Subdomain offset</span></span><br><span class="line"><span class="comment">    * @param &#123;boolean&#125; [options.proxyIpHeader] proxy ip header, default to X-Forwarded-For</span></span><br><span class="line"><span class="comment">    * @param &#123;boolean&#125; [options.maxIpsCount] max ips read from proxy ip header, default to 0 (means infinity)</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">super</span>();</span><br><span class="line">    options = options || &#123;&#125;;</span><br><span class="line">    <span class="keyword">this</span>.proxy = options.proxy || <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">this</span>.subdomainOffset = options.subdomainOffset || <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">this</span>.proxyIpHeader = options.proxyIpHeader || <span class="string">'X-Forwarded-For'</span>;</span><br><span class="line">    <span class="keyword">this</span>.maxIpsCount = options.maxIpsCount || <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">this</span>.env = options.env || process.env.NODE_ENV || <span class="string">'development'</span>;</span><br><span class="line">    <span class="keyword">if</span> (options.keys) <span class="keyword">this</span>.keys = options.keys;</span><br><span class="line">    <span class="keyword">this</span>.middleware = [];</span><br><span class="line">    <span class="keyword">this</span>.context = <span class="built_in">Object</span>.create(context);</span><br><span class="line">    <span class="keyword">this</span>.request = <span class="built_in">Object</span>.create(request);</span><br><span class="line">    <span class="keyword">this</span>.response = <span class="built_in">Object</span>.create(response);</span><br><span class="line">    <span class="keyword">if</span> (util.inspect.custom) &#123;</span><br><span class="line">      <span class="keyword">this</span>[util.inspect.custom] = <span class="keyword">this</span>.inspect;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>就是一些初始化流程，把options的一些选项挂在到this上。这里有一个要留意的是代理相关的配置。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">listen(...args) &#123;</span><br><span class="line">	debug(<span class="string">'debug'</span>)</span><br><span class="line">	<span class="keyword">const</span> server = http.createServer(<span class="keyword">this</span>.callback())</span><br><span class="line">	<span class="keyword">return</span> server.listen(...args)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里http.createServer接收的是一个<code>function(req, res) {}</code>函数，这里调用了calllback生成这样一个函数。这样的设计使得可以将callback生成的处理器放到任何能够接受监听器函数中用于启动一个服务，比如说http.createServer或者express。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">callback() &#123;</span><br><span class="line">	<span class="keyword">const</span> fn = compose(<span class="keyword">this</span>.middleware)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!<span class="keyword">this</span>.listenerCount(<span class="string">'error)) this.on('</span>error<span class="string">', this.onerror)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	const handleRequest = (req, res) =&gt; &#123;</span></span><br><span class="line"><span class="string">		const ctx = this.createContext(req, res)</span></span><br><span class="line"><span class="string">		return this.handleRequest(ctx, fn)</span></span><br><span class="line"><span class="string">	&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>这里主要就是构造出一个上下文对象，然后在handleRequest里去处理这个请求。</p>
+<p>先看下创建上下文的函数<code>createContext</code>吧</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">createContext(req, res) &#123;</span><br><span class="line">    <span class="keyword">const</span> context = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.context);</span><br><span class="line">    <span class="keyword">const</span> request = context.request = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.request);</span><br><span class="line">    <span class="keyword">const</span> response = context.response = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.response);</span><br><span class="line">    context.app = request.app = response.app = <span class="keyword">this</span>;</span><br><span class="line">    context.req = request.req = response.req = req;</span><br><span class="line">    context.res = request.res = response.res = res;</span><br><span class="line">    request.ctx = response.ctx = context;</span><br><span class="line">    request.response = response;</span><br><span class="line">    response.request = request;</span><br><span class="line">    context.originalUrl = request.originalUrl = req.url;</span><br><span class="line">    context.state = &#123;&#125;;</span><br><span class="line">    <span class="keyword">return</span> context;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>前面构造函数中对<code>this.context</code>, <code>this.request</code>, <code>this.response</code>进行了初始化</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.context = <span class="built_in">Object</span>.create(context);</span><br><span class="line"><span class="keyword">this</span>.request = <span class="built_in">Object</span>.create(request);</span><br><span class="line"><span class="keyword">this</span>.response = <span class="built_in">Object</span>.create(response);</span><br></pre></td></tr></table></figure>
+<p><code>createContext</code>做的就是给context变量里的req,res,ctx进行赋值，吧res和req不仅挂到了context上，还挂到了<code>contex.request</code>, <code>context.response</code>上。</p>
+<p>接下来看一下koa为人津津乐道的插件机制。在<a href="https://www.github.com/koajs/koa" target="_blank" rel="noopener">koa github</a>主页上有这么一段话介绍koa</p>
+<ul>
+<li>Expressive HTTP middleware framework for node.js to make web applications and APIs more enjoyable to write. Koa’s middleware stack flows in a stack-like manner, allowing you to perform actions downstream then filter and manipulate the response upstream</li>
+</ul>
+<p>koa提供了一个web框架的核心部分，不包含路由处理，静态文件处理（这些都是通过中间件来实现），我们经常会把这种叫做洋葱模型。</p>
+<p>!<img src="https://i.loli.net/2020/05/23/FBRVDXMQpwJny6e.png" alt="2892151181-5ab48de7b5013_articlex.png"></p>
+<p>实际使用中使用use来给koa应用注册中间件，中间件按照注册顺序按序调用，前面的中间件可以调用next()来控制下一个中间件的执行。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Koa = <span class="built_in">require</span>(<span class="string">'koa'</span>);</span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Koa();</span><br><span class="line"></span><br><span class="line"><span class="comment">// logger</span></span><br><span class="line">app.use(<span class="keyword">async</span> (ctx, next) =&gt; &#123;</span><br><span class="line">  <span class="keyword">await</span> next();</span><br><span class="line">  <span class="keyword">const</span> rt = ctx.response.get(<span class="string">'X-Response-Time'</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;ctx.method&#125;</span> <span class="subst">$&#123;ctx.url&#125;</span> - <span class="subst">$&#123;rt&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// x-response-time</span></span><br><span class="line"></span><br><span class="line">app.use(<span class="keyword">async</span> (ctx, next) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> start = <span class="built_in">Date</span>.now();</span><br><span class="line">  <span class="keyword">await</span> next();</span><br><span class="line">  <span class="keyword">const</span> ms = <span class="built_in">Date</span>.now() - start;</span><br><span class="line">  ctx.set(<span class="string">'X-Response-Time'</span>, <span class="string">`<span class="subst">$&#123;ms&#125;</span>ms`</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// response</span></span><br><span class="line"></span><br><span class="line">app.use(<span class="keyword">async</span> ctx =&gt; &#123;</span><br><span class="line">  ctx.body = <span class="string">'Hello World'</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+<p>通过中间件可以做到调用下游，控制流回上游</p>
+<p>那这个是怎么实现的呢？先来看use的实现</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">use(fn) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> fn !== <span class="string">'function'</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'middleware must be a function!'</span>);</span><br><span class="line">    <span class="keyword">if</span> (isGeneratorFunction(fn)) &#123;</span><br><span class="line">      deprecate(<span class="string">'Support for generators will be removed in v3. '</span> +</span><br><span class="line">                <span class="string">'See the documentation for examples of how to convert old middleware '</span> +</span><br><span class="line">                <span class="string">'https://github.com/koajs/koa/blob/master/docs/migration.md'</span>);</span><br><span class="line">      fn = convert(fn);</span><br><span class="line">    &#125;</span><br><span class="line">    debug(<span class="string">'use %s'</span>, fn._name || fn.name || <span class="string">'-'</span>);</span><br><span class="line">    <span class="keyword">this</span>.middleware.push(fn);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>use函数实现非常简单，就是把注册进来中间件函数<code>(context, next) ⇒ {}</code>  存放到实例的middleware里面。那么这个middleware是怎么起作用的呢？</p>
+<p>细心的你可能在之前的<code>callback</code> 函数中发现有这样一行</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fn = compose(<span class="keyword">this</span>.middleware)</span><br></pre></td></tr></table></figure>
+<p>这行代码就是实现中间件的精髓。compose将所有的中间件组合成一个函数。</p>
+<p>先不看官方的实现，我们可以自己实现一个这样的compose函数</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> compose = <span class="function">(<span class="params">middlewares</span>) =&gt;</span> (ctx) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> dispatch = <span class="function">(<span class="params">i</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> fn = middlewares[i]</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 最后一个中间件调用next不能报错</span></span><br><span class="line">    <span class="keyword">if</span> (!fn) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(fn(ctx, () =&gt; dispatch(i + <span class="number">1</span>)))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  dispatch(<span class="number">0</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，compose生成了一个新的函数，在这个函数中我们把ctx传入进去，所有的中间件都会执行，执行的顺序通过给中间件函数传递的第二个参数来控制，也就是说把在第n+1个中间件函数的执行权交给第n个中间件函数。</p>
+<p>koa实际是使用了<a href="https://github.com/koajs/compose#readme" target="_blank" rel="noopener">koa/compose</a>。这里一并把代码贴出来</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = compose</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Compose `middleware` returning</span></span><br><span class="line"><span class="comment"> * a fully valid middleware comprised</span></span><br><span class="line"><span class="comment"> * of all those which are passed.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param &#123;Array&#125; middleware</span></span><br><span class="line"><span class="comment"> * @return &#123;Function&#125;</span></span><br><span class="line"><span class="comment"> * @api public</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">compose</span> (<span class="params">middleware</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">Array</span>.isArray(middleware)) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'Middleware stack must be an array!'</span>)</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> fn <span class="keyword">of</span> middleware) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> fn !== <span class="string">'function'</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'Middleware must be composed of functions!'</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * @param &#123;Object&#125; context</span></span><br><span class="line"><span class="comment">   * @return &#123;Promise&#125;</span></span><br><span class="line"><span class="comment">   * @api public</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">context, next</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// last called middleware #</span></span><br><span class="line">    <span class="keyword">let</span> index = <span class="number">-1</span></span><br><span class="line">    <span class="keyword">return</span> dispatch(<span class="number">0</span>)</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">dispatch</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (i &lt;= index) <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'next() called multiple times'</span>))</span><br><span class="line">      index = i</span><br><span class="line">      <span class="keyword">let</span> fn = middleware[i]</span><br><span class="line">      <span class="keyword">if</span> (i === middleware.length) fn = next</span><br><span class="line">      <span class="keyword">if</span> (!fn) <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve()</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(fn(context, dispatch.bind(<span class="literal">null</span>, i + <span class="number">1</span>)));</span><br><span class="line">      &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(err)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>相对于简陋版本的compose来说，这里的compose考虑了不能在一个中间件中调用多次next，还处理了最后一个中间件不调用next的情况。</p>
+<p>Koa构造函数还有两个函数，toJSON, inspect，这俩函数就是返回指定的几个字段。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Return JSON representation.</span></span><br><span class="line"><span class="comment">   * We only bother showing settings.</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * @return &#123;Object&#125;</span></span><br><span class="line"><span class="comment">   * @api public</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  toJSON() &#123;</span><br><span class="line">    <span class="keyword">return</span> only(<span class="keyword">this</span>, [</span><br><span class="line">      <span class="string">'subdomainOffset'</span>,</span><br><span class="line">      <span class="string">'proxy'</span>,</span><br><span class="line">      <span class="string">'env'</span></span><br><span class="line">    ]);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Inspect implementation.</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * @return &#123;Object&#125;</span></span><br><span class="line"><span class="comment">   * @api public</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  inspect() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.toJSON();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>再看下处理请求的部分，处理请求包括错误处理，数据响应。这里有一个onFinished(res, onerror)是在响应结束或者关闭或者错误的时候执行一下onerror方法。<a href="https://github.com/jshttp/on-finished" target="_blank" rel="noopener">on-finished</a></p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">handleRequest(ctx, fnMiddleware) &#123;</span><br><span class="line">	<span class="keyword">const</span> res = ctx.res</span><br><span class="line">	res.statusCode = <span class="number">404</span></span><br><span class="line">	<span class="keyword">const</span> onerror = <span class="function"><span class="params">err</span> =&gt;</span> ctx.onerror(err)</span><br><span class="line">	<span class="keyword">const</span> handleResponse = <span class="function"><span class="params">()</span> =&gt;</span> respond(ctx)</span><br><span class="line"></span><br><span class="line">	onFinished(res, onerror)</span><br><span class="line">	<span class="keyword">return</span> fnMiddleware(ctx).then(handleResponse).catch(onerror)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">respond</span>(<span class="params">ctx</span>) </span>&#123;</span><br><span class="line">	<span class="comment">// allow bypassing koa</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="literal">false</span> === ctx.respond) <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!ctx.writable) <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">const</span> res = ctx.res</span><br><span class="line">	<span class="keyword">let</span> body = ctx.body</span><br><span class="line">	<span class="keyword">const</span> code = ctx.status;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// statuses.empty(code) returns true if a status code expects an empty body</span></span><br><span class="line">	<span class="keyword">if</span> (statuses.empty[code]) &#123;</span><br><span class="line">		<span class="comment">// strip headers</span></span><br><span class="line">		ctx.body = <span class="literal">null</span></span><br><span class="line">		<span class="keyword">return</span> res.end()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (<span class="string">'HEAD'</span> === ctx.method) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!res.headersSent &amp;&amp; !ctx.response.has(<span class="string">'Content-Length'</span>)) &#123;</span><br><span class="line">			<span class="keyword">const</span> &#123; length &#125; = ctx</span><br><span class="line">			<span class="keyword">if</span> (<span class="built_in">Number</span>.isInteger(length)) ctx.length = length</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> res.end()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// status body</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="literal">null</span> === body) &#123;</span><br><span class="line">		<span class="keyword">if</span> (ctx.reponse._expliciNullBody) &#123;</span><br><span class="line">			ctx.response.remove(<span class="string">'Content-Type'</span>)</span><br><span class="line">			ctx.response.remove(<span class="string">'Transfer-Encoding'</span>)</span><br><span class="line">			<span class="keyword">return</span> res.end()</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (ctx.req.httpVersionMajaor &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">			body = <span class="built_in">String</span>(code)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			body = ctx.message || <span class="built_in">String</span>(code)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (!res.headersSend) &#123;</span><br><span class="line">			ctx.type = <span class="string">'text'</span></span><br><span class="line">			ctx.length = Buffer.byteLength(body)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> res.end(body)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// responses</span></span><br><span class="line">	<span class="keyword">if</span> (Buffer.isBuffer(body)) <span class="keyword">return</span> res.end(body)</span><br><span class="line">	<span class="keyword">if</span> (<span class="string">'string'</span> === <span class="keyword">typeof</span> body) <span class="keyword">return</span> res.end(body)</span><br><span class="line">	<span class="keyword">if</span> (body <span class="keyword">instanceof</span> Stream) <span class="keyword">return</span> body.pipe(res)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// body: json</span></span><br><span class="line">	body = <span class="built_in">JSON</span>.stringify(body)</span><br><span class="line">	<span class="keyword">if</span> (!res.headersSent) &#123;</span><br><span class="line">		ctx.length = Buffer.byteLength(body)</span><br><span class="line">	&#125;</span><br><span class="line">	res.end(body)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里处理了不同类型的body，这里可以看到如果<code>res.headersSent</code>为false的话，会写一些header。</p>
+<p>context, request, response</p>
+<h3 id="context"><a href="#context" class="headerlink" title="context"></a>context</h3><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> COOKIES = <span class="built_in">Symbol</span>(<span class="string">'context#cookies'</span>)</span><br><span class="line"><span class="keyword">const</span> proto = <span class="built_in">module</span>.exports = &#123;</span><br><span class="line">	inspect() &#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">this</span> === proto) <span class="keyword">return</span> <span class="keyword">this</span></span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.toJSON()</span><br><span class="line">	&#125;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回对象的所有json表示</span></span><br><span class="line">	toJSON() &#123;</span><br><span class="line">		<span class="keyword">return</span> &#123;</span><br><span class="line">			request: <span class="keyword">this</span>.request.toJSON(),</span><br><span class="line">			response: <span class="keyword">this</span>.response.toJSON(),</span><br><span class="line">			app: <span class="keyword">this</span>.app.toJSON(),</span><br><span class="line">			originalUrl: <span class="keyword">this</span>.originalUrl,</span><br><span class="line">			req: <span class="string">'&lt;original node req&gt;'</span>,</span><br><span class="line">			res: <span class="string">'&lt;original node res&gt;'</span>,</span><br><span class="line">			socket: <span class="string">'&lt;original node socket&gt;'</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">// assertion</span></span><br><span class="line">	assert: httpAssert,</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// throw error</span></span><br><span class="line">	<span class="keyword">throw</span>(...arg) &#123;</span><br><span class="line">		<span class="keyword">throw</span> createError(...args)</span><br><span class="line">	&#125;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">// default error handling</span></span><br><span class="line">	onerror(err) &#123;</span><br><span class="line">		<span class="comment">//</span></span><br><span class="line">	&#125;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">// cookies</span></span><br><span class="line">	<span class="keyword">get</span> cookies() &#123;</span><br><span class="line">		<span class="keyword">if</span> (!<span class="keyword">this</span>[COOKIES]) &#123;</span><br><span class="line">			<span class="keyword">this</span>[COOKIES] = <span class="keyword">new</span> Cookie(<span class="keyword">this</span>.req, <span class="keyword">this</span>.res, &#123;</span><br><span class="line">				keys: <span class="keyword">this</span>.app.keys,</span><br><span class="line">				secure: <span class="keyword">this</span>.request.secure</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line"></span><br><span class="line">	<span class="keyword">set</span> cookies(_cookies) &#123;</span><br><span class="line">		<span class="keyword">this</span>[COOKIES] = _cookies</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Response delegation.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">delegate(proto, <span class="string">'response'</span>)</span><br><span class="line">  .method(<span class="string">'attachment'</span>)</span><br><span class="line">  .method(<span class="string">'redirect'</span>)</span><br><span class="line">  .method(<span class="string">'remove'</span>)</span><br><span class="line">  .method(<span class="string">'vary'</span>)</span><br><span class="line">  .method(<span class="string">'has'</span>)</span><br><span class="line">  .method(<span class="string">'set'</span>)</span><br><span class="line">  .method(<span class="string">'append'</span>)</span><br><span class="line">  .method(<span class="string">'flushHeaders'</span>)</span><br><span class="line">  .access(<span class="string">'status'</span>)</span><br><span class="line">  .access(<span class="string">'message'</span>)</span><br><span class="line">  .access(<span class="string">'body'</span>)</span><br><span class="line">  .access(<span class="string">'length'</span>)</span><br><span class="line">  .access(<span class="string">'type'</span>)</span><br><span class="line">  .access(<span class="string">'lastModified'</span>)</span><br><span class="line">  .access(<span class="string">'etag'</span>)</span><br><span class="line">  .getter(<span class="string">'headerSent'</span>)</span><br><span class="line">  .getter(<span class="string">'writable'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Request delegation.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">delegate(proto, <span class="string">'request'</span>)</span><br><span class="line">  .method(<span class="string">'acceptsLanguages'</span>)</span><br><span class="line">  .method(<span class="string">'acceptsEncodings'</span>)</span><br><span class="line">  .method(<span class="string">'acceptsCharsets'</span>)</span><br><span class="line">  .method(<span class="string">'accepts'</span>)</span><br><span class="line">  .method(<span class="string">'get'</span>)</span><br><span class="line">  .method(<span class="string">'is'</span>)</span><br><span class="line">  .access(<span class="string">'querystring'</span>)</span><br><span class="line">  .access(<span class="string">'idempotent'</span>)</span><br><span class="line">  .access(<span class="string">'socket'</span>)</span><br><span class="line">  .access(<span class="string">'search'</span>)</span><br><span class="line">  .access(<span class="string">'method'</span>)</span><br><span class="line">  .access(<span class="string">'query'</span>)</span><br><span class="line">  .access(<span class="string">'path'</span>)</span><br><span class="line">  .access(<span class="string">'url'</span>)</span><br><span class="line">  .access(<span class="string">'accept'</span>)</span><br><span class="line">  .getter(<span class="string">'origin'</span>)</span><br><span class="line">  .getter(<span class="string">'href'</span>)</span><br><span class="line">  .getter(<span class="string">'subdomains'</span>)</span><br><span class="line">  .getter(<span class="string">'protocol'</span>)</span><br><span class="line">  .getter(<span class="string">'host'</span>)</span><br><span class="line">  .getter(<span class="string">'hostname'</span>)</span><br><span class="line">  .getter(<span class="string">'URL'</span>)</span><br><span class="line">  .getter(<span class="string">'header'</span>)</span><br><span class="line">  .getter(<span class="string">'headers'</span>)</span><br><span class="line">  .getter(<span class="string">'secure'</span>)</span><br><span class="line">  .getter(<span class="string">'stale'</span>)</span><br><span class="line">  .getter(<span class="string">'fresh'</span>)</span><br><span class="line">  .getter(<span class="string">'ips'</span>)</span><br><span class="line">  .getter(<span class="string">'ip'</span>);</span><br></pre></td></tr></table></figure>
+<p>context里写了很多setter，getter,并且使用<a href="https://github.com/tj/node-delegates" target="_blank" rel="noopener">delegate</a>把<strong>request</strong>，<strong>response</strong>的东西挂到委托到<strong>context</strong>上。</p>
+<h3 id="request"><a href="#request" class="headerlink" title="request"></a>request</h3><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> IP = <span class="built_in">Symbol</span>(<span class="string">'context#ip'</span>)</span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">	<span class="keyword">get</span> header() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.req.headers</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">set</span> header(val) &#123;</span><br><span class="line">		<span class="keyword">this</span>.req.headers = val</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">get</span> url() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.req.url</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">set</span> url(val) &#123;</span><br><span class="line">		<span class="keyword">this</span>.req.url = val</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">get</span> method() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.req.method</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">set</span> method(val) &#123;</span><br><span class="line">		<span class="keyword">this</span>.req.method = val	</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">get</span> query() &#123;</span><br><span class="line">		<span class="keyword">const</span> str = <span class="keyword">this</span>.querystring;</span><br><span class="line">		<span class="keyword">const</span> c = <span class="keyword">this</span>._querycache = <span class="keyword">this</span>._querycache || &#123;&#125;;</span><br><span class="line">		<span class="keyword">return</span> c[str] || (c[str] = qs.parse(str))</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">set</span> query(obj) &#123;</span><br><span class="line">		<span class="keyword">this</span>.querystring = q.stringify(obj)</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">get</span> querystring() &#123;</span><br><span class="line">		<span class="keyword">if</span> (!<span class="keyword">this</span>.req) <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">		<span class="keyword">return</span> parse(<span class="keyword">this</span>.req).query || <span class="string">''</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">set</span> querystring() &#123;</span><br><span class="line">		<span class="keyword">const</span> url = parse(<span class="keyword">this</span>.req)</span><br><span class="line">		<span class="keyword">if</span> (url.search === <span class="string">`?<span class="subst">$&#123;str&#125;</span>`</span>) <span class="keyword">return</span>;</span><br><span class="line">		</span><br><span class="line">		url.search = str</span><br><span class="line">		url.patch = <span class="literal">null</span></span><br><span class="line">		</span><br><span class="line">		<span class="keyword">this</span>.url = stringify(url)</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">get</span> socket() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.socket</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="keyword">get</span> length() &#123;</span><br><span class="line">		<span class="keyword">const</span> len = <span class="keyword">this</span>.get(<span class="string">'Content-Length'</span>)</span><br><span class="line">		<span class="keyword">if</span> (len === <span class="string">''</span>) <span class="keyword">return</span></span><br><span class="line">		<span class="keyword">return</span> ~~len</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Return request's remote address</span></span><br><span class="line"><span class="comment">   * When `app.proxy` is `true`, parse</span></span><br><span class="line"><span class="comment">   * the "X-Forwarded-For" ip address list and return the first one</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * @return &#123;String&#125;</span></span><br><span class="line"><span class="comment">   * @api public</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">get</span> ip() &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>[IP]) &#123;</span><br><span class="line">      <span class="keyword">this</span>[IP] = <span class="keyword">this</span>.ips[<span class="number">0</span>] || <span class="keyword">this</span>.socket.remoteAddress || <span class="string">''</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>[IP];</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="keyword">set</span> ip(_ip) &#123;</span><br><span class="line">    <span class="keyword">this</span>[IP] = _ip;</span><br><span class="line">  &#125;,</span><br><span class="line">	<span class="keyword">get</span>(field) &#123;</span><br><span class="line">    <span class="keyword">const</span> req = <span class="keyword">this</span>.req;</span><br><span class="line">    <span class="keyword">switch</span> (field = field.toLowerCase()) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">'referer'</span>:</span><br><span class="line">      <span class="keyword">case</span> <span class="string">'referrer'</span>:</span><br><span class="line">        <span class="keyword">return</span> req.headers.referrer || req.headers.referer || <span class="string">''</span>;</span><br><span class="line">      <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> req.headers[field] || <span class="string">''</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Return JSON representation.</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * @return &#123;Object&#125;</span></span><br><span class="line"><span class="comment">   * @api public</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  toJSON() &#123;</span><br><span class="line">    <span class="keyword">return</span> only(<span class="keyword">this</span>, [</span><br><span class="line">      <span class="string">'method'</span>,</span><br><span class="line">      <span class="string">'url'</span>,</span><br><span class="line">      <span class="string">'header'</span></span><br><span class="line">    ]);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这里也都是一些setter，getter，还有一些封装的方法比如get。</p>
+<p>不过从代码中可以学习到一些编码技巧。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> c = <span class="keyword">this</span>._querycache = <span class="keyword">this</span>._querycache || &#123;&#125;; <span class="comment">// 存只避免多次访问</span></span><br><span class="line"><span class="keyword">return</span> ~~len <span class="comment">// 位运算，这里相当于parseInt</span></span><br></pre></td></tr></table></figure>
+<p>位运算参考文章 <a href="https://juejin.im/post/5a98ea2f6fb9a028bb186f34" target="_blank" rel="noopener">位运算符在JS中的妙用</a></p>
+<p>上面代码还有一个比较意思的是，cookies和ip的访问都是用了Symbol。原因<a href="https://github.com/koajs/koa/pull/1216/commits/864da936d7005b4ef54e6c15b0bbac628472e3eb" target="_blank" rel="noopener">参考</a></p>
+<h3 id="response"><a href="#response" class="headerlink" title="response"></a>response</h3><p>与request 类似，不再贴代码。</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>在package.json里script中</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"scripts"</span>: &#123;</span><br><span class="line">    <span class="string">"test"</span>: <span class="string">"egg-bin test test"</span>,</span><br><span class="line">    <span class="string">"test-cov"</span>: <span class="string">"egg-bin cov test"</span>,</span><br><span class="line">    <span class="string">"lint"</span>: <span class="string">"eslint benchmarks lib test"</span>,</span><br><span class="line">    <span class="string">"bench"</span>: <span class="string">"make -C benchmarks"</span>,</span><br><span class="line">    <span class="string">"authors"</span>: <span class="string">"git log --format='%aN &lt;%aE&gt;' | sort -u &gt; AUTHORS"</span></span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<p>可以看到这里功能测试使用的是egg-bin（mocha）</p>
+<h3 id="基准测试"><a href="#基准测试" class="headerlink" title="基准测试"></a>基准测试</h3><p><code>make -C benchmarks</code> ，首先可以了解一下<a href="http://www.ruanyifeng.com/blog/2015/02/make.html" target="_blank" rel="noopener">make</a>。-C是改变Makefile的读取目录，这里意思就是去benchmark目录下找Makefile文件。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">// benchmark/Makefile</span><br><span class="line"><span class="section">all: middleware</span></span><br><span class="line"></span><br><span class="line"><span class="section">middleware:</span></span><br><span class="line">	@./run 1 false <span class="variable">$@</span></span><br><span class="line">	@./run 5 false <span class="variable">$@</span></span><br><span class="line">	@./run 10 false <span class="variable">$@</span></span><br><span class="line">	@./run 15 false <span class="variable">$@</span></span><br><span class="line">	@./run 20 false <span class="variable">$@</span></span><br><span class="line">	@./run 30 false <span class="variable">$@</span></span><br><span class="line">	@./run 50 false <span class="variable">$@</span></span><br><span class="line">	@./run 100 false <span class="variable">$@</span></span><br><span class="line">	@./run 1 true <span class="variable">$@</span></span><br><span class="line">	@./run 5 true <span class="variable">$@</span></span><br><span class="line">	@./run 10 true <span class="variable">$@</span></span><br><span class="line">	@./run 15 true <span class="variable">$@</span></span><br><span class="line">	@./run 20 true <span class="variable">$@</span></span><br><span class="line">	@./run 30 true <span class="variable">$@</span></span><br><span class="line">	@./run 50 true <span class="variable">$@</span></span><br><span class="line">	@./run 100 true <span class="variable">$@</span></span><br><span class="line">	@echo</span><br><span class="line"></span><br><span class="line"><span class="meta"><span class="meta-keyword">.PHONY</span>: all middleware</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// benchmark/middleware.js</span><br><span class="line">'use strict';</span><br><span class="line"></span><br><span class="line">const Koa = require('..');</span><br><span class="line">const app = new Koa();</span><br><span class="line"></span><br><span class="line">// number of middleware</span><br><span class="line"></span><br><span class="line">let n = parseInt(process.env.MW || '1', 10);</span><br><span class="line">const useAsync = process.env.USE_ASYNC === 'true';</span><br><span class="line"></span><br><span class="line">console.log(`  $&#123;n&#125;$&#123;useAsync ? ' async' : ''&#125; middleware`);</span><br><span class="line"></span><br><span class="line">while (n--) &#123;</span><br><span class="line">  if (useAsync) &#123;</span><br><span class="line">    app.use(async(ctx, next) =&gt; next());</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    app.use((ctx, next) =&gt; next());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const body = Buffer.from('Hello World');</span><br><span class="line"></span><br><span class="line">if (useAsync) &#123;</span><br><span class="line">  app.use(async(ctx, next) =&gt; &#123; await next(); ctx.body = body; &#125;);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  app.use((ctx, next) =&gt; next().then(() =&gt; ctx.body = body));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">app.listen(3333);</span><br></pre></td></tr></table></figure>
+<h3 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h3><p>测试代码就不看了，有兴趣自己去github上看看。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Node/" rel="tag"># Node</a>
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/25/如何优雅关机重启/" rel="next" title="如何优雅关机重启.md">
+                <i class="fa fa-chevron-left"></i> 如何优雅关机重启.md
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars1.githubusercontent.com/u/18627853" alt="colginh">
+            
+              <p class="site-author-name" itemprop="name">colginh</p>
+              <p class="site-description motion-element" itemprop="description">个人博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:skyran1995@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://weibo.com/5357700121/profile" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#工程化"><span class="nav-number">1.</span> <span class="nav-text">工程化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心代码"><span class="nav-number">2.</span> <span class="nav-text">核心代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#入口"><span class="nav-number">2.1.</span> <span class="nav-text">入口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context"><span class="nav-number">2.2.</span> <span class="nav-text">context</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#request"><span class="nav-number">2.3.</span> <span class="nav-text">request</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#response"><span class="nav-number">2.4.</span> <span class="nav-text">response</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">3.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基准测试"><span class="nav-number">3.1.</span> <span class="nav-text">基准测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#功能测试"><span class="nav-number">3.2.</span> <span class="nav-text">功能测试</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">colginh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://lynchblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://colgin.com/2020/05/23/koa源码/';
+          this.page.identifier = '2020/05/23/koa源码/';
+          this.page.title = 'koa源码';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://lynchblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
