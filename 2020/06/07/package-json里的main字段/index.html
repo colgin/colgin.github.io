@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon.ico?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/assets/img/favicon.ico?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaScript,工程化,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="package.json是一个JavaScript的项目描述文件，其中main字段是非常重要的一个字段，它描述了程序的入口。本文将分析作为一个模块（不是应用）的main字段。">
+<meta name="keywords" content="JavaScript,工程化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="package.json里的main字段">
+<meta property="og:url" content="http://colgin.com/2020/06/07/package-json里的main字段/index.html">
+<meta property="og:site_name" content="colgin&#39;s Blogs">
+<meta property="og:description" content="package.json是一个JavaScript的项目描述文件，其中main字段是非常重要的一个字段，它描述了程序的入口。本文将分析作为一个模块（不是应用）的main字段。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-06-06T16:19:00.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="package.json里的main字段">
+<meta name="twitter:description" content="package.json是一个JavaScript的项目描述文件，其中main字段是非常重要的一个字段，它描述了程序的入口。本文将分析作为一个模块（不是应用）的main字段。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://colgin.com/2020/06/07/package-json里的main字段/">
+
+
+
+
+
+  <title>package.json里的main字段 | colgin's Blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">colgin's Blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录生活与学习的点点滴滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://colgin.com/2020/06/07/package-json里的main字段/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="colginh">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/18627853">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="colgin's Blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">package.json里的main字段</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-07T00:10:03+08:00">
+                2020-06-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/06/07/package-json里的main字段/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/06/07/package-json里的main字段/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>package.json是一个JavaScript的项目描述文件，其中main字段是非常重要的一个字段，它描述了程序的入口。本文将分析作为一个模块（不是应用）的main字段。</p>
+<a id="more"></a>
+<h2 id="main-vs-module"><a href="#main-vs-module" class="headerlink" title="main vs module"></a>main vs module</h2><p>main字段是程序的入口，在<a href="The main field is a module ID that is the primary entry point to your program. That is, if your package is named foo, and a user installs it, and then does require(&quot;foo&quot;">npm官网</a>, then your main module’s exports object will be returned.  This should be a module ID relative to the root of your package folder.  For m)有这么一段描述</p>
+<ul>
+<li>The main field is a module ID that is the primary entry point to your program. That is, if your package is named <strong><code>foo</code></strong>, and a user installs it, and then does <strong><code>require(&quot;foo&quot;)</code></strong>, then your main module’s exports object will be returned</li>
+<li>This should be a module ID relative to the root of your package folder.</li>
+</ul>
+<p>main字段是commonJS规范的入口文件，对于客户端应用来说，如果使用webpack或者rollup这样的现代化打包器打包应用的话，其实优先考虑的是module字段，如果module字段没有值的话，才会使用main字段。具体看 <a href="https://github.com/rollup/rollup/wiki/pkg.module" target="_blank" rel="noopener">pkg.module</a></p>
+<h2 id="main的指向"><a href="#main的指向" class="headerlink" title="main的指向"></a>main的指向</h2><p>在看一些开源代码库的实现的时候，关于main字段有一些不一样的理解。</p>
+<p>比如<a href="https://github.com/vuejs/vuex" target="_blank" rel="noopener">vuex</a>中package.json是这样的</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	"main": "dist/vuex.common.js",</span><br><span class="line">	"module": "dist/vuex.esm.js",</span><br><span class="line">	"unpkg": "dist/vuex.js",</span><br><span class="line">	"jsdelivr": "dist/vuex.js",</span><br><span class="line">	"typings": "types/index.d.ts"</span><br><span class="line">	"files": [</span><br><span class="line">		"dist",</span><br><span class="line">		"types/index.d.ts",</span><br><span class="line">		"types/helper.d.ts",</span><br><span class="line">		<span class="string">"types/vue.d.ts"</span></span><br><span class="line">	]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这里的main指向了一个使用rollup打包的开发版本的commonjs格式的打包后的文件。module指向的是一个使用rollup打包的开发版本的esm格式的包。其他诸如jsdelivr, unpkg使用的都是开发rollup打包的umd格式的包。vuex的dist目录会被推送到github，当包的使用中使用<code>npm install</code>安装包的时候，dist目录也会存在与node_modules/vuex目录下。</p>
+<p>在另一个知名的包<a href="https://github.com/axios/axios/" target="_blank" rel="noopener">axios</a>的package.json里就和vuex有些区别</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	"main": "index.js",</span><br><span class="line">	"browser": &#123;</span><br><span class="line">		"./lib/adapters/http.js": "./lib/adapters/xhr.js"</span><br><span class="line">	&#125;,</span><br><span class="line">	"jsdelivr": "dist/axios.min.js",</span><br><span class="line">	"unpkg": "dist/axios/min.js"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这package.json没files字段，说明安装的时候，项目的所有文件夹和根目录下非配置文件都会被安装进去，其实也就只有两个文件夹（lib目录和dist目录）。</p>
+<p>axios由于一个前后端都可以使用的库，前后端发出请求的方式不一样，前端使用xhr对象，后端使用的是http库，所以这里有一个browser字段表示在浏览器端把某一个文件的导入换成另外一个文件。</p>
+<p>axios 的package.json没有module目录，说明如果模块被一个客户端应用使用的话，打包器的入口也是main指向的地址。这个main的地址指向了一个源文件，并不是打包后的文件。这里和之前的vuex有明显的不一样。</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>一个包（模块）在一个应用中是如何被使用的？</p>
+<p>一般来说会有两种方式</p>
+<ol>
+<li>直接通过script标签引入</li>
+<li>通过require或者import方式引入，加上打包工具(webpack, rollup)</li>
+</ol>
+<p>第一种方式通常会使用一个dist目录的压缩版本的umd格式的包，使用cdn或者其他方式引入。此处不细讲。</p>
+<p>前面我们说到，打包工具一般会使用module/main 字段作为包的入口文件。这里先讨论main，main一般来说会有三种取值</p>
+<ol>
+<li>指向源代码文件 （如axios）</li>
+<li>指向打包后的开发版本（如vuex）</li>
+<li>指向打包后的生产版本</li>
+</ol>
+<p>先讨论第一种与第二中的区别</p>
+<p>如果使用源码作为入口文件的话，就需要使用者自行对这个模块进行打包处理，而由于使用webpack这类打包工具的时候，往往会配置babel-loader 把node_modules给exclude掉，这也就意味着不会对这个包进行转译。如果这个包里出现了es6或者更高级的特性的话，可能会在应用层上会出现不兼容的问题。而且对node_modules里的包进行处理，会导致编译速度变慢。</p>
+<p>所以如果是在客户端使用的包，包的开发者不应该使用源代码作为入口。如果包的目标运行环境只是在node端，由于node端不需要对源代码进行编译打包，所以可以将源文件作为入口文件。</p>
+<p>再讨论第二种与第三种的区别：</p>
+<p>我们看到vuex的module字段指向的是一个开发版本的编译包。开发版本和生产版本有什么区别呢？</p>
+<ol>
+<li>开发版本一般不会进行压缩，利于在包的使用者在开发过程中进行调试，保持源代码的可读性。</li>
+<li>开发版本一般会有一些警告信息。这些警告信息，一般源码是这样实现的，这些代码一样会被放到开发版本的包文件中。</li>
+</ol>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (process.env.NODE_ENV === <span class="string">'development'</span>) &#123;</span><br><span class="line">	<span class="built_in">console</span>.warn()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果使用webpack的话，会使用<a href="https://webpack.js.org/plugins/define-plugin/" target="_blank" rel="noopener">DefinePlugin</a>来定义环境变量。如果在开发环境的话，NODE_ENV就是’development’了，那么警告信息就会被打印出来。</p>
+<p>所以可以看到vuex的module和main指向的不同模块格式的开发版本的包，这让你在开发的时候，有很好的开发体验，会有报错信息。</p>
+<p>等你将你的应用代码打包上线的时候，打包工具会将环境变量设置为production，那么那些所有的判断都为false了，所以就不会进入那些警告的逻辑了。同时，还会启用minify将代码进行压缩，会删除用不到的代码。所以生产版本就看不到警告了。</p>
+<h2 id="再看开源库"><a href="#再看开源库" class="headerlink" title="再看开源库"></a>再看开源库</h2><p>前面我们看了vuex和axios，看起来vuex的实现更加标准一些。axios的只有一个main字段（client 和server端公用一个入口），如果使用者不加转译的话，axios里如果用了一些目标浏览器不支持的新特性的话，就会出现兼容性问题。</p>
+<p>axios和vuex都将dist目录推送到github</p>
+<p>再看<a href="https://github.com/mobxjs/mobx/issues/1922" target="_blank" rel="noopener">mobx</a>的实现， mobx和axios一样可以在client,server端使用。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"main"</span>: <span class="string">"lib/index.js"</span>,</span><br><span class="line">  <span class="attr">"umd:main"</span>: <span class="string">"lib/mobx.umd.js"</span>,</span><br><span class="line">  <span class="attr">"module"</span>: <span class="string">"lib/mobx.module.js"</span>,</span><br><span class="line">  <span class="attr">"unpkg"</span>: <span class="string">"lib/mobx.umd.min.js"</span>,</span><br><span class="line">  <span class="attr">"jsnext:main"</span>: <span class="string">"lib/mobx.module.js"</span>,</span><br><span class="line">  <span class="attr">"typings"</span>: <span class="string">"lib/mobx.esm.js"</span>,</span><br><span class="line">  <span class="attr">"files"</span>: [</span><br><span class="line">  	<span class="string">"lib"</span>,</span><br><span class="line">  	<span class="string">"LICENSE"</span></span><br><span class="line">  ],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里main指向的是源码文件，其他的都是打包后的文件。而且还要知道的是mobx并没有把lib目录push到github，而只是把lib目录push到了npm上。</p>
+<p>参考：</p>
+<p><a href="https://jingsam.github.io/2018/03/12/npm-main.html" target="_blank" rel="noopener">关于package.json中main字段的指向问题</a></p>
+<p><a href="https://docs.npmjs.com/files/package.json" target="_blank" rel="noopener">npm doc</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/工程化/" rel="tag"># 工程化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/23/koa源码/" rel="next" title="koa源码">
+                <i class="fa fa-chevron-left"></i> koa源码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars1.githubusercontent.com/u/18627853" alt="colginh">
+            
+              <p class="site-author-name" itemprop="name">colginh</p>
+              <p class="site-description motion-element" itemprop="description">个人博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:skyran1995@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://weibo.com/5357700121/profile" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#main-vs-module"><span class="nav-number">1.</span> <span class="nav-text">main vs module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#main的指向"><span class="nav-number">2.</span> <span class="nav-text">main的指向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思考"><span class="nav-number">3.</span> <span class="nav-text">思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#再看开源库"><span class="nav-number">4.</span> <span class="nav-text">再看开源库</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">colginh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://lynchblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://colgin.com/2020/06/07/package-json里的main字段/';
+          this.page.identifier = '2020/06/07/package-json里的main字段/';
+          this.page.title = 'package.json里的main字段';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://lynchblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
