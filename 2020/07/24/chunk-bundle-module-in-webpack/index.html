@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaScript,webpack,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在webpack配置中输出的配置中，提供了几个占位符号，其中contenthash与chunkhash是令人比较费解的两个。">
+<meta name="keywords" content="JavaScript,webpack">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 中的contenthash与chunkhash">
+<meta property="og:url" content="http://colgin.com/2020/07/24/chunk-bundle-module-in-webpack/index.html">
+<meta property="og:site_name" content="colgin&#39;s Blogs">
+<meta property="og:description" content="在webpack配置中输出的配置中，提供了几个占位符号，其中contenthash与chunkhash是令人比较费解的两个。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png">
+<meta property="og:image" content="https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png">
+<meta property="og:image" content="https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png">
+<meta property="og:updated_time" content="2020-07-23T17:22:05.183Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="webpack 中的contenthash与chunkhash">
+<meta name="twitter:description" content="在webpack配置中输出的配置中，提供了几个占位符号，其中contenthash与chunkhash是令人比较费解的两个。">
+<meta name="twitter:image" content="https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://colgin.com/2020/07/24/chunk-bundle-module-in-webpack/">
+
+
+
+
+
+  <title>webpack 中的contenthash与chunkhash | colgin's Blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">colgin's Blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录生活与学习的点点滴滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://colgin.com/2020/07/24/chunk-bundle-module-in-webpack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="colgin">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="colgin's Blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">webpack 中的contenthash与chunkhash</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-24T01:02:50+08:00">
+                2020-07-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在webpack配置中输出的配置中，提供了几个占位符号，其中contenthash与chunkhash是令人比较费解的两个。</p>
+<a id="more"></a>
+<h2 id="bundle-module-chunk"><a href="#bundle-module-chunk" class="headerlink" title="bundle, module, chunk"></a>bundle, module, chunk</h2><h3 id="module"><a href="#module" class="headerlink" title="module"></a>module</h3><p>module 是最好理解的，我们通常会把webpack 描述为 <strong>module bundler</strong>。在webpack中，一切资源都是模块，其实webpack本身智能处理js module，但是通过loader，可以处理不同类型的module，比较常见的比如css，图片，字体。</p>
+<p><img src="https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png" alt="https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png"></p>
+<p>可以看到左边这个就是不同类型的module。</p>
+<p>在webpack官网针对module 还有专门的介绍，简而言之，通过各种语法对各种资源的引用让webpack能够建立起一个依赖树。比如</p>
+<ul>
+<li>ES2015 import</li>
+<li>CommonJS <code>require()</code>语法</li>
+<li>AMD <code>define</code> , <code>require</code>语法</li>
+<li>css/less/scss 中的 <code>@import</code></li>
+<li>css 中的<code>url(...)</code></li>
+<li>html中<code>img src=... &gt;</code></li>
+</ul>
+<p>通过loader，可以支持非常多的module类型，比如使用ts-loader就可以支持ts module。回想一下，webpack 配置loader就是在module对象下配置的。</p>
+<h3 id="bundle"><a href="#bundle" class="headerlink" title="bundle"></a>bundle</h3><p>bundle 对应的是最终生成的文件，一个文件对应一个bundle</p>
+<h3 id="chunk"><a href="#chunk" class="headerlink" title="chunk"></a>chunk</h3><p>chunk是webpack 中一个不好理解，但是又非常重要的概念。是webpack 内部处理的的一个表示，chunk是module 的集合。</p>
+<p>在<a href="https://github.com/webpack/webpack.js.org/issues/970#issuecomment-305525560" target="_blank" rel="noopener">Concepts- Bundle vs Chunk</a>的讨论中，webpack的贡献者提出了下面的观点：</p>
+<p>chunk就是 bundle，chunk只是对依赖的一层封装。还提出了三种chunk</p>
+<ul>
+<li>entry chunk：entry chunk就是应用的入口，里面包含了webpack的启动代码，整体而言就是一个IIFE，参数是modules，就是一个一个的module。entry chunk一定是最先执行的。</li>
+<li>initial chunk：initial chunk 是同步加载的，但是不包含webpack的那些启动代码。initial chunk 一般是紧跟在 entry chunk之后加载的。initial chunk 也是一个bundle（用户侧的称呼），initial chunk 一般可以由拆包生成，比如SplitChunksPlugin, 或者 mini-css-extract-plugin。典型的代码如下:</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">webpackJsonp([<span class="number">0</span>],[</span><br><span class="line"><span class="comment">/* 0 */</span></span><br><span class="line"><span class="comment">/* unknown exports provided */</span></span><br><span class="line"><span class="comment">/* all exports used */</span></span><br><span class="line"><span class="comment">/*!*********************!*\\</span></span><br><span class="line"><span class="comment">  !*** ./utility2.js ***!</span></span><br><span class="line"><span class="comment">  \\*********************/</span></span><br><span class="line"><span class="comment">/***/</span> (<span class="function"><span class="keyword">function</span>(<span class="params">module, exports</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="string">"utility2"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/***/</span> &#125;),</span><br><span class="line"><span class="comment">/* 1 */</span></span><br><span class="line"><span class="comment">/* unknown exports provided */</span></span><br><span class="line"><span class="comment">/* all exports used */</span></span><br><span class="line"><span class="comment">/*!*********************!*\\</span></span><br><span class="line"><span class="comment">  !*** ./utility3.js ***!</span></span><br><span class="line"><span class="comment">  \\*********************/</span></span><br><span class="line"><span class="comment">/***/</span> (<span class="function"><span class="keyword">function</span>(<span class="params">module, exports</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="string">"utility3"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/***/</span> &#125;)</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Normal chunk: normal chunk 和initial chunk的区别在于，normal chunk是懒加载或者说是异步加载的。比如通过import()动态导入语法就会生成normal chunk。normal chunk。normal chunk 是异步的，没有固定的顺序。</li>
+</ul>
+<p>如果按照chunk产出的原因来分的话。大概可以分为3类</p>
+<ul>
+<li>entry</li>
+<li>SplitChunksPlugin</li>
+<li>Dynamic import</li>
+</ul>
+<p>在webpack打包结果中会说明每一个文件来自与哪个chunk</p>
+<p><img src="https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png" alt="https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png"></p>
+<h2 id="contenthash-chunkhash"><a href="#contenthash-chunkhash" class="headerlink" title="contenthash, chunkhash"></a>contenthash, chunkhash</h2><p>官网上对chunkhash 的解释是 The hash of chunk content, 对contenthash的解释是 The hash of the content of a file。</p>
+<p>而且还特地标注了，如果使用ExtracTextWebpackPlugin的时候，用contenthash ，不要使用chunkhash。</p>
+<p>这是为什么呢？</p>
+<p>先搭建一下webpack 环境把。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack.config.js</span></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  entry: <span class="string">'./src/index.js'</span>,</span><br><span class="line">  mode: <span class="string">'development'</span>,</span><br><span class="line">  output: &#123;</span><br><span class="line">    path: path.resolve(__dirname, <span class="string">'../dist'</span>),</span><br><span class="line">    filename: <span class="string">'[chunkhash:5].js'</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\\.js$/</span>,</span><br><span class="line">        use: <span class="string">'babel-loader'</span></span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\\.css$/</span>,</span><br><span class="line">        use: [MiniCssExtractPlugin.loader, <span class="string">'css-loader'</span>],</span><br><span class="line">      &#125;,</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [</span><br><span class="line">    <span class="keyword">new</span> HtmlWebpackPlugin(&#123;</span><br><span class="line">      template: path.resolve(__dirname, <span class="string">'../src/index.html'</span>),</span><br><span class="line">      <span class="comment">// chunks: ['vendors', 'runtime', 'main']</span></span><br><span class="line">    &#125;),</span><br><span class="line">    <span class="keyword">new</span> CleanWebpackPlugin(),</span><br><span class="line">    <span class="keyword">new</span> MiniCssExtractPlugin(&#123;</span><br><span class="line">      filename: <span class="string">'[contenthash:5].css'</span></span><br><span class="line">    &#125;)</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>源文件如下</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; abs &#125; <span class="keyword">from</span> <span class="string">'./abs'</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./index.css'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.onload = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> div = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>)</span><br><span class="line">  div.className = <span class="string">'food'</span></span><br><span class="line">  div.textContent = <span class="number">8888</span></span><br><span class="line">  <span class="built_in">document</span>.body.append(div)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(abs(<span class="number">109</span>))</span><br><span class="line"><span class="comment">// index.css</span></span><br><span class="line">.food &#123;</span><br><span class="line">  color: yellow;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// abs.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> abs = <span class="function">(<span class="params">value</span>) =&gt;</span> (value &gt; <span class="number">0</span> ? val</span><br></pre></td></tr></table></figure>
+<p>接下来，调整output.filename使用的占位符和MiniCssExtractPlugin使用的占位符。</p>
+<p>为了测试这俩占位符的区别，每次只会做以下任意一种修改</p>
+<ul>
+<li>A：修改index.js文件 ，console.log()的值</li>
+<li>B：修改index.css文件内容</li>
+</ul>
+<ol>
+<li>如果二者都是用chunkhash</li>
+</ol>
+<p>A, B 两种情况都会导致打包出来的文件发生变化，而且，二者文件名都是一样的（前提占位符一样）。</p>
+<p><img src="https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png" alt="https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png"></p>
+<ol start="2">
+<li>如果二者都是用contenthash</li>
+</ol>
+<p>A: js文件发生变化，css文件没有发生变化</p>
+<p>B: js文件没有发生变化，css文件发生变化</p>
+<p>在这里的场景，由于css都被抽离成一个单独的文件，直接插入到html中，但是如果类似与动态引入的话，比如</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">import</span>(<span class="string">'./example.js'</span>).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;&#125;)</span><br></pre></td></tr></table></figure>
+<p>如果example.js文件了，index.js 文件还不修改的话，必然会导致引用文件失败。因为之前的文件已经不在了。</p>
+<ol start="3">
+<li>如果output.filename 是contenthash，css插件用的是chunkhash的话</li>
+</ol>
+<p>A: js 文件发生变化，css文件发生变化</p>
+<p>B: js 文件不发生变化，css文件发生变化</p>
+<p>可以看到，我们只修改了js文件，但是css文件也变了</p>
+<ol start="4">
+<li>如果output.filename使用chunkhash, css插件使用contenthash的话</li>
+</ol>
+<p>A: js文件发生变化，css文件不发生变化</p>
+<p>B: js文件发生变化，css文件发生变化</p>
+<p>从缓存的角度来看，我们总是希望尽可能充分利用缓存，每次只变更我们更新过的文件。前提是更新过的文件能够作用。</p>
+<p>显然上面第四种是符合要求的，也就是output.filename使用chunkhash, css plugin使用contenthash。</p>
+<p>从这我们也可以对比得知contenthash 是只与内容相关，内容变了，hash就变了。而chunkhash是一整个chunk的内容，不仅仅是自己的内容，还有引用的别的module 的内容，任何一个变化了，都要发生变化，这就和chunk 的概念不谋而合了。</p>
+<p>参考资料</p>
+<ul>
+<li><a href="https://webpack.js.org/configuration/output/#outputfilename" target="_blank" rel="noopener">webpack官网</a></li>
+<li><a href="https://stackoverflow.com/questions/42523436/what-are-module-chunk-and-bundle-in-webpack" target="_blank" rel="noopener">stackoverflow: What are module, chunk and bundle in webpack</a></li>
+<li><a href="https://github.com/webpack/webpack.js.org/issues/970" target="_blank" rel="noopener">github issue: Concepts- Bundle vs Chunk</a></li>
+<li><a href="https://juejin.im/post/5d70ad50f265da03cf7aae91" target="_blank" rel="noopener">webpack中的bundle, module, chunk分别是什么</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/webpack/" rel="tag"># webpack</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/05/scope-slots-and-render-in-vue/" rel="next" title="Vue中的scope slot和render函数">
+                <i class="fa fa-chevron-left"></i> Vue中的scope slot和render函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">colgin</p>
+              <p class="site-description motion-element" itemprop="description">个人博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#bundle-module-chunk"><span class="nav-number">1.</span> <span class="nav-text">bundle, module, chunk</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#module"><span class="nav-number">1.1.</span> <span class="nav-text">module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bundle"><span class="nav-number">1.2.</span> <span class="nav-text">bundle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chunk"><span class="nav-number">1.3.</span> <span class="nav-text">chunk</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contenthash-chunkhash"><span class="nav-number">2.</span> <span class="nav-text">contenthash, chunkhash</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">colgin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
