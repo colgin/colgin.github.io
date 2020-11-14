@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://colgin.com">
-  <title>colgin&#39;s Blogs</title>
+  <title>vue3 中渲染器api的设计 | colgin&#39;s Blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="个人博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="colgin&#39;s Blogs">
-<meta property="og:url" content="http://colgin.com/page/3/index.html">
+  <meta name="description" content="vue2的代码中将vdom渲染成dom的方法封装在内部，如果要将vue渲染到其他一些平台，从代码组织上就很啰嗦。比如mp-vue就是直接从fork了一份vue的代码，然后修改渲染vdom的那部分代码。比如weex因为和vue有合作，所以代码是直接放在vue里的platform目录下。而vue3则彻底将运行时和将vdom渲染到页面上的平台相关代码进行了分离。从代码的组织上就能看出来了，runtime">
+<meta name="keywords" content="Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue3 中渲染器api的设计">
+<meta property="og:url" content="http://colgin.com/2020/11/14/vue3-renderer/index.html">
 <meta property="og:site_name" content="colgin&#39;s Blogs">
-<meta property="og:description" content="个人博客">
+<meta property="og:description" content="vue2的代码中将vdom渲染成dom的方法封装在内部，如果要将vue渲染到其他一些平台，从代码组织上就很啰嗦。比如mp-vue就是直接从fork了一份vue的代码，然后修改渲染vdom的那部分代码。比如weex因为和vue有合作，所以代码是直接放在vue里的platform目录下。而vue3则彻底将运行时和将vdom渲染到页面上的平台相关代码进行了分离。从代码的组织上就能看出来了，runtime">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-14T15:56:56.981Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="colgin&#39;s Blogs">
-<meta name="twitter:description" content="个人博客">
+<meta name="twitter:title" content="vue3 中渲染器api的设计">
+<meta name="twitter:description" content="vue2的代码中将vdom渲染成dom的方法封装在内部，如果要将vue渲染到其他一些平台，从代码组织上就很啰嗦。比如mp-vue就是直接从fork了一份vue的代码，然后修改渲染vdom的那部分代码。比如weex因为和vue有合作，所以代码是直接放在vue里的platform目录下。而vue3则彻底将运行时和将vdom渲染到页面上的平台相关代码进行了分离。从代码的组织上就能看出来了，runtime">
   
     <link rel="alternative" href="/atom.xml" title="colgin&#39;s Blogs" type="application/atom+xml">
   
@@ -145,35 +147,96 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-为Hexo-Yilia的博客上添加livere-来必利-作为评论支持" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-vue3-renderer" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/23/为Hexo-Yilia的博客上添加livere-来必利-作为评论支持/">为Hexo + Yilia的博客上添加livere(来必利)作为评论支持</a>
+    <h1 class="article-title" itemprop="name">
+      vue3 中渲染器api的设计
     </h1>
   
 
         
-        <a href="/2017/07/23/为Hexo-Yilia的博客上添加livere-来必利-作为评论支持/" class="archive-article-date">
-  	<time datetime="2017-07-23T08:06:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-23</time>
+        <a href="/2020/11/14/vue3-renderer/" class="archive-article-date">
+  	<time datetime="2020-11-14T15:54:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-14</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在搭建好博客之后，总感觉少了点什么，看了看别人的博客，恍然大悟，没有评论的博客哪能叫博客啊，要是别人发现你的博客有错，都没法联系你。于是就开始琢磨给博客添加评论。</p>
-<p>由于我之前选用的是<a href="https://github.com/litten/hexo-theme-yilia" target="_blank" rel="noopener">Yilia</a>，在这个主题中提供了几种参考的评论系统（网易云跟帖，多说，disqus，畅言），本着学习 + 实践的态度。我开始了试错之路。</p>
-        
-          <a class="article-more-a" href="/2017/07/23/为Hexo-Yilia的博客上添加livere-来必利-作为评论支持/#more">more >></a>
-        
+        <p>vue2的代码中将vdom渲染成dom的方法封装在内部，如果要将vue渲染到其他一些平台，从代码组织上就很啰嗦。比如<a href="https://github.com/Meituan-Dianping/mpvue" target="_blank" rel="noopener">mp-vue</a>就是直接从fork了一份vue的代码，然后修改渲染vdom的那部分代码。比如weex因为和vue有合作，所以代码是直接放在vue里的<a href="https://github.com/vuejs/vue/tree/dev/src/platforms/weex" target="_blank" rel="noopener">platform</a>目录下。而vue3则彻底将运行时和将vdom渲染到页面上的平台相关代码进行了分离。从代码的组织上就能看出来了，runtime-core是平台无关的运行时，runtime-dom是和dom相关的api，除了vue实现的dom 平台之外，vue还将api设计成友好的可拓展的方式，可以让开发者自定义渲染器。所以本文将从源码解析vue 关于渲染器部分的api设计与实现。<br><a id="more"></a></p>
+<p>首先来看下，如何在web页面上渲染一个app</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Counter = &#123;</span><br><span class="line">  data() &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      counter: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Vue.createApp(Counter).mount(<span class="string">'#counter'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#counter'</span>,</span><br><span class="line">  render: <span class="function">(<span class="params">h</span>) =&gt;</span> &lt;Counter /&gt;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>vue3的api设计也和vue2 有很大的区别</p>
+<p>vue3 引入了一个新的 概念application，通过createApp可以创建一个application，然后可以在application上可以注册这个application上全局的指令。</p>
+<p>通过源码，可以看到</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> createApp = <span class="function">(<span class="params">(...args</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> app = ensureRenderer().createApp(...args)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">    injectNativeTagCheck(app)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> &#123; mount &#125; = app</span><br><span class="line">  app.mount = (containerOrSelector: Element | string): <span class="function"><span class="params">any</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> container = normalizeContainer(containerOrSelector)</span><br><span class="line">    <span class="keyword">if</span> (!container) <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">const</span> component = app._component</span><br><span class="line">    <span class="keyword">if</span> (!isFunction(component) &amp;&amp; !component.render &amp;&amp; !component.template) &#123;</span><br><span class="line">      component.template = container.innerHTML</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// clear content before mounting</span></span><br><span class="line">    container.innerHTML = <span class="string">''</span></span><br><span class="line">    <span class="keyword">const</span> proxy = mount(container)</span><br><span class="line">    container.removeAttribute(<span class="string">'v-cloak'</span>)</span><br><span class="line">    container.setAttribute(<span class="string">'data-v-app'</span>, <span class="string">''</span>)</span><br><span class="line">    <span class="keyword">return</span> proxy</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> app</span><br><span class="line">&#125;) <span class="keyword">as</span> CreateAppFunction&lt;Element&gt;</span><br></pre></td></tr></table></figure>
+<p>这里通过调用ensureRenderer() 返回一个渲染器，然后调用渲染器的createApp方法得到app，然后重写app的mount方法。</p>
+<p>所以在vue里渲染器是什么呢？可以看看ensureRender()函数</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// lazy create the renderer - this makes core renderer logic tree-shakable</span></span><br><span class="line"><span class="comment">// in case the user only imports reactivity utilities from Vue.</span></span><br><span class="line"><span class="keyword">let</span> renderer: Renderer&lt;Element&gt; | HydrationRenderer</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ensureRenderer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> renderer || (renderer = createRenderer&lt;Node, Element&gt;(rendererOptions))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rendererOptions = extend(&#123; patchProp, forcePatchProp &#125;, nodeOps)</span><br></pre></td></tr></table></figure>
+<p>这里的渲染器就是通过createRenderer函数创建的，传递的参数 是 一些操作dom的方法，比如nodeOps</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> nodeOps = &#123;</span><br><span class="line">    insert() &#123;&#125;,</span><br><span class="line">    remove() &#123;&#125;,</span><br><span class="line">    createElement() &#123;&#125;,</span><br><span class="line">    createText() &#123;&#125;,</span><br><span class="line">    createComment() &#123;&#125;,</span><br><span class="line">    setText() &#123;&#125;,</span><br><span class="line">    setElementText() &#123;&#125;,</span><br><span class="line">    parentNode() &#123;&#125;,</span><br><span class="line">    nextSibling() &#123;&#125;,</span><br><span class="line">    querySelector() &#123;&#125;,</span><br><span class="line">    setScopeId() &#123;&#125;,</span><br><span class="line">    cloneNode() &#123;&#125;,</span><br><span class="line">    insertStaticContent() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>都是一些常规的操作dom的方法。</p>
+<p>再看下createRenderer的实现，在runtime-core包里面</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">createRenderer</span>&lt;</span></span><br><span class="line"><span class="function">  <span class="title">HostNode</span> = <span class="title">RendererNode</span>,</span></span><br><span class="line"><span class="function">  <span class="title">HostElement</span> = <span class="title">RendererElement</span></span></span><br><span class="line"><span class="function">&gt;(<span class="params">options: RendererOptions&lt;HostNode, HostElement&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> baseCreateRenderer&lt;HostNode, HostElement&gt;(options)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>createRenderer函数是被导出的，可以提供给开发者使用。这也是我们自定义渲染器需要使用的方法。接下来看下baseCreateRenderer的实现</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">baseCreateRender</span>(<span class="params">options, createHydrationFns</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">    insert: hostInsert,</span><br><span class="line">    remove: hostRemove,</span><br><span class="line">    patchProp: hostPatchProp,</span><br><span class="line">    forcePatchProp: hostForcePatchProp,</span><br><span class="line">    createElement: hostCreateElement,</span><br><span class="line">    createText: hostCreateText,</span><br><span class="line">    createComment: hostCreateComment,</span><br><span class="line">    setText: hostSetText,</span><br><span class="line">    setElementText: hostSetElementText,</span><br><span class="line">    parentNode: hostParentNode,</span><br><span class="line">    nextSibling: hostNextSibling,</span><br><span class="line">    setScopeId: hostSetScopeId = NOOP,</span><br><span class="line">    cloneNode: hostCloneNode,</span><br><span class="line">    insertStaticContent: hostInsertStaticContent</span><br><span class="line">  &#125; = options</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">const</span> render = <span class="function">(<span class="params">vnode, contianer</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> hydrate: ReturnType&lt;<span class="keyword">typeof</span> createHydrationFunctions&gt;[<span class="number">0</span>] | <span class="literal">undefined</span></span><br><span class="line">  <span class="keyword">let</span> hydrateNode: ReturnType&lt;<span class="keyword">typeof</span> createHydrationFunctions&gt;[<span class="number">1</span>] | <span class="literal">undefined</span></span><br><span class="line">  <span class="keyword">if</span> (createHydrationFns) &#123;</span><br><span class="line">    ;[hydrate, hydrateNode] = createHydrationFns(internals <span class="keyword">as</span> RendererInternals&lt;</span><br><span class="line">      Node,</span><br><span class="line">      Element</span><br><span class="line">    &gt;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        render,</span><br><span class="line">        hydrate,</span><br><span class="line">        createApp: createAppAPI(render, hydrate)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里可以看到，baseCreateRenderer 函数没有导出，这是因为这是通用的渲染器定义，在这个函数 返回了三个方法</p>
+<ul>
+<li>render: 将vnode渲染到指定容器中</li>
+<li>hydrate: ssr相关</li>
+<li>createApp: 创建应用</li>
+</ul>
+<p>在这个函数中，从options对象中取出操作dom的那些方法，然后得到一个render 函数，这个render 函数作用就是将vnode 渲染到指定的节点上，这其中就会利用options传过来的那些原生dom方法。</p>
+<p>可以看到一个渲染器包含了 render,hydrate,createApp三个部分。</p>
+<p>我们再看下createApp的实现</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">createAppAPI</span>&lt;<span class="title">HostElement</span>&gt;(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  render: RootRenderFunction,</span></span></span><br><span class="line"><span class="function"><span class="params">  hydrate?: RootHydrateFunction</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">CreateAppFunction</span>&lt;<span class="title">HostElement</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">createApp</span>(<span class="params">rootComponent, rootProps = null</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (rootProps != <span class="literal">null</span> &amp;&amp; !isObject(rootProps)) &#123;</span><br><span class="line">      __DEV__ &amp;&amp; warn(<span class="string">`root props passed to app.mount() must be an object.`</span>)</span><br><span class="line">      rootProps = <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> context = createAppContext()</span><br><span class="line">    <span class="keyword">const</span> installedPlugins = <span class="keyword">new</span> <span class="built_in">Set</span>()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> isMounted = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> app: App = (context.app = &#123;</span><br><span class="line">      _uid: uid++,</span><br><span class="line">      _component: rootComponent <span class="keyword">as</span> ConcreteComponent,</span><br><span class="line">      _props: rootProps,</span><br><span class="line">      _container: <span class="literal">null</span>,</span><br><span class="line">      _context: context,</span><br><span class="line"></span><br><span class="line">      version,</span><br><span class="line"></span><br><span class="line">      <span class="keyword">get</span> config() &#123;</span><br><span class="line">        <span class="keyword">return</span> context.config</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      <span class="keyword">set</span> config(v) &#123;</span><br><span class="line">        <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">          warn(</span><br><span class="line">            <span class="string">`app.config cannot be replaced. Modify individual options instead.`</span></span><br><span class="line">          )</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      use(plugin: Plugin, ...options: any[]) &#123;</span><br><span class="line">        <span class="keyword">if</span> (installedPlugins.has(plugin)) &#123;</span><br><span class="line">          __DEV__ &amp;&amp; warn(<span class="string">`Plugin has already been applied to target app.`</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (plugin &amp;&amp; isFunction(plugin.install)) &#123;</span><br><span class="line">          installedPlugins.add(plugin)</span><br><span class="line">          plugin.install(app, ...options)</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isFunction(plugin)) &#123;</span><br><span class="line">          installedPlugins.add(plugin)</span><br><span class="line">          plugin(app, ...options)</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">          warn(</span><br><span class="line">            <span class="string">`A plugin must either be a function or an object with an "install" `</span> +</span><br><span class="line">              <span class="string">`function.`</span></span><br><span class="line">          )</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> app</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      mixin(mixin: ComponentOptions) &#123;</span><br><span class="line">        <span class="keyword">if</span> (__FEATURE_OPTIONS_API__) &#123;</span><br><span class="line">          <span class="keyword">if</span> (!context.mixins.includes(mixin)) &#123;</span><br><span class="line">            context.mixins.push(mixin)</span><br><span class="line">            <span class="comment">// global mixin with props/emits de-optimizes props/emits</span></span><br><span class="line">            <span class="comment">// normalization caching.</span></span><br><span class="line">            <span class="keyword">if</span> (mixin.props || mixin.emits) &#123;</span><br><span class="line">              context.deopt = <span class="literal">true</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125; <span class="keyword">else</span> <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">            warn(</span><br><span class="line">              <span class="string">'Mixin has already been applied to target app'</span> +</span><br><span class="line">                (mixin.name ? <span class="string">`: <span class="subst">$&#123;mixin.name&#125;</span>`</span> : <span class="string">''</span>)</span><br><span class="line">            )</span><br><span class="line">          &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">          warn(<span class="string">'Mixins are only available in builds supporting Options API'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> app</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      component(name: string, component?: Component): any &#123;</span><br><span class="line">        <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">          validateComponentName(name, context.config)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!component) &#123;</span><br><span class="line">          <span class="keyword">return</span> context.components[name]</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (__DEV__ &amp;&amp; context.components[name]) &#123;</span><br><span class="line">          warn(<span class="string">`Component "<span class="subst">$&#123;name&#125;</span>" has already been registered in target app.`</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        context.components[name] = component</span><br><span class="line">        <span class="keyword">return</span> app</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      directive(name: string, directive?: Directive) &#123;</span><br><span class="line">        <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">          validateDirectiveName(name)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!directive) &#123;</span><br><span class="line">          <span class="keyword">return</span> context.directives[name] <span class="keyword">as</span> any</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (__DEV__ &amp;&amp; context.directives[name]) &#123;</span><br><span class="line">          warn(<span class="string">`Directive "<span class="subst">$&#123;name&#125;</span>" has already been registered in target app.`</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        context.directives[name] = directive</span><br><span class="line">        <span class="keyword">return</span> app</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      mount(rootContainer: HostElement, isHydrate?: boolean): any &#123;</span><br><span class="line">        <span class="keyword">if</span> (!isMounted) &#123;</span><br><span class="line">          <span class="keyword">const</span> vnode = createVNode(</span><br><span class="line">            rootComponent <span class="keyword">as</span> ConcreteComponent,</span><br><span class="line">            rootProps</span><br><span class="line">          )</span><br><span class="line">          <span class="comment">// store app context on the root VNode.</span></span><br><span class="line">          <span class="comment">// this will be set on the root instance on initial mount.</span></span><br><span class="line">          vnode.appContext = context</span><br><span class="line"></span><br><span class="line">          <span class="comment">// HMR root reload</span></span><br><span class="line">          <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">            context.reload = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">              render(cloneVNode(vnode), rootContainer)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">          <span class="keyword">if</span> (isHydrate &amp;&amp; hydrate) &#123;</span><br><span class="line">            hydrate(vnode <span class="keyword">as</span> VNode&lt;Node, Element&gt;, rootContainer <span class="keyword">as</span> any)</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            render(vnode, rootContainer)</span><br><span class="line">          &#125;</span><br><span class="line">          isMounted = <span class="literal">true</span></span><br><span class="line">          app._container = rootContainer</span><br><span class="line">          <span class="comment">// for devtools and telemetry</span></span><br><span class="line">          ;(rootContainer <span class="keyword">as</span> any).__vue_app__ = app</span><br><span class="line"></span><br><span class="line">          <span class="keyword">if</span> (__DEV__ || __FEATURE_PROD_DEVTOOLS__) &#123;</span><br><span class="line">            devtoolsInitApp(app, version)</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">          <span class="keyword">return</span> vnode.component!.proxy</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">          warn(</span><br><span class="line">            <span class="string">`App has already been mounted.\n`</span> +</span><br><span class="line">              <span class="string">`If you want to remount the same app, move your app creation logic `</span> +</span><br><span class="line">              <span class="string">`into a factory function and create fresh app instances for each `</span> +</span><br><span class="line">              <span class="string">`mount - e.g. \`const createMyApp = () =&gt; createApp(App)\``</span></span><br><span class="line">          )</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      unmount() &#123;</span><br><span class="line">        <span class="keyword">if</span> (isMounted) &#123;</span><br><span class="line">          render(<span class="literal">null</span>, app._container)</span><br><span class="line">          <span class="keyword">if</span> (__DEV__ || __FEATURE_PROD_DEVTOOLS__) &#123;</span><br><span class="line">            devtoolsUnmountApp(app)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">          warn(<span class="string">`Cannot unmount an app that is not mounted.`</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      provide(key, value) &#123;</span><br><span class="line">        <span class="keyword">if</span> (__DEV__ &amp;&amp; (key <span class="keyword">as</span> string | symbol) <span class="keyword">in</span> context.provides) &#123;</span><br><span class="line">          warn(</span><br><span class="line">            <span class="string">`App already provides property with key "<span class="subst">$&#123;<span class="built_in">String</span>(key)&#125;</span>". `</span> +</span><br><span class="line">              <span class="string">`It will be overwritten with the new value.`</span></span><br><span class="line">          )</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// TypeScript doesn't allow symbols as index type</span></span><br><span class="line">        <span class="comment">// https://github.com/Microsoft/TypeScript/issues/24587</span></span><br><span class="line">        context.provides[key <span class="keyword">as</span> string] = value</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> app</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> app</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>前面我们说到 vue3 与vue2有一个很大的区别在于，vue3引入了application的概念，在createAppAPI这里可以看到，返回的app就是一个application对象，这个对象实现了 集成注册插件，注册指令，注册组件等方法，实现都很简单，就是将这些资源的注册到app 的context中而不是像vue3那样注册到全局Vue中。</p>
+<p>这个createAppAPI 里有一个mount方法 就是将application 挂载到某一个dom节点上，实现上就是利用之前的render 方法。</p>
+<p>看到这里，或许你对vue3渲染器的API设计与实现已经有一部分了解了。接下来说一些有意思的点。</p>
+<ol>
+<li>render方法</li>
+</ol>
+<p>在runtime-dom中 对渲染器的render方法是暴露给了开发者的。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use explicit type casts here to avoid import() calls in rolled-up d.ts</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> render = <span class="function">(<span class="params">(...args</span>) =&gt;</span> &#123;</span><br><span class="line">  ensureRenderer().render(...args)</span><br><span class="line">&#125;) <span class="keyword">as</span> RootRenderFunction&lt;Element&gt;</span><br></pre></td></tr></table></figure>
+<p>而这个render方法 的实现就是 渲染器里面的render方法，作用就是将vdom渲染到固定容器中。也就是说如下代码也是可以渲染出来的。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; h &#125; <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App.vue'</span></span><br><span class="line"></span><br><span class="line">render(h(App), <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>))</span><br></pre></td></tr></table></figure>
+<p>而实际使用过程，我们大都使用createApp创建一个application这种方式，原因是这种方式更加符合vue3的设计，将资源注册到application 会让代码更加模块化。</p>
+<p>render方法在测试中会有很多应用</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createStaticVNode, h, render &#125; <span class="keyword">from</span> <span class="string">'../src'</span></span><br><span class="line"></span><br><span class="line">describe(<span class="string">'static vnode handling'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> content = <span class="string">`&lt;div&gt;hello&lt;/div&gt;&lt;p&gt;world&lt;/p&gt;`</span></span><br><span class="line">  <span class="keyword">const</span> content2 = <span class="string">`&lt;p&gt;foo&lt;/p&gt;&lt;div&gt;bar&lt;/div&gt;&lt;span&gt;baz&lt;/span&gt;`</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> s = createStaticVNode(content, <span class="number">2</span>)</span><br><span class="line">  <span class="keyword">const</span> s2 = createStaticVNode(content2, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">  test(<span class="string">'should mount from string'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> root = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>)</span><br><span class="line">    render(h(<span class="string">'div'</span>, [s]), root)</span><br><span class="line">    expect(root.innerHTML).toBe(<span class="string">`&lt;div&gt;<span class="subst">$&#123;content&#125;</span>&lt;/div&gt;`</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>如何实现一个渲染器</li>
+</ol>
+<p>根据vue 的api设计，我们只需要传入一组 操作原生 内容的api，就可以得到一个针对特定平台的渲染器</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createRenderer, h &#125; <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="comment">// 参考runtime-dom/src/nodeOps.ts</span></span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">    insert() &#123;&#125;,</span><br><span class="line">    remove() &#123;&#125;,</span><br><span class="line">    createElement() &#123;&#125;,</span><br><span class="line">    createText() &#123;&#125;,</span><br><span class="line">    createComment() &#123;&#125;,</span><br><span class="line">    setText() &#123;&#125;,</span><br><span class="line">    setElementText() &#123;&#125;,</span><br><span class="line">    parentNode() &#123;&#125;,</span><br><span class="line">    nextSibling() &#123;&#125;,</span><br><span class="line">    querySelector() &#123;&#125;,</span><br><span class="line">    setScopeId() &#123;&#125;,</span><br><span class="line">    cloneNode() &#123;&#125;,</span><br><span class="line">    insertStaticContent() &#123;&#125;,</span><br><span class="line">    patchProp() &#123;&#125;,</span><br><span class="line">    forcePatchProp() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> myRenderer</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ensureMyRenderer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> myRenderer || (myRenderer = createRenderer(options))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createMyRendererApp</span>(<span class="params">...args</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> app = ensureMyRenderer().createApp(...args)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重写mount</span></span><br><span class="line">    <span class="keyword">const</span> &#123; mount &#125; = app</span><br><span class="line">    app.mount = <span class="function">(<span class="params">containerOrSelector</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ..</span></span><br><span class="line">        <span class="keyword">const</span> proxy = mount(container)</span><br><span class="line">        <span class="keyword">return</span> proxy</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">createMyRendererApp(h(<span class="xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span>), 'app')</span></span><br></pre></td></tr></table></figure>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -184,25 +247,95 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">博客搭建</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
         		</li>
       		
 		</ul>
 	</div>
 
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/23/为Hexo-Yilia的博客上添加livere-来必利-作为评论支持/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://colgin.com/2020/11/14/vue3-renderer/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2020/07/24/chunk-bundle-module-in-webpack/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">webpack 中的contenthash与chunkhash</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -217,80 +350,51 @@
         </div>
         
         
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-我的个人博客终于搭建好了···（撒花）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/17/我的个人博客终于搭建好了···（撒花）/">我的个人博客终于搭建好了···（撒花）</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/17/我的个人博客终于搭建好了···（撒花）/" class="archive-article-date">
-  	<time datetime="2017-07-17T08:35:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>欢迎进入我的个人博客。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/17/我的个人博客终于搭建好了···（撒花）/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    目录，不存在的…
+                    </div>
+                </span>
             </div>
         </div>
         
-        
     </div>
 </aside>
 
 
 
+  
+  
+  
+
+  
 
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
-    </nav>
+      <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+
+<script>
+    var gitalk = new Gitalk({
+      clientID: '7aa700b9248340fcb8bc',
+      clientSecret: '029ba4d6274c2b8b9fcabe5b8b5d1c0bcd21c7h04',
+      repo: 'colgin.github.io',
+      owner: 'colgin',
+      admin: ['colgin'],
+      id: md5(window.location.pathname),
+      distractionFreeMode: true
+  })
+
+    gitalk.render('gitalk-container')
+</script>
+
   
 
 
@@ -313,8 +417,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
