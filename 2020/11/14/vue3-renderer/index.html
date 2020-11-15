@@ -212,7 +212,7 @@
 <li>如何实现一个渲染器</li>
 </ol>
 <p>根据vue 的api设计，我们只需要传入一组 操作原生 内容的api，就可以得到一个针对特定平台的渲染器</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createRenderer, h &#125; <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="comment">// 参考runtime-dom/src/nodeOps.ts</span></span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">    insert() &#123;&#125;,</span><br><span class="line">    remove() &#123;&#125;,</span><br><span class="line">    createElement() &#123;&#125;,</span><br><span class="line">    createText() &#123;&#125;,</span><br><span class="line">    createComment() &#123;&#125;,</span><br><span class="line">    setText() &#123;&#125;,</span><br><span class="line">    setElementText() &#123;&#125;,</span><br><span class="line">    parentNode() &#123;&#125;,</span><br><span class="line">    nextSibling() &#123;&#125;,</span><br><span class="line">    querySelector() &#123;&#125;,</span><br><span class="line">    setScopeId() &#123;&#125;,</span><br><span class="line">    cloneNode() &#123;&#125;,</span><br><span class="line">    insertStaticContent() &#123;&#125;,</span><br><span class="line">    patchProp() &#123;&#125;,</span><br><span class="line">    forcePatchProp() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> myRenderer</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ensureMyRenderer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> myRenderer || (myRenderer = createRenderer(options))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createMyRendererApp</span>(<span class="params">...args</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> app = ensureMyRenderer().createApp(...args)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重写mount</span></span><br><span class="line">    <span class="keyword">const</span> &#123; mount &#125; = app</span><br><span class="line">    app.mount = <span class="function">(<span class="params">containerOrSelector</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ..</span></span><br><span class="line">        <span class="keyword">const</span> proxy = mount(container)</span><br><span class="line">        <span class="keyword">return</span> proxy</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">createMyRendererApp(h(<span class="xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span>), 'app')</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createRenderer, h &#125; <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="comment">// 参考runtime-dom/src/nodeOps.ts</span></span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">    insert() &#123;&#125;,</span><br><span class="line">    remove() &#123;&#125;,</span><br><span class="line">    createElement() &#123;&#125;,</span><br><span class="line">    createText() &#123;&#125;,</span><br><span class="line">    createComment() &#123;&#125;,</span><br><span class="line">    setText() &#123;&#125;,</span><br><span class="line">    setElementText() &#123;&#125;,</span><br><span class="line">    parentNode() &#123;&#125;,</span><br><span class="line">    nextSibling() &#123;&#125;,</span><br><span class="line">    querySelector() &#123;&#125;,</span><br><span class="line">    setScopeId() &#123;&#125;,</span><br><span class="line">    cloneNode() &#123;&#125;,</span><br><span class="line">    insertStaticContent() &#123;&#125;,</span><br><span class="line">    patchProp() &#123;&#125;,</span><br><span class="line">    forcePatchProp() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> myRenderer</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ensureMyRenderer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> myRenderer || (myRenderer = createRenderer(options))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createMyRendererApp</span>(<span class="params">...args</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> app = ensureMyRenderer().createApp(...args)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重写mount</span></span><br><span class="line">    <span class="keyword">const</span> &#123; mount &#125; = app</span><br><span class="line">    app.mount = <span class="function">(<span class="params">containerOrSelector</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ..</span></span><br><span class="line">        <span class="keyword">const</span> proxy = mount(container)</span><br><span class="line">        <span class="keyword">return</span> proxy</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">createMyRendererApp(h(&lt;App /&gt;), 'app')</span><br></pre></td></tr></table></figure>
 
       
 
@@ -383,10 +383,10 @@
 
 <script>
     var gitalk = new Gitalk({
-      clientID: '7aa700b9248340fcb8bc',
-      clientSecret: '029ba4d6274c2b8b9fcabe5b8b5d1c0bcd21c7h04',
+      clientID: 'a95b74318f4522128abf',
+      clientSecret: '5fb7f1cb62419a8fe164e75e4bf37d4aa2b307b3',
       repo: 'colgin.github.io',
-      owner: 'colgin',
+      owner: 'undefined',
       admin: ['colgin'],
       id: md5(window.location.pathname),
       distractionFreeMode: true
@@ -504,14 +504,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">package.json</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Promise</a>
               </li>
              
@@ -520,15 +512,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vue</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">博客搭建</a>
+                <a href="javascript:void(0)" class="js-tag color3">package.json</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">工程化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">博客搭建</a>
               </li>
              
               <li class="article-tag-list-item">
