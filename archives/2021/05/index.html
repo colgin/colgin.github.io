@@ -6,20 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://colgin.com">
-  <title>异步编程 | colgin&#39;s Blogs</title>
+  <title>Archives: 2021/5 | colgin&#39;s Blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
-<meta name="keywords" content="Node,JavaScript">
-<meta property="og:type" content="article">
-<meta property="og:title" content="异步编程">
-<meta property="og:url" content="http://colgin.com/2017/11/18/异步编程/index.html">
+  <meta name="description" content="个人博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="colgin&#39;s Blogs">
+<meta property="og:url" content="http://colgin.com/archives/2021/05/index.html">
 <meta property="og:site_name" content="colgin&#39;s Blogs">
-<meta property="og:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
+<meta property="og:description" content="个人博客">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-30T03:27:00.767Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="异步编程">
-<meta name="twitter:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
+<meta name="twitter:title" content="colgin&#39;s Blogs">
+<meta name="twitter:description" content="个人博客">
   
     <link rel="alternative" href="/atom.xml" title="colgin&#39;s Blogs" type="application/atom+xml">
   
@@ -147,90 +145,40 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-异步编程" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      异步编程
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2021" class="archive-year">2021</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2021/05/15/promise-wrapper/" class="archive-article-date">
+  	<time datetime="2021-05-15T07:51:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-15</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2021/05/15/promise-wrapper/">Promise的二次封装</a>
     </h1>
   
 
-        
-        <a href="/2017/11/18/异步编程/" class="archive-article-date">
-  	<time datetime="2017-11-18T08:11:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li><h2 id="函数式编程"><a href="#函数式编程" class="headerlink" title="函数式编程"></a>函数式编程</h2><ul>
-<li>高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回</li>
-<li>偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法<a id="more"></a>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isType = <span class="function"><span class="keyword">function</span>(<span class="params">type</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.call(obj) === [<span class="string">'Object'</span> + type]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>由上诉代码可知，这种通过指定部分参数来产生一个新的定制函数的形式就是偏函数。这样就不用挨个去实现isFunction()、isString()这样的函数，只需要在isType函数传入参数即可得到定制函数</p>
-<h2 id="异步编程的优势和难点"><a href="#异步编程的优势和难点" class="headerlink" title="异步编程的优势和难点"></a>异步编程的优势和难点</h2><h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><p>利用事件循环的方式，JavaScript线程像一个分配任务和处理结果的大管家，I/O线程池里的各个I/O线程都是小二，负责兢兢业业地完成分配来的工作，小二与管家互不依赖，所以可以保持整体的高效率。这个模型的缺点在于管家无法承担过多的细节性任务，如果承担过多，则会影响到任务的分配和调度，管家忙个不停，小二却没有活干，这样效率就会降低。Node是为了解决编程模型中阻塞I/O的性能问题的，采用了单线程模型，这导致Node更新一个处理I/O密集问题的能手，cpu密集型则取决于管家能耐。由于海量请求同时作用在单线程上，需要防止任何计算耗费过多的cpu时间片。所以无论是I/O密集型还是计算密集型，只要计算不影响异步I/O的调度，都不会有问题。所以可以将海量计算分解为诸多小量计算，通过setImmediate()进行调度。</p>
-<h3 id="难点"><a href="#难点" class="headerlink" title="难点"></a>难点</h3><ul>
-<li>异常处理:不能像同步代码那样使用try…catch，因为异步I/O分为两步，提交请求，和处理结果。try…catch只能捕获提交请求这个阶段的错误（只能捕捉当前这个事件循环的错误），因为处理结果（回调函数的执行）是在下一个事件循环才会执行，try…catch捕捉不到callback执行时抛出的异常。<blockquote>
-<p>在Node中，我们在处理异常时形成了一种规定，会将异常放在回调的一个实参传递，如果不为空，则说明有异常。</p>
-</blockquote>
-</li>
-<li>函数嵌套过深：多个异步调用</li>
-<li>多线程编程：单线程无法高效利用多核cpu的服务器，因为单个Node进程实质上没有充分利用多核cpu。web workers。</li>
-</ul>
-<h3 id="异步编程解决方案"><a href="#异步编程解决方案" class="headerlink" title="异步编程解决方案"></a>异步编程解决方案</h3><h4 id="事件发布-订阅模式"><a href="#事件发布-订阅模式" class="headerlink" title="事件发布/订阅模式"></a>事件发布/订阅模式</h4><p>依赖于Node自身提供的event模块，回调函数事件化。Node对事件的发布订阅机制做了一些小的限制。比如说对一个事件添加的侦听器不能超过10个（这个限制也可以自己修改）为了防止内存泄漏以及过多占用cpu</p>
-<h4 id="Promise-Deferred模式"><a href="#Promise-Deferred模式" class="headerlink" title="Promise/Deferred模式"></a>Promise/Deferred模式</h4><p>这种模式可以先执行异步调用，延迟传递处理函数。这种方式比预先传入回调更好看一些。在原始API里一个事件只能处理一个回调，而通过deferred对象，可以对事件加入任意的业务处理逻辑。CommonJS的Promise/A就是这种模式的一种实现。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$.<span class="keyword">get</span>('/api)</span><br><span class="line"> .success(onSuccess)</span><br><span class="line"> .error(onErroe)</span><br><span class="line"> .complete(onComplete)</span><br></pre></td></tr></table></figure>
-<h4 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h4><h5 id="async"><a href="#async" class="headerlink" title="async"></a>async</h5><ul>
-<li>async.series()：异步的串行执行</li>
-<li>async.parallel()：异步的并行执行</li>
-<li>async.waterfall()：异步调用的依赖处理</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Node</a>
-        		</li>
-      		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
         		</li>
@@ -238,158 +186,30 @@
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/Node/" class="article-tag-list-link color5">Node</a>
+        			<a href="/categories/JavaScript/" class="article-tag-list-link color1">JavaScript</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://colgin.com/2017/11/18/异步编程/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2017/11/22/你真的了解JavaScript中的异步吗/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          你真的了解JavaScript中的异步吗
-        
-      </div>
-    </a>
   
   
-    <a href="/2017/11/17/NodeJS异步IO/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">NodeJS异步IO</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#函数式编程"><span class="toc-number">1.</span> <span class="toc-text">函数式编程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#异步编程的优势和难点"><span class="toc-number">2.</span> <span class="toc-text">异步编程的优势和难点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#优势"><span class="toc-number">2.1.</span> <span class="toc-text">优势</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#难点"><span class="toc-number">2.2.</span> <span class="toc-text">难点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#异步编程解决方案"><span class="toc-number">2.3.</span> <span class="toc-text">异步编程解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#事件发布-订阅模式"><span class="toc-number">2.3.1.</span> <span class="toc-text">事件发布/订阅模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Promise-Deferred模式"><span class="toc-number">2.3.2.</span> <span class="toc-text">Promise/Deferred模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#流程控制"><span class="toc-number">2.3.3.</span> <span class="toc-text">流程控制</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#async"><span class="toc-number">2.3.3.1.</span> <span class="toc-text">async</span></a></li></ol></li></ol></li></ol></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-  
-      <div id="gitalk-container"></div>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
-
-<script>
-    var gitalk = new Gitalk({
-      clientID: 'a95b74318f4522128abf',
-      clientSecret: '5fb7f1cb62419a8fe164e75e4bf37d4aa2b307b3',
-      repo: 'colgin.github.io',
-      owner: 'colgin',
-      admin: ['colgin'],
-      id: md5(window.location.pathname),
-      distractionFreeMode: true
-  })
-
-    gitalk.render('gitalk-container')
-</script>
-
-  
+    
 
 
           </div>
@@ -412,8 +232,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

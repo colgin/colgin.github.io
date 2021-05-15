@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://colgin.com">
-  <title>异步编程 | colgin&#39;s Blogs</title>
+  <title>Promise的二次封装 | colgin&#39;s Blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
-<meta name="keywords" content="Node,JavaScript">
+  <meta name="description" content="看到标题，很多人要说了，Promise 不就原生支持的 Promise 嘛，还有啥好封装的？或者说你要封装Promise还不如直接使用 async , await 不就行了。如果你是这么想的，那么请继续阅读下去。">
+<meta name="keywords" content="JavaScript">
 <meta property="og:type" content="article">
-<meta property="og:title" content="异步编程">
-<meta property="og:url" content="http://colgin.com/2017/11/18/异步编程/index.html">
+<meta property="og:title" content="Promise的二次封装">
+<meta property="og:url" content="http://colgin.com/2021/05/15/promise-wrapper/index.html">
 <meta property="og:site_name" content="colgin&#39;s Blogs">
-<meta property="og:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
+<meta property="og:description" content="看到标题，很多人要说了，Promise 不就原生支持的 Promise 嘛，还有啥好封装的？或者说你要封装Promise还不如直接使用 async , await 不就行了。如果你是这么想的，那么请继续阅读下去。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-30T03:27:00.767Z">
+<meta property="og:updated_time" content="2021-05-15T15:49:21.356Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="异步编程">
-<meta name="twitter:description" content="函数式编程 高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回 偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法">
+<meta name="twitter:title" content="Promise的二次封装">
+<meta name="twitter:description" content="看到标题，很多人要说了，Promise 不就原生支持的 Promise 嘛，还有啥好封装的？或者说你要封装Promise还不如直接使用 async , await 不就行了。如果你是这么想的，那么请继续阅读下去。">
   
     <link rel="alternative" href="/atom.xml" title="colgin&#39;s Blogs" type="application/atom+xml">
   
@@ -147,53 +147,52 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-异步编程" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-promise-wrapper" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      异步编程
+      Promise的二次封装
     </h1>
   
 
         
-        <a href="/2017/11/18/异步编程/" class="archive-article-date">
-  	<time datetime="2017-11-18T08:11:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-18</time>
+        <a href="/2021/05/15/promise-wrapper/" class="archive-article-date">
+  	<time datetime="2021-05-15T07:51:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-15</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <ul>
-<li><h2 id="函数式编程"><a href="#函数式编程" class="headerlink" title="函数式编程"></a>函数式编程</h2><ul>
-<li>高阶函数：JavaScript中函数式一等公民，可以作为参数传递，或者作为返回值返回</li>
-<li>偏函数：指创建一个调用另一个部分-参数或变量已经预置的函数-的函数的用法<a id="more"></a>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isType = <span class="function"><span class="keyword">function</span>(<span class="params">type</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.call(obj) === [<span class="string">'Object'</span> + type]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>由上诉代码可知，这种通过指定部分参数来产生一个新的定制函数的形式就是偏函数。这样就不用挨个去实现isFunction()、isString()这样的函数，只需要在isType函数传入参数即可得到定制函数</p>
-<h2 id="异步编程的优势和难点"><a href="#异步编程的优势和难点" class="headerlink" title="异步编程的优势和难点"></a>异步编程的优势和难点</h2><h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><p>利用事件循环的方式，JavaScript线程像一个分配任务和处理结果的大管家，I/O线程池里的各个I/O线程都是小二，负责兢兢业业地完成分配来的工作，小二与管家互不依赖，所以可以保持整体的高效率。这个模型的缺点在于管家无法承担过多的细节性任务，如果承担过多，则会影响到任务的分配和调度，管家忙个不停，小二却没有活干，这样效率就会降低。Node是为了解决编程模型中阻塞I/O的性能问题的，采用了单线程模型，这导致Node更新一个处理I/O密集问题的能手，cpu密集型则取决于管家能耐。由于海量请求同时作用在单线程上，需要防止任何计算耗费过多的cpu时间片。所以无论是I/O密集型还是计算密集型，只要计算不影响异步I/O的调度，都不会有问题。所以可以将海量计算分解为诸多小量计算，通过setImmediate()进行调度。</p>
-<h3 id="难点"><a href="#难点" class="headerlink" title="难点"></a>难点</h3><ul>
-<li>异常处理:不能像同步代码那样使用try…catch，因为异步I/O分为两步，提交请求，和处理结果。try…catch只能捕获提交请求这个阶段的错误（只能捕捉当前这个事件循环的错误），因为处理结果（回调函数的执行）是在下一个事件循环才会执行，try…catch捕捉不到callback执行时抛出的异常。<blockquote>
-<p>在Node中，我们在处理异常时形成了一种规定，会将异常放在回调的一个实参传递，如果不为空，则说明有异常。</p>
-</blockquote>
-</li>
-<li>函数嵌套过深：多个异步调用</li>
-<li>多线程编程：单线程无法高效利用多核cpu的服务器，因为单个Node进程实质上没有充分利用多核cpu。web workers。</li>
-</ul>
-<h3 id="异步编程解决方案"><a href="#异步编程解决方案" class="headerlink" title="异步编程解决方案"></a>异步编程解决方案</h3><h4 id="事件发布-订阅模式"><a href="#事件发布-订阅模式" class="headerlink" title="事件发布/订阅模式"></a>事件发布/订阅模式</h4><p>依赖于Node自身提供的event模块，回调函数事件化。Node对事件的发布订阅机制做了一些小的限制。比如说对一个事件添加的侦听器不能超过10个（这个限制也可以自己修改）为了防止内存泄漏以及过多占用cpu</p>
-<h4 id="Promise-Deferred模式"><a href="#Promise-Deferred模式" class="headerlink" title="Promise/Deferred模式"></a>Promise/Deferred模式</h4><p>这种模式可以先执行异步调用，延迟传递处理函数。这种方式比预先传入回调更好看一些。在原始API里一个事件只能处理一个回调，而通过deferred对象，可以对事件加入任意的业务处理逻辑。CommonJS的Promise/A就是这种模式的一种实现。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$.<span class="keyword">get</span>('/api)</span><br><span class="line"> .success(onSuccess)</span><br><span class="line"> .error(onErroe)</span><br><span class="line"> .complete(onComplete)</span><br></pre></td></tr></table></figure>
-<h4 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h4><h5 id="async"><a href="#async" class="headerlink" title="async"></a>async</h5><ul>
-<li>async.series()：异步的串行执行</li>
-<li>async.parallel()：异步的并行执行</li>
-<li>async.waterfall()：异步调用的依赖处理</li>
-</ul>
-</li>
-</ul>
+        <p>看到标题，很多人要说了，<code>Promise</code> 不就原生支持的 <code>Promise</code> 嘛，还有啥好封装的？或者说你要封装<code>Promise</code>还不如直接使用 async , await 不就行了。如果你是这么想的，那么请继续阅读下去。 <a id="more"></a></p>
+<p>笔者最近在设计 API 的时候，遇到这么一个很常见的场景。需要通过传入一个外部函数来控制代码的执行流程，比如在文件 上传之前，调用传入的函数来检查文件是否符合要求，只有符合要求的情况才会上传，否则就会中断。这个函数可能是异步的，也可能是是同步的，只有当结果是 <code>Promise.reolve(true)</code>或者 <code>true</code>的时候，才算符合要求。不符合要求的时候要提示一下，而且文件上传错误的时候也要提示。</p>
+<p>如果使用 Promise，实现代码可能如下</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> BeforeUpload = <span class="function">(<span class="params">f: File</span>) =&gt;</span> <span class="built_in">Promise</span>&lt;<span class="built_in">boolean</span>&gt; | <span class="built_in">boolean</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> before: BeforeUpload = <span class="function"><span class="keyword">function</span> <span class="title">upload</span>(<span class="params">file: File</span>) </span>&#123; <span class="comment">// 用户传入的函数</span></span><br><span class="line">  <span class="keyword">const</span> beforeResult = before(file)</span><br><span class="line">  <span class="keyword">const</span> beforePromise =</span><br><span class="line">    <span class="keyword">typeof</span> beforeResult === <span class="string">'boolean'</span></span><br><span class="line">      ? <span class="built_in">Promise</span>.resolve(beforeResult)</span><br><span class="line">      : beforeResult</span><br><span class="line"></span><br><span class="line">  beforePromise</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// true</span></span><br><span class="line">      <span class="keyword">if</span> (res) &#123;</span><br><span class="line">        <span class="keyword">await</span> uploadFile(file)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        toaster.warning(<span class="string">'文件不符合要求'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(<span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// beforePromise如果直接是 reject的话，这里不好区分 upload报错还是 beforePromise校验报错。</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到由于函数执行的结果类型不一样，需要将函数执行的结果转换为 <code>Promise</code>，这里会有一点啰嗦。</p>
+<p>而且，我们需要将 校验报错和上传报错区分开，上面的写法就不是很好了。可以在上面的基础上进行一些小修改，代码如下</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">upload</span>(<span class="params">file: File</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> beforeResult = before(file)</span><br><span class="line">  <span class="keyword">const</span> beforePromise =</span><br><span class="line">    <span class="keyword">typeof</span> beforeResult === <span class="string">'boolean'</span></span><br><span class="line">      ? <span class="built_in">Promise</span>.resolve(beforeResult)</span><br><span class="line">      : beforeResult</span><br><span class="line"></span><br><span class="line">  beforePromise</span><br><span class="line">    .then(</span><br><span class="line">      (res) =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (res) &#123;</span><br><span class="line">          <span class="keyword">await</span> uploadFile(file)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          toaster.warning(<span class="string">'文件不符合要求'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      (err) =&gt; &#123;</span><br><span class="line">        toaster.warning(<span class="string">'文件不符合要求'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    )</span><br><span class="line">    .catch(<span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">      toaster.warning(<span class="string">'上传出错'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>是可以达到目的，但是代码就很割裂，文件不符合要求的提示重复出现（当然这个和前面提到的需求相关，不过不妨碍，请继续阅读）</p>
+<p>接下来我们使用 async, await 来处理，由于校验和上传二者个错误需要分开处理，这里需要两个 try..catch</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">upload</span>(<span class="params">file: File</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> beforeResult = <span class="keyword">await</span> before(file)</span><br><span class="line">    <span class="keyword">if</span> (!beforeResult) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">    toaster.warning(<span class="string">'文件不符合要求'</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">await</span> uploadFile(file)</span><br><span class="line">  &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">    toaster.warning(<span class="string">'文件上传出错'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>async, await 能够处理这种情况，但是由于需要处理两种不同类型的报错，我们需要写两个 try … catch 来辨别不同的错误（这里不知有没有更优的方案），其实这里还可以将上传错误定一一个新的错误类型，使用一个 try…catch，在 catch 中根绝 Error 类型就知道是什么原因的报错，但是这里也不太好做。</p>
+<p>async, await + try … catch 再带来优秀的代码书写体验的同时，也让代码变得非常不好看，try … catch 让代码都往里缩进了。而且 async, await 目前还是要借助 babel/regenerator 来兼容不支持 此特性的浏览器，这是有额外的运行时成本。这也是笔者不那么喜欢 async, await 的原因。当然不得不承认 async，await 处理异步逻辑确实比 <code>Promise</code>直观。</p>
+<p>那有没有什么方法能够将二者的特性兼而有之呢？在笔者的探索过程中，go 语言的错误处理让笔者眼前一亮。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">i, err := strconv.ParseInt(<span class="string">"123"</span>, <span class="number">10</span>, <span class="number">32</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="built_in">panic</span>(err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种出现错误，就要求及时处理的 api 设计不就能够符合我们的需求吗？</p>
+<p>我们需要一个 promiseWrapper 来对一个 promise 对象进行包装，让它的结果和错误以 tuple 的形式返回。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">promiseWrapper</span>(<span class="params">p: <span class="built_in">Promise</span>&lt;<span class="built_in">any</span>&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> p.then(<span class="function">(<span class="params">data</span>) =&gt;</span> [data, <span class="literal">null</span>]).catch(<span class="function">(<span class="params">err</span>) =&gt;</span> [<span class="literal">null</span>, err])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里最简单的一种形式，当然我们希望这个函数不仅仅可以接受 Promise 对象，还可接受普通对象, 只需要稍加修改</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MaybePromise&lt;T&gt; = <span class="built_in">Promise</span>&lt;T&gt; | T</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isPromise</span>(<span class="params">value: <span class="built_in">any</span></span>): <span class="title">value</span> <span class="title">is</span> <span class="title">Promise</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.call(value) === <span class="string">'[object Promise]'</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">promiseWrapper</span>&lt;<span class="title">T</span>&gt;(<span class="params">p: MaybePromise&lt;T&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (isPromise(p) ? p : <span class="built_in">Promise</span>.resolve(p))</span><br><span class="line">    .then(<span class="function">(<span class="params">data</span>) =&gt;</span> [data, <span class="literal">null</span>])</span><br><span class="line">    .catch(<span class="function">(<span class="params">err</span>) =&gt;</span> [<span class="literal">null</span>, err])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再回到之前的问题，再用 promisewrapper 来实现一下</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">upload</span>(<span class="params">file: File</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [beforeResult, beforeErr] = <span class="keyword">await</span> promiseWrapper((before(file))</span><br><span class="line">  <span class="keyword">if</span> (!beforeResult || beforeErr) &#123;</span><br><span class="line">    toaster.warning(<span class="string">'文件不符合要求'</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> [_, uploadErr] = <span class="keyword">await</span> promiseWrapper(uploadFile(file))</span><br><span class="line">  <span class="keyword">if</span> (uploadErr) &#123;</span><br><span class="line">    toaster.warning(<span class="string">'文件上传出错'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码是不是简洁干净了很多呢？</p>
+<p>如果有多个异步过程并行怎么办？先使用 Promise.all 返回一个 promise 然后丢给 promiseWrapper</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> files = [file1, file2, file3]</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">upload</span>(<span class="params">file: File</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [beforeResult, beforeErr] = <span class="keyword">await</span> promiseWrapper(<span class="built_in">Promise</span>.all(files.map(before)))</span><br><span class="line">  <span class="keyword">if</span> (!beforeResult.every(<span class="built_in">Boolean</span>) || beforeErr)</span><br><span class="line">    toaster.warning(<span class="string">'文件不符合要求'</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> [_, uploadErr] = <span class="keyword">await</span> promiseWrapper(<span class="built_in">Promise</span>.all(files.map(uploadFile)))</span><br><span class="line">  <span class="keyword">if</span> (uploadErr) &#123;</span><br><span class="line">    toaster.warning(<span class="string">'文件上传出错'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意：上面代码表示所有的文件校验成功才会继续上传，只是为了举例，并不一定符合生产要求。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>可以看到，通过我们封装的 promiseWrapper 函数，在处理异步的时候相对于 原生 try…catch 来说，还是提供了一个新的思路，至于编码风格，就萝卜青菜，各有所爱了。</p>
 
       
 
@@ -228,10 +227,6 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Node</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
         		</li>
       		
@@ -244,7 +239,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/Node/" class="article-tag-list-link color5">Node</a>
+        			<a href="/categories/JavaScript/" class="article-tag-list-link color1">JavaScript</a>
         		</li>
       		
 		</ul>
@@ -299,7 +294,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://colgin.com/2017/11/18/异步编程/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://colgin.com/2021/05/15/promise-wrapper/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -313,18 +308,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/11/22/你真的了解JavaScript中的异步吗/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          你真的了解JavaScript中的异步吗
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/11/17/NodeJS异步IO/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">NodeJS异步IO</div>
+    <a href="/2021/03/07/component-update-in-vue3/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vue3中的shouldComponentUpdate</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -351,7 +337,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#函数式编程"><span class="toc-number">1.</span> <span class="toc-text">函数式编程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#异步编程的优势和难点"><span class="toc-number">2.</span> <span class="toc-text">异步编程的优势和难点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#优势"><span class="toc-number">2.1.</span> <span class="toc-text">优势</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#难点"><span class="toc-number">2.2.</span> <span class="toc-text">难点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#异步编程解决方案"><span class="toc-number">2.3.</span> <span class="toc-text">异步编程解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#事件发布-订阅模式"><span class="toc-number">2.3.1.</span> <span class="toc-text">事件发布/订阅模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Promise-Deferred模式"><span class="toc-number">2.3.2.</span> <span class="toc-text">Promise/Deferred模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#流程控制"><span class="toc-number">2.3.3.</span> <span class="toc-text">流程控制</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#async"><span class="toc-number">2.3.3.1.</span> <span class="toc-text">async</span></a></li></ol></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">1.</span> <span class="toc-text">结论</span></a></li></ol>
                     </div>
                 </span>
             </div>
