@@ -6,18 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://colgin.com">
-  <title>Tag: webpack | colgin&#39;s Blogs</title>
+  <title>从stackblitz看security | colgin&#39;s Blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="个人博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="colgin&#39;s Blogs">
-<meta property="og:url" content="http://colgin.com/tags/webpack/index.html">
+  <meta name="description" content="最近stackblitz 提的WebContainers 着实在技术圈里火了一把，总结下来就是，这是一个在线的编辑器，WebContainers 技术可以做到在浏览器端执行node，可以直接利用Chrome DevTools调试，启动也比在本地快。stackblitz和code sandbox 这种编辑器的区别在于，stackblitz的代码执行全是离线的，而codesandbox则是将代码跑在一">
+<meta name="keywords" content="Node">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从stackblitz看security">
+<meta property="og:url" content="http://colgin.com/2021/05/28/security-in-language/index.html">
 <meta property="og:site_name" content="colgin&#39;s Blogs">
-<meta property="og:description" content="个人博客">
+<meta property="og:description" content="最近stackblitz 提的WebContainers 着实在技术圈里火了一把，总结下来就是，这是一个在线的编辑器，WebContainers 技术可以做到在浏览器端执行node，可以直接利用Chrome DevTools调试，启动也比在本地快。stackblitz和code sandbox 这种编辑器的区别在于，stackblitz的代码执行全是离线的，而codesandbox则是将代码跑在一">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.loli.net/2021/05/28/OqIge5XPux4arok.png">
+<meta property="og:image" content="https://i.loli.net/2021/05/28/HcEg1okVKdX9PfR.png">
+<meta property="og:updated_time" content="2021-05-27T17:00:56.287Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="colgin&#39;s Blogs">
-<meta name="twitter:description" content="个人博客">
+<meta name="twitter:title" content="从stackblitz看security">
+<meta name="twitter:description" content="最近stackblitz 提的WebContainers 着实在技术圈里火了一把，总结下来就是，这是一个在线的编辑器，WebContainers 技术可以做到在浏览器端执行node，可以直接利用Chrome DevTools调试，启动也比在本地快。stackblitz和code sandbox 这种编辑器的区别在于，stackblitz的代码执行全是离线的，而codesandbox则是将代码跑在一">
+<meta name="twitter:image" content="https://i.loli.net/2021/05/28/OqIge5XPux4arok.png">
   
     <link rel="alternative" href="/atom.xml" title="colgin&#39;s Blogs" type="application/atom+xml">
   
@@ -145,75 +150,218 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-security-in-language" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/24/chunk-bundle-module-in-webpack/" class="archive-article-date">
-  	<time datetime="2020-07-23T17:02:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-24</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/24/chunk-bundle-module-in-webpack/">webpack 中的contenthash与chunkhash</a>
+    <h1 class="article-title" itemprop="name">
+      从stackblitz看security
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2021/05/28/security-in-language/" class="archive-article-date">
+  	<time datetime="2021-05-27T16:20:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近stackblitz 提的<a href="https://blog.stackblitz.com/posts/introducing-webcontainers/" target="_blank" rel="noopener">WebContainers</a> 着实在技术圈里火了一把，总结下来就是，这是一个在线的编辑器，WebContainers 技术可以做到在浏览器端执行node，可以直接利用Chrome DevTools调试，启动也比在本地快。stackblitz和code sandbox 这种编辑器的区别在于，stackblitz的代码执行全是离线的，而codesandbox则是将代码跑在一个remote server上然后将结果返回回来。<a id="more"></a></p>
+<p>stackblitz这个功能配合PWA，完全可以离线使用。可以用来学习各种前端框架，后端SSR框架，Node。看起来还是很不错的。</p>
+<p>在stackblitz的博客中说到 它的一个特性是 “secure by default”。 因为代码的执行全是在浏览器的sandbox中，所以是更加安全的。看到这里，笔者就在思考语言的安全到底是什么意思？一般可以通过什么方式去是实现呢？</p>
+<p>之后，想起ry 曾经的演讲 <a href="https://www.youtube.com/watch?v=M3BM9TB-8yA" target="_blank" rel="noopener">我对Node.js遗憾的十件事</a></p>
+<p><img src="https://i.loli.net/2021/05/28/OqIge5XPux4arok.png" alt="截屏2021-05-28 上午12.49.36.png"></p>
+<p>根据ry的说法，node可以随意调用system call，可以访问系统的文件，这在机器上可能会有 安全问题。你无法控制node不让其访问某些文件（这可以通过类似于docker这样的容器来实现隔离？）。ry在介绍deno的时候，谈到deno如何修复这个问题的</p>
+<p><img src="https://i.loli.net/2021/05/28/HcEg1okVKdX9PfR.png" alt="security in deno"></p>
+<p>通过一些flag可以控制运行时的权限从而保证security。</p>
+<p>另外，常常听到rust说自己是一门安全的语言，是不是也是想表达类似的意思呢？由于笔者在这方面没什么研究，所以这个问题就先搁置了。。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">webpack</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Node</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/JavaScript/" class="article-tag-list-link color1">JavaScript</a>
+        			<a href="/categories/思考/" class="article-tag-list-link color3">思考</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://colgin.com/2021/05/28/security-in-language/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2021/05/15/promise-wrapper/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Promise的二次封装</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    目录，不存在的…
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+  
+      <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+
+<script>
+    var gitalk = new Gitalk({
+      clientID: 'a95b74318f4522128abf',
+      clientSecret: '5fb7f1cb62419a8fe164e75e4bf37d4aa2b307b3',
+      repo: 'colgin.github.io',
+      owner: 'colgin',
+      admin: ['colgin'],
+      id: md5(window.location.pathname),
+      distractionFreeMode: true
+  })
+
+    gitalk.render('gitalk-container')
+</script>
+
+  
 
 
           </div>
@@ -236,9 +384,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
