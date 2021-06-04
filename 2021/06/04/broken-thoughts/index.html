@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://colgin.com">
-  <title>Category: 思考 | colgin&#39;s Blogs</title>
+  <title>broken_thoughts | colgin&#39;s Blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="个人博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="colgin&#39;s Blogs">
-<meta property="og:url" content="http://colgin.com/categories/思考/index.html">
+  <meta name="description" content="esbuildesbuild 的watch模式实现是一个优化版的轮训。不用os的 fs是因为 portability(这里存疑？) 具体是怎么优化的呢？ Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling sys">
+<meta property="og:type" content="article">
+<meta property="og:title" content="broken_thoughts">
+<meta property="og:url" content="http://colgin.com/2021/06/04/broken-thoughts/index.html">
 <meta property="og:site_name" content="colgin&#39;s Blogs">
-<meta property="og:description" content="个人博客">
+<meta property="og:description" content="esbuildesbuild 的watch模式实现是一个优化版的轮训。不用os的 fs是因为 portability(这里存疑？) 具体是怎么优化的呢？ Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling sys">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-06-04T01:09:28.455Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="colgin&#39;s Blogs">
-<meta name="twitter:description" content="个人博客">
+<meta name="twitter:title" content="broken_thoughts">
+<meta name="twitter:description" content="esbuildesbuild 的watch模式实现是一个优化版的轮训。不用os的 fs是因为 portability(这里存疑？) 具体是怎么优化的呢？ Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling sys">
   
     <link rel="alternative" href="/atom.xml" title="colgin&#39;s Blogs" type="application/atom+xml">
   
@@ -145,71 +146,204 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-broken-thoughts" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/28/security-in-language/" class="archive-article-date">
-  	<time datetime="2021-05-27T16:20:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/28/security-in-language/">从stackblitz看security</a>
+    <h1 class="article-title" itemprop="name">
+      broken_thoughts
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Node</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        <a href="/2021/06/04/broken-thoughts/" class="archive-article-date">
+  	<time datetime="2021-06-04T01:03:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="esbuild"><a href="#esbuild" class="headerlink" title="esbuild"></a>esbuild</h2><p>esbuild 的watch模式实现是一个优化版的轮训。不用os的 fs是因为 portability(这里存疑？)</p>
+<p>具体是怎么优化的呢？</p>
+<p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p>
+<p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change’s path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p>
+<p>每次扫描都只扫描一部分文件，发现变化的文件，之后这个文件的更新 就能被立刻注意到。</p>
+<p>有意思～</p>
 
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/思考/" class="article-tag-list-link color3">思考</a>
+        			<a href="/categories/Note/" class="article-tag-list-link color5">Note</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://colgin.com/2021/06/04/broken-thoughts/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2021/05/28/type-challenges/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">type-challenges</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#esbuild"><span class="toc-number">1.</span> <span class="toc-text">esbuild</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+  
+      <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+
+<script>
+    var gitalk = new Gitalk({
+      clientID: 'a95b74318f4522128abf',
+      clientSecret: '5fb7f1cb62419a8fe164e75e4bf37d4aa2b307b3',
+      repo: 'colgin.github.io',
+      owner: 'colgin',
+      admin: ['colgin'],
+      id: md5(window.location.pathname),
+      distractionFreeMode: true
+  })
+
+    gitalk.render('gitalk-container')
+</script>
+
+  
 
 
           </div>
@@ -232,10 +366,10 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
 		root: "/",

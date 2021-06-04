@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="colgin&#39;s Blogs">
 <meta property="og:description" content="typescript的类型运算能够让我们在写代码时设计出更加完善，健壮的类型。这方面的教程不多，官网文档例子也有限，正好看到 社区中有一个 项目type-challenges ，可以帮助我们学习ts的类型，本文就算是记录针对该教程的一个学习过程吧。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-06-03T15:25:09.268Z">
+<meta property="og:updated_time" content="2021-06-04T15:59:24.705Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="type-challenges">
 <meta name="twitter:description" content="typescript的类型运算能够让我们在写代码时设计出更加完善，健壮的类型。这方面的教程不多，官网文档例子也有限，正好看到 社区中有一个 项目type-challenges ，可以帮助我们学习ts的类型，本文就算是记录针对该教程的一个学习过程吧。">
@@ -341,6 +341,13 @@
 <p>答案</p>
 <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> LengthOfString&lt;S <span class="keyword">extends</span> <span class="built_in">string</span>, T <span class="keyword">extends</span> <span class="built_in">string</span>[] = []&gt;</span><br><span class="line">= S <span class="keyword">extends</span> <span class="string">`<span class="subst">$&#123;string&#125;</span><span class="subst">$&#123;infer R&#125;</span>`</span></span><br><span class="line">  ? LengthOfString&lt;R, [...T, <span class="built_in">string</span>]&gt;</span><br><span class="line">  : T[<span class="string">'length'</span>];</span><br></pre></td></tr></table></figure>
 <p>没写出来，这个实现太秀了。将字符串递归转化为元组，使用递归泛型存储变量。</p>
+<h3 id="Flatten"><a href="#Flatten" class="headerlink" title="Flatten"></a>Flatten</h3><p><a href>题目</a></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> flatten = Flatten&lt;[<span class="number">1</span>, <span class="number">2</span>, [<span class="number">3</span>, <span class="number">4</span>], [[[<span class="number">5</span>]]]&gt;</span><br><span class="line"> <span class="comment">// [1, 2, 3, 4, 5]</span></span><br></pre></td></tr></table></figure>
+<p>答案</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Flatten&lt;K <span class="keyword">extends</span> <span class="built_in">any</span>[]&gt; = K <span class="keyword">extends</span> [infer First, ...infer Rest]</span><br><span class="line">  ? First <span class="keyword">extends</span> <span class="built_in">any</span>[]</span><br><span class="line">    ? [...Flatten&lt;First&gt;, ...Flatten&lt;Rest&gt;]</span><br><span class="line">    : [First, ...Flatten&lt;Rest&gt;]</span><br><span class="line">  : K</span><br></pre></td></tr></table></figure>
+<p>也可以利用泛型变量的递归</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Flatten&lt;K <span class="keyword">extends</span> <span class="built_in">any</span>, T <span class="keyword">extends</span> <span class="built_in">any</span>[] = []&gt; = K <span class="keyword">extends</span> [infer First, ...infer Rest]</span><br><span class="line">  ? First <span class="keyword">extends</span> <span class="built_in">any</span>[]</span><br><span class="line">    ? Flatten&lt;[...First, ...Rest], T&gt;</span><br><span class="line">    : Flatten&lt;Rest, [...T, First]&gt;</span><br><span class="line">  : T</span><br></pre></td></tr></table></figure>
+<p>将结果存到泛型变量上时，只有在符合要求的时候才会往泛型上存。最后将泛型返回。</p>
 
       
 
@@ -460,6 +467,15 @@
   
 <nav id="article-nav">
   
+    <a href="/2021/06/04/broken-thoughts/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          broken_thoughts
+        
+      </div>
+    </a>
+  
   
     <a href="/2021/05/28/security-in-language/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">从stackblitz看security</div>
@@ -489,7 +505,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#实现Pick"><span class="toc-number">1.</span> <span class="toc-text">实现Pick</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#Tuple-to-Object"><span class="toc-number"></span> <span class="toc-text">Tuple to Object</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#First-Of-Array"><span class="toc-number">1.</span> <span class="toc-text">First Of Array</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Length-of-Tuple"><span class="toc-number">2.</span> <span class="toc-text">Length of Tuple</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exclude"><span class="toc-number">3.</span> <span class="toc-text">Exclude</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Awaited"><span class="toc-number">4.</span> <span class="toc-text">Awaited</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#If"><span class="toc-number">5.</span> <span class="toc-text">If</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Concat"><span class="toc-number">6.</span> <span class="toc-text">Concat</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Includes"><span class="toc-number">7.</span> <span class="toc-text">Includes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReturnType"><span class="toc-number">8.</span> <span class="toc-text">ReturnType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现Omit"><span class="toc-number">9.</span> <span class="toc-text">实现Omit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Readonly"><span class="toc-number">10.</span> <span class="toc-text">Readonly</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DeepReadonly"><span class="toc-number">11.</span> <span class="toc-text">DeepReadonly</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tuple-to-Union"><span class="toc-number">12.</span> <span class="toc-text">Tuple to Union</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Chainable-Options"><span class="toc-number">13.</span> <span class="toc-text">Chainable Options</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Last-of-Array"><span class="toc-number">14.</span> <span class="toc-text">Last of Array</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pop"><span class="toc-number">15.</span> <span class="toc-text">Pop</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Type-Lookup"><span class="toc-number">16.</span> <span class="toc-text">Type Lookup</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trim-Left"><span class="toc-number">17.</span> <span class="toc-text">Trim Left</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trim"><span class="toc-number">18.</span> <span class="toc-text">Trim</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Capitalize"><span class="toc-number">19.</span> <span class="toc-text">Capitalize</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Replace"><span class="toc-number">20.</span> <span class="toc-text">Replace</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReplaceAll"><span class="toc-number">21.</span> <span class="toc-text">ReplaceAll</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Append-Argument"><span class="toc-number">22.</span> <span class="toc-text">Append Argument</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Permutation"><span class="toc-number">23.</span> <span class="toc-text">Permutation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Length-of-String"><span class="toc-number">24.</span> <span class="toc-text">Length of String</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#实现Pick"><span class="toc-number">1.</span> <span class="toc-text">实现Pick</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#Tuple-to-Object"><span class="toc-number"></span> <span class="toc-text">Tuple to Object</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#First-Of-Array"><span class="toc-number">1.</span> <span class="toc-text">First Of Array</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Length-of-Tuple"><span class="toc-number">2.</span> <span class="toc-text">Length of Tuple</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exclude"><span class="toc-number">3.</span> <span class="toc-text">Exclude</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Awaited"><span class="toc-number">4.</span> <span class="toc-text">Awaited</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#If"><span class="toc-number">5.</span> <span class="toc-text">If</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Concat"><span class="toc-number">6.</span> <span class="toc-text">Concat</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Includes"><span class="toc-number">7.</span> <span class="toc-text">Includes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReturnType"><span class="toc-number">8.</span> <span class="toc-text">ReturnType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现Omit"><span class="toc-number">9.</span> <span class="toc-text">实现Omit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Readonly"><span class="toc-number">10.</span> <span class="toc-text">Readonly</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DeepReadonly"><span class="toc-number">11.</span> <span class="toc-text">DeepReadonly</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tuple-to-Union"><span class="toc-number">12.</span> <span class="toc-text">Tuple to Union</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Chainable-Options"><span class="toc-number">13.</span> <span class="toc-text">Chainable Options</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Last-of-Array"><span class="toc-number">14.</span> <span class="toc-text">Last of Array</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pop"><span class="toc-number">15.</span> <span class="toc-text">Pop</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Type-Lookup"><span class="toc-number">16.</span> <span class="toc-text">Type Lookup</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trim-Left"><span class="toc-number">17.</span> <span class="toc-text">Trim Left</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trim"><span class="toc-number">18.</span> <span class="toc-text">Trim</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Capitalize"><span class="toc-number">19.</span> <span class="toc-text">Capitalize</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Replace"><span class="toc-number">20.</span> <span class="toc-text">Replace</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReplaceAll"><span class="toc-number">21.</span> <span class="toc-text">ReplaceAll</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Append-Argument"><span class="toc-number">22.</span> <span class="toc-text">Append Argument</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Permutation"><span class="toc-number">23.</span> <span class="toc-text">Permutation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Length-of-String"><span class="toc-number">24.</span> <span class="toc-text">Length of String</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Flatten"><span class="toc-number">25.</span> <span class="toc-text">Flatten</span></a></li></ol>
                     </li></div>
                 </span>
             </div>
@@ -620,19 +636,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Promise</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">异步</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">网络编程</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">安全加密</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Promise</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">异步</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -644,7 +660,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">css-in-js</a>
+                <a href="javascript:void(0)" class="js-tag color5">Vue3</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Source Code</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -652,15 +672,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">css-in-js</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vue</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Vue3</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Source Code</a>
               </li>
              
               <li class="article-tag-list-item">
