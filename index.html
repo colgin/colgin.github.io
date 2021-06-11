@@ -147,6 +147,126 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-renderer" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/06/12/renderer/">renderer</a>
+    </h1>
+  
+
+        
+        <a href="/2021/06/12/renderer/" class="archive-article-date">
+  	<time datetime="2021-06-11T17:40:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>React 和 Vue 都使用vdom 来描述ui，这使得基于他们来实现跨平台就显得十分简单。比如React 使用react-dom将ui渲染到 dom上，使用react-native 将 ui渲染到 android / iOS 这样的原生平台上。Vue2的实现中没有将平台相关的逻辑抽离出来，而Vue3则将平台无关的代码与平台相关的代码彻底分割开了，可以通过自定义渲染器将Vue3 渲染到任意平台。</p>
+<p>Vue的渲染器 设计，可以看以前的<a href="https://colgin.github.io/2020/11/14/vue3-renderer/#more" target="_blank" rel="noopener">文章</a></p>
+<p>React 的渲染器是怎么设计的呢？我们知道 React通过 reconciler 来 决定如何更新host tree，reconciler 决定了是重新生成dom还是在现有内容上做一些修改。</p>
+<p>react-reconciler 有两个工作模式</p>
+<ul>
+<li>mutation mode: 所有的 host instance 都是可以被修改的。react-dom就是这样的</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> view = createView()</span><br><span class="line">updateView(view, &#123; <span class="attr">color</span>: <span class="string">'red'</span> &#125;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>persistent mode: 整个host tree都死 immutable的，重新渲染就是重建一棵树</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">view = createView()</span><br><span class="line">view = cloneView(view, &#123; <span class="attr">color</span>: <span class="string">'red'</span> &#125;)</span><br></pre></td></tr></table></figure>
+<p>一个渲染器包含了两部分内容。</p>
+<ul>
+<li>built-in component: dom 平台的 div, h1, react-native平台的 View, Text</li>
+<li>host config: 与host 相关的一些api，比如创建host instance等</li>
+</ul>
+<p>此处我们仅仅讨论 渲染器的 host config部分。</p>
+<p>在接口上，一个React渲染器只需要实现一个 供 Reconciler 调用的对象接口。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> ReactDOMRenderer = Reconciler(ReactDOMHostConfig)</span><br></pre></td></tr></table></figure>
+<p>这个 ReactDOMHostConfig 就是一系列 与平台相关的 基础接口。在这里<a href="https://github.com/facebook/react/blob/master/packages/react-reconciler/src/forks/ReactFiberHostConfig.custom.js" target="_blank" rel="noopener">react</a>中可以看到完整的。</p>
+<p>比如下面这个例子就实现了一个简单的dom 渲染器</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ReactReconciler <span class="keyword">from</span> <span class="string">'react-reconciler'</span></span><br><span class="line"></span><br><span class="line">ReactReconciler(&#123;</span><br><span class="line">	<span class="comment">// hostConfig</span></span><br><span class="line">	supportsMutation: <span class="literal">true</span>, <span class="comment">// mutation mode</span></span><br><span class="line">	</span><br><span class="line">	createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) &#123;</span><br><span class="line">		<span class="comment">// 这里的type就是原生dom了，组件的处理已经在react 被处理完了</span></span><br><span class="line">		<span class="keyword">const</span> el = <span class="built_in">document</span>.createElement(type)</span><br><span class="line">		<span class="comment">// 简单处理</span></span><br><span class="line">		[<span class="string">'alt'</span>, <span class="string">'className'</span>, <span class="string">'href'</span>, <span class="string">'rel'</span>, <span class="string">'src'</span>, <span class="string">'target'</span>].forEatch(<span class="function"><span class="params">k</span> =&gt;</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> (props[k]) el[k] = props[k]</span><br><span class="line">		&#125;)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (props.onClick) &#123;</span><br><span class="line">			el.addEventListener(<span class="string">'click'</span>, props.onClick)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// react 是平台无关的，这个返回值不是给react使用的，而是给hostConfig其他函数用的</span></span><br><span class="line">		<span class="keyword">return</span> el</span><br><span class="line">	&#125;,</span><br><span class="line">	createTextInstance(text, rootContianerInstance, hostContext, internalInstanceHandle) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">document</span>.createTextNode(text)</span><br><span class="line">	&#125;,</span><br><span class="line"></span><br><span class="line">	apendChildToContainer(container, child) &#123;</span><br><span class="line">		container.appendChild(child)</span><br><span class="line">	&#125;,</span><br><span class="line">	appendChild(container, child) &#123;</span><br><span class="line">		container.appendChild(child)</span><br><span class="line">	&#125;,</span><br><span class="line">	appendInitialChild(container, child) &#123;</span><br><span class="line">		container.appendChild(child)</span><br><span class="line">	&#125;,</span><br><span class="line">	removeChildFromContainer(container, child) &#123;</span><br><span class="line">		container.removeChild(child)</span><br><span class="line">	&#125;</span><br><span class="line">	removeChild(container, child) &#123;</span><br><span class="line">		container.removeChild(child)</span><br><span class="line">	&#125;</span><br><span class="line">	insertInContainerBefore(container, child, before) &#123;</span><br><span class="line">		container.inserBefore(child, before)</span><br><span class="line">	&#125;,</span><br><span class="line">	insertBefore(container, child, before) &#123;</span><br><span class="line">		container.inserBefore(child, before)</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="comment">// called in render phase</span></span><br><span class="line">	prepareUpdate(instance, type, oldProps, newProps, rootContainerInstance, currentHostContext) &#123;</span><br><span class="line">		<span class="keyword">let</span> payload</span><br><span class="line">		<span class="keyword">if</span> (oldProps.bgColor !== newProps.bgColor) &#123;</span><br><span class="line">			payload = &#123; <span class="attr">newBgColor</span>: newProps.bgColor &#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 返回一个diff 结果，这个结果react 并不关心，是给下一个函数使用的</span></span><br><span class="line">		<span class="keyword">return</span> payload</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="comment">// called in commit phase</span></span><br><span class="line">	commitUpdate(instance, updatePayload, type, oldProps, newProps, rootContainerInstance, currentHostContext) &#123;</span><br><span class="line">		<span class="keyword">if</span> (updatePayload.newBgColor) &#123;</span><br><span class="line">			instance.style.backgroundColor = updatePayload.newBgColor</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> ReactDomMini = &#123;</span><br><span class="line">	render(comp, target) &#123;</span><br><span class="line">		<span class="comment">// disabled concurrent mode and hydration</span></span><br><span class="line">		<span class="keyword">let</span> container = reconciler.createContainer(target, <span class="literal">false</span>, <span class="literal">false</span>)</span><br><span class="line">		reconciler.updateContainer(comp, contaienr, <span class="literal">null</span>, <span class="literal">null</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码参考自 <a href="youtube.com/watch?v=CGpMlWVcHok">Building a Custom React Renderer | Sophie Alpert</a></p>
+<p>其实可以看到React 和 Vue3的渲染器api设计有一些不同，react是将参数丢给 reconciler，由 reconciler来实现调度。而Vue3则是没有 reconciler这一层，直接由hostConfig 生成 一套通用的 api，vue runtime 调用这一套通用的api实现渲染。</p>
+<p>参考</p>
+<ul>
+<li>[Building a Custom React Renderer | Sophie Alpert](youtube.com/watch?v=CGpMlWVcHok]</li>
+<li><a href="https://agent-hunt.medium.com/hello-world-custom-react-renderer-9a95b7cd04bc" target="_blank" rel="noopener">Hello World Custom React Renderer</a></li>
+<li>[react-dom](ttps://github.com/facebook/react/blob/master/packages/react-dom/src/client/ReactDOMHostConfig.js]</li>
+<li><a href="https://saul-mirone.github.io/zh-hans/the-essence-of-react-component/" target="_blank" rel="noopener">React组件的本质</a></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">React</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">renderer</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/React/" class="article-tag-list-link color1">React</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/06/12/renderer/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-broken-thoughts" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -946,97 +1066,6 @@
 
 
   
-    <article id="post-scope-slots-and-render-in-vue" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/05/scope-slots-and-render-in-vue/">Vue中的scope slot和render函数</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/05/scope-slots-and-render-in-vue/" class="archive-article-date">
-  	<time datetime="2020-07-05T01:49:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在Vue中使用slot-scope和render函数都可以做到自定义渲染，其实二者有很多相通之处，本文将通过几个例子来分析slot-scope和render 的灵活应用。
-        
-          <a class="article-more-a" href="/2020/07/05/scope-slots-and-render-in-vue/#more">more >></a>
-        
-      
-
-      
-    </p></div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/05/scope-slots-and-render-in-vue/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1134,23 +1163,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">网络编程</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">安全加密</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Promise</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">异步</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">redis</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1158,7 +1175,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+                <a href="javascript:void(0)" class="js-tag color5">css-in-js</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1170,15 +1187,35 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vue</a>
+                <a href="javascript:void(0)" class="js-tag color5">网络编程</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">css-in-js</a>
+                <a href="javascript:void(0)" class="js-tag color5">安全加密</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">package.json</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Promise</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">异步</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Vue</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">React</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">renderer</a>
               </li>
              
               <li class="article-tag-list-item">
