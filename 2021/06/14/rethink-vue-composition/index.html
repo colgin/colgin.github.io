@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://colgin.com">
-  <title>Archives: 2021 | colgin&#39;s Blogs</title>
+  <title>Rethink vue composition api | colgin&#39;s Blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="个人博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="colgin&#39;s Blogs">
-<meta property="og:url" content="http://colgin.com/archives/2021/index.html">
+  <meta name="description" content="对 vue3的composition api 进行了一些反思和总结，总结了一些经验和实践，特此记录。">
+<meta name="keywords" content="Vue,Composition api">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rethink vue composition api">
+<meta property="og:url" content="http://colgin.com/2021/06/14/rethink-vue-composition/index.html">
 <meta property="og:site_name" content="colgin&#39;s Blogs">
-<meta property="og:description" content="个人博客">
+<meta property="og:description" content="对 vue3的composition api 进行了一些反思和总结，总结了一些经验和实践，特此记录。">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-06-22T16:43:06.822Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="colgin&#39;s Blogs">
-<meta name="twitter:description" content="个人博客">
+<meta name="twitter:title" content="Rethink vue composition api">
+<meta name="twitter:description" content="对 vue3的composition api 进行了一些反思和总结，总结了一些经验和实践，特此记录。">
   
     <link rel="alternative" href="/atom.xml" title="colgin&#39;s Blogs" type="application/atom+xml">
   
@@ -145,89 +147,107 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-rethink-vue-composition" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/22/patterns-in-vue-composition-api/" class="archive-article-date">
-  	<time datetime="2021-06-22T15:30:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-22</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/22/patterns-in-vue-composition-api/">Vue Composition Api中常见的几种模式</a>
+    <h1 class="article-title" itemprop="name">
+      Rethink vue composition api
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Composition api</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/14/rethink-vue-composition/" class="archive-article-date">
+        
+        <a href="/2021/06/14/rethink-vue-composition/" class="archive-article-date">
   	<time datetime="2021-06-14T02:33:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-14</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/14/rethink-vue-composition/">Rethink vue composition api</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>对 vue3的composition api 进行了一些反思和总结，总结了一些经验和实践，特此记录。<a id="more"></a></p>
+<h2 id="逻辑抽离与关注点分离"><a href="#逻辑抽离与关注点分离" class="headerlink" title="逻辑抽离与关注点分离"></a>逻辑抽离与关注点分离</h2><p>Vue2 使用 options api，根据 类型将逻辑分成了 <code>data</code>, <code>computed</code>, <code>watch</code>, <code>methods</code> 几个部分，在vue官网中对这种方式进行了反思，这种根据类型 组织代码的方式在 逻辑比较复杂的时候会变得很难理解，经常会为了一个逻辑不得不翻看大段代码。composition api 就是为了解决这么一个问题，将 一个 逻辑关注点(logic concern)组织到一个 composition api中，在一个 composition api中可以有 <code>data</code>, <code>computed</code>, <code>watch</code>, <code>methods</code>。可以参考<a href="https://v3.vuejs.org/guide/composition-api-introduction.html#why-composition-api" target="_blank" rel="noopener">文档</a></p>
+<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>composition api 归根结底还是一个函数，一个composition api 只做一件事，一个复杂的逻辑可以使用多个composition api组合而成。这样可以使得逻辑更加独立，提高复用性，体现专注点分离。</p>
+<p>比如 <a href="https://vueuse.org/" target="_blank" rel="noopener">vueuse</a> 中 的 <a href="https://vueuse.org/core/useDark/" target="_blank" rel="noopener">useDark</a> 实现了 响应式的 dark mode 以及持久化</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useDark, useToggle &#125; <span class="keyword">from</span> <span class="string">'@vueuse/core'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> isDark = useDark()</span><br><span class="line"><span class="keyword">const</span> toggleDark = useToggle(isDark)</span><br></pre></td></tr></table></figure>
+<p>useDark 实际上内部使用了 <code>usePreferredDark</code> 和 <code>useStorage</code> ，前者是使用媒体查询来确定是否为dark模式，后者则是实现了数据的持久化。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">useDark</span>(<span class="params">options: UseDarkOptions = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123;</span><br><span class="line">    selector = <span class="string">'html'</span>, <span class="comment">// css selector for target element applying to</span></span><br><span class="line">    attribute = <span class="string">'class'</span>, <span class="comment">// HTML attribute applying the target element</span></span><br><span class="line">    valueDark = <span class="string">'dark'</span>, <span class="comment">// value applying to the target element when isDark = true</span></span><br><span class="line">    valueLight = <span class="string">''</span>, <span class="comment">// value applying to the target element when isDark = false</span></span><br><span class="line">    <span class="built_in">window</span> = defaultWindow,</span><br><span class="line">    storage = defaultWindow?.localStorage, <span class="comment">// storage object, </span></span><br><span class="line">    storageKey = <span class="string">'vueuse-color-scheme'</span>, <span class="comment">// key to persist the data</span></span><br><span class="line">    listenToStorageChanges = <span class="literal">true</span>,</span><br><span class="line">  &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> preferredDark = usePreferredDark(&#123; <span class="built_in">window</span> &#125;)</span><br><span class="line">  <span class="keyword">const</span> store = storageKey == <span class="literal">null</span></span><br><span class="line">    ? ref&lt;ColorSchemes&gt;(<span class="string">'auto'</span>)</span><br><span class="line">    : useStorage&lt;ColorSchemes&gt;(storageKey, <span class="string">'auto'</span>, storage, &#123; <span class="built_in">window</span>, listenToStorageChanges &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> isDark = computed&lt;<span class="built_in">boolean</span>&gt;(&#123;</span><br><span class="line">    <span class="keyword">get</span>() &#123;</span><br><span class="line">      <span class="keyword">return</span> store.value === <span class="string">'auto'</span></span><br><span class="line">        ? preferredDark.value</span><br><span class="line">        : store.value === <span class="string">'dark'</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="keyword">set</span>(v) &#123;</span><br><span class="line">      <span class="keyword">if</span> (v === preferredDark.value)</span><br><span class="line">        store.value = <span class="string">'auto'</span></span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        store.value = v ? <span class="string">'dark'</span> : <span class="string">'light'</span></span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> onChanged = options.onChanged || <span class="function">(<span class="params">(<span class="params">v: <span class="built_in">boolean</span></span>) =&gt; &#123;</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> el = <span class="built_in">window</span>?.<span class="built_in">document</span>.querySelector(<span class="params">selector</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">if</span> (<span class="params">attribute === '<span class="keyword">class</span>'</span>) &#123;</span></span></span><br><span class="line"><span class="function"><span class="params">      el?.classList.toggle(<span class="params">valueDark, v</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="keyword">if</span> (<span class="params">valueLight</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">        el?.classList.toggle(<span class="params">valueLight, !v</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">    &#125;</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">else</span> &#123; el?.setAttribute(<span class="params">attribute, v ? valueDark : valueLight</span>) &#125;</span></span></span><br><span class="line"><span class="function"><span class="params">  &#125;</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  <span class="params">watch</span>(<span class="params">isDark, onChanged, &#123; flush: 'post' &#125;</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  <span class="params">tryOnMounted</span>(<span class="params">(<span class="params"></span>) =&gt; onChanged(<span class="params">isDark.value</span>)</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  <span class="params">return</span> <span class="params">isDark</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，使用了 <code>usePreferredDark</code> 获取到 初始值（按照设计，如果在storage里读不到内容，就会使用 system preferences）。然后使用了 <code>useStorage</code> 来从 storage里读取指定key 的值。整个函数返回的是一个 computed value, 在修改它的时候会给target 设置属性。</p>
+<p>接下来看下 <code>usePreferredDark</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">usePreferredDark</span>(<span class="params">options?: ConfigurableWindow</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> useMediaQuery(<span class="string">'(prefers-color-scheme: dark)'</span>, options)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，这是是调用了 <code>useMediaQuery</code> </p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Reactive Media Query.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/useMediaQuery</span></span><br><span class="line"><span class="comment"> * @param query</span></span><br><span class="line"><span class="comment"> * @param options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useMediaQuery</span>(<span class="params">query: <span class="built_in">string</span>, options: ConfigurableWindow = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="built_in">window</span> = defaultWindow &#125; = options</span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">window</span>)</span><br><span class="line">    <span class="keyword">return</span> ref(<span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> mediaQuery = <span class="built_in">window</span>.matchMedia(query)</span><br><span class="line">  <span class="keyword">const</span> matches = ref(mediaQuery.matches)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> handler = <span class="function">(<span class="params">event: MediaQueryListEvent</span>) =&gt;</span> &#123;</span><br><span class="line">    matches.value = event.matches</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="string">'addEventListener'</span> <span class="keyword">in</span> mediaQuery) &#123;</span><br><span class="line">    mediaQuery.addEventListener(<span class="string">'change'</span>, handler)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// @ts-expect-error - fallback for Safari &lt; 14 and older browsers</span></span><br><span class="line">    mediaQuery.addListener(handler)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tryOnUnmounted(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="string">'removeEventListener'</span> <span class="keyword">in</span> mediaQuery) &#123;</span><br><span class="line">      mediaQuery.removeEventListener(<span class="string">'change'</span>, handler)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// @ts-expect-error - fallback for Safari &lt; 14 and older browsers</span></span><br><span class="line">      mediaQuery.removeListener(handler)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> matches</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到 <code>useMediaQuery</code> 的实现也很简单，是使用 <code>window.matchMedia</code>获取初始值，然后使用事件来处理变化实现响应式的。这也是 将 普通变量转化为响应式变量最常见的一种模式</p>
+<p>接下来看下 <code>useStorage</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Reactive LocalStorage/SessionStorage.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/useStorage</span></span><br><span class="line"><span class="comment"> * @param key</span></span><br><span class="line"><span class="comment"> * @param defaultValue</span></span><br><span class="line"><span class="comment"> * @param storage</span></span><br><span class="line"><span class="comment"> * @param options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useStorage</span>&lt;<span class="title">T</span> <span class="title">extends</span>(<span class="params"><span class="built_in">string</span>|<span class="built_in">number</span>|<span class="built_in">boolean</span>|object|<span class="literal">null</span></span>)&gt; (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  key: <span class="built_in">string</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">  defaultValue: T,</span></span></span><br><span class="line"><span class="function"><span class="params">  storage: StorageLike | <span class="literal">undefined</span> = defaultWindow?.localStorage,</span></span></span><br><span class="line"><span class="function"><span class="params">  options: StorageOptions = &#123;&#125;,</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123;</span><br><span class="line">    flush = <span class="string">'pre'</span>,</span><br><span class="line">    deep = <span class="literal">true</span>,</span><br><span class="line">    listenToStorageChanges = <span class="literal">true</span>,</span><br><span class="line">    <span class="built_in">window</span> = defaultWindow,</span><br><span class="line">    eventFilter,</span><br><span class="line">  &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> data = ref&lt;T&gt;(defaultValue)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">type</span> = defaultValue == <span class="literal">null</span></span><br><span class="line">    ? <span class="string">'any'</span></span><br><span class="line">    : <span class="keyword">typeof</span> defaultValue === <span class="string">'boolean'</span></span><br><span class="line">      ? <span class="string">'boolean'</span></span><br><span class="line">      : <span class="keyword">typeof</span> defaultValue === <span class="string">'string'</span></span><br><span class="line">        ? <span class="string">'string'</span></span><br><span class="line">        : <span class="keyword">typeof</span> defaultValue === <span class="string">'object'</span></span><br><span class="line">          ? <span class="string">'object'</span></span><br><span class="line">          : <span class="built_in">Array</span>.isArray(defaultValue)</span><br><span class="line">            ? <span class="string">'object'</span></span><br><span class="line">            : !<span class="built_in">Number</span>.isNaN(defaultValue)</span><br><span class="line">              ? <span class="string">'number'</span></span><br><span class="line">              : <span class="string">'any'</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">read</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!storage)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">let</span> rawValue = storage.getItem(key)</span><br><span class="line">      <span class="keyword">if</span> (rawValue == <span class="literal">null</span> &amp;&amp; defaultValue) &#123;</span><br><span class="line">        rawValue = Serializers[<span class="keyword">type</span>].write(defaultValue)</span><br><span class="line">        storage.setItem(key, rawValue)</span><br><span class="line">      &#125;</span><br><span class="line">      data.value = Serializers[<span class="keyword">type</span>].read(rawValue, defaultValue)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      <span class="built_in">console</span>.warn(e)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  read()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">window</span> &amp;&amp; listenToStorageChanges)</span><br><span class="line">    useEventListener(<span class="built_in">window</span>, <span class="string">'storage'</span>, read)</span><br><span class="line"></span><br><span class="line">  watchWithFilter(</span><br><span class="line">    data,</span><br><span class="line">    () =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (!storage) <span class="comment">// SSR</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (data.value == <span class="literal">null</span>)</span><br><span class="line">          storage.removeItem(key)</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">          storage.setItem(key, Serializers[<span class="keyword">type</span>].write(data.value))</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">        <span class="built_in">console</span>.warn(e)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      flush,</span><br><span class="line">      deep,</span><br><span class="line">      eventFilter,</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> data</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Serializers</code> 定义了不同js类型的序列化与反序列化的方法， 这里的模式是一样的，使用 read读区默认值，使用事件监听变化。</p>
+<h3 id="组织"><a href="#组织" class="headerlink" title="组织"></a>组织</h3><p>composition api 是一个函数，有输入，输出，从 options api转过来的开发者一定会有这样的一个疑问？到底要怎么样拆分呢？有一些变量需要多个逻辑块共用，这种情况应该怎么处理呢？</p>
+<p>这里，引用 antfu在 vue conf 的一个结论: <strong>在setup 中，我们建立输入和输出的连接</strong>。这句话要多理解。</p>
+<h2 id="函数的参数"><a href="#函数的参数" class="headerlink" title="函数的参数"></a>函数的参数</h2><p>Composition api 归根结底是函数，函数是可以接收参数的，有时候这个参数是不会变的，有时候是需要考虑参数的变化的。</p>
+<h3 id="不考虑参数变化"><a href="#不考虑参数变化" class="headerlink" title="不考虑参数变化"></a>不考虑参数变化</h3><p>如果不考虑参数变化的话，一般传入的是 初始值或者一些配置化的参数（比如useBreakpoints）。</p>
+<p>比如前面提到过的 <code>useStorage</code> </p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useStorage &#125; <span class="keyword">from</span> <span class="string">'@vueuse/core'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// bind object</span></span><br><span class="line"><span class="keyword">const</span> state = useStorage(<span class="string">'my-store'</span>, &#123; hello: <span class="string">'hi'</span>, greeting: <span class="string">'Hello'</span> &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// bind boolean</span></span><br><span class="line"><span class="keyword">const</span> flag = useStorage(<span class="string">'my-flag'</span>, <span class="literal">true</span>) <span class="comment">// returns Ref&lt;boolean&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// bind number</span></span><br><span class="line"><span class="keyword">const</span> count = useStorage(<span class="string">'my-count'</span>, <span class="number">0</span>) <span class="comment">// returns Ref&lt;number&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// bind string with SessionStorage</span></span><br><span class="line"><span class="keyword">const</span> id = useStorage(<span class="string">'my-id'</span>, <span class="string">'some-string-id'</span>, sessionStorage) <span class="comment">// returns Ref&lt;string&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// delete data from storage</span></span><br><span class="line">state.value = <span class="literal">null</span></span><br></pre></td></tr></table></figure>
+<p>这种情况下一般会返回一个响应式的变量</p>
+<h3 id="考虑参数变化"><a href="#考虑参数变化" class="headerlink" title="考虑参数变化"></a>考虑参数变化</h3><p>有时候，传给composition api 的参数是变化的，这就要求composition api 内部能够处理这种变化。总结一下有以下几个场景</p>
+<h4 id="传递一个ref"><a href="#传递一个ref" class="headerlink" title="传递一个ref"></a>传递一个<code>ref</code></h4><p>在已经有一个ref 变量的情况下，直接将ref 变量传递给 composition api, 可以直接修改外部变。这里以 <code>useTitle</code>为例。<code>useTitle</code> 可以接收一个字符串 或者一个ref 作为参数。</p>
+   <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Reactive document title.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/useTitle</span></span><br><span class="line"><span class="comment"> * @param newTitle</span></span><br><span class="line"><span class="comment"> * @param options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useTitle</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  newTitle: MaybeRef&lt;<span class="built_in">string</span> | <span class="literal">null</span> | <span class="literal">undefined</span>&gt; = <span class="literal">null</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">  &#123; <span class="built_in">document</span> = defaultDocument &#125;: ConfigurableDocument = &#123;&#125;,</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> title = ref(newTitle ?? <span class="built_in">document</span>?.title ?? <span class="literal">null</span>)</span><br><span class="line"></span><br><span class="line">  watch(</span><br><span class="line">    title,</span><br><span class="line">    (t, o) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (isString(t) &amp;&amp; t !== o &amp;&amp; <span class="built_in">document</span>)</span><br><span class="line">        <span class="built_in">document</span>.title = t</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123; immediate: <span class="literal">true</span> &#125;,</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> title</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>   可以看到 这里的参数类型是 <code>MaybeRef&lt;string | null | undefined&gt;</code> ，<code>MaybeRef</code> 的声明如下</p>
+   <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MybeRef&lt;T&gt; = T | Ref&lt;T&gt; | ComputedRef&lt;T&gt;</span><br></pre></td></tr></table></figure>
+<p>   在 <code>useTitle</code> 中，会根据 函数参数定义一个 新的 Ref。</p>
+   <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> title = ref(newTitle ?? <span class="built_in">document</span>?.title ?? <span class="literal">null</span>)</span><br></pre></td></tr></table></figure>
+<p>   这行代码 内容非常丰富，由于 newTitle可能为null，如果为null的情况下，就会从 <code>document.title</code> 上取。如果 newTitle 不是null，如果newTitle是 <code>string</code> 的话，就会创建一个 初始值为 newTitle 的<code>ref</code>，如果newTitle 是 <code>Ref&lt;string&gt;</code>的话，title 与 newTitle 是一样的。</p>
+<p>   这得益于 <code>ref</code> 的实现，如果传入的参数是一个 <code>Ref</code> 的话，就会直接返回。这一点在源码中可以看出</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">ref</span>(<span class="params">value?: unknown</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> createRef(value)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createRef</span>(<span class="params">rawValue: unknown, shallow = <span class="literal">false</span></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (isRef(rawValue)) &#123;</span><br><span class="line">		<span class="keyword">return</span> rawValue</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> RefImpl(rawValue, shallow)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="传递一个函数"><a href="#传递一个函数" class="headerlink" title="传递一个函数"></a>传递一个函数</h4><p>在一些简单的情况下，可以通过传递一个函数来实现动态参数。</p>
+   <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; data, error &#125; = useFetch(<span class="function"><span class="params">()</span> =&gt;</span> <span class="string">`/api/user/<span class="subst">$&#123;props.name&#125;</span>`</span>)</span><br></pre></td></tr></table></figure>
+<p>   实现上</p>
+   <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">function</span> <span class="title">useFetch</span>(<span class="params">getUrl</span>) </span>&#123;</span><br><span class="line">   	<span class="keyword">const</span> data = ref(<span class="literal">null</span>)</span><br><span class="line">   	<span class="keyword">const</span> error = ref(<span class="literal">null</span>)</span><br><span class="line">   	<span class="keyword">const</span> isPending = ref(<span class="literal">true</span>)</span><br><span class="line">   </span><br><span class="line">   	watchEffect(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">   		isPending.value = <span class="literal">true</span></span><br><span class="line">   		data.value = <span class="literal">null</span></span><br><span class="line">   		error.value = <span class="literal">null</span></span><br><span class="line">   		fetch(getUrl())</span><br><span class="line">   			.then(<span class="function"><span class="params">res</span> =&gt;</span> res.json())</span><br><span class="line">   			.then(_data =&gt; &#123;</span><br><span class="line">   				data.value = _data</span><br><span class="line">   				isPending = <span class="literal">false</span></span><br><span class="line">   			&#125;)</span><br><span class="line">   			.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">   				error.value = err</span><br><span class="line">   				isPending = <span class="literal">false</span></span><br><span class="line">   			&#125;)</span><br><span class="line">   	&#125;)</span><br><span class="line">   </span><br><span class="line">   	<span class="keyword">return</span> &#123;</span><br><span class="line">   		data,</span><br><span class="line">   		error,</span><br><span class="line">   		isPending</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">但是这种只适合于少量参数的情况，实际上 vueuse的 [useFetch](https:<span class="comment">//vueuse.org/core/usefetch/)还是使用的 传递ref 变量的形式。</span></span><br><span class="line"></span><br><span class="line">​<span class="string">``</span><span class="string">`typescript</span></span><br><span class="line"><span class="string">const url = ref('https://my-api.com/user/1') </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">const &#123; data &#125; = useFetch(url, &#123; refetch: true &#125;)</span></span><br></pre></td></tr></table></figure>
+<h2 id="函数的返回值"><a href="#函数的返回值" class="headerlink" title="函数的返回值"></a>函数的返回值</h2><h4 id="返回响应式变量"><a href="#返回响应式变量" class="headerlink" title="返回响应式变量"></a>返回响应式变量</h4><p>前文举例的大多数都是这种格式，此处不再举例。</p>
+<h4 id="返回创建响应式变量的方法"><a href="#返回创建响应式变量的方法" class="headerlink" title="返回创建响应式变量的方法"></a>返回创建响应式变量的方法</h4><p>典型的如 <code>useBreakpoints</code></p>
+<p>使用方式如下</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useBreakpoints &#125; <span class="keyword">from</span> <span class="string">'@vueuse/core'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> breakpoints = useBreakpoints(&#123;</span><br><span class="line">  tablet: <span class="number">640</span>,</span><br><span class="line">  laptop: <span class="number">1024</span>,</span><br><span class="line">  desktop: <span class="number">1280</span>,</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> laptop = breakpoints.between(<span class="string">'laptop'</span>, <span class="string">'desktop'</span>) <span class="comment">// reactive</span></span><br></pre></td></tr></table></figure>
+<p>这里，<code>useBreakpoints</code>其实只是一个普通的函数，利用闭包 返回了 一些 工具方法，这些工具方法会得到 响应式变量。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Reactively viewport breakpoints</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/useBreakpoints</span></span><br><span class="line"><span class="comment"> * @param options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useBreakpoints</span>&lt;<span class="title">K</span> <span class="title">extends</span> <span class="title">string</span>&gt;(<span class="params">breakpoints: Breakpoints&lt;K&gt;, options: ConfigurableWindow = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">getValue</span>(<span class="params">k: K, delta?: <span class="built_in">number</span></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> v = breakpoints[k]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (delta != <span class="literal">null</span>)</span><br><span class="line">      v = increaseWithUnit(v, delta)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> v === <span class="string">'number'</span>)</span><br><span class="line">      v = <span class="string">`<span class="subst">$&#123;v&#125;</span>px`</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> v</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="built_in">window</span> = defaultWindow &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">match</span>(<span class="params">query: <span class="built_in">string</span></span>): <span class="title">boolean</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">window</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">window</span>.matchMedia(query).matches</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    greater(k: K) &#123;</span><br><span class="line">      <span class="keyword">return</span> useMediaQuery(<span class="string">`(min-width: <span class="subst">$&#123;getValue(k)&#125;</span>)`</span>, options)</span><br><span class="line">    &#125;,</span><br><span class="line">    smaller(k: K) &#123;</span><br><span class="line">      <span class="keyword">return</span> useMediaQuery(<span class="string">`(max-width: <span class="subst">$&#123;getValue(k, -0.1)&#125;</span>)`</span>, options)</span><br><span class="line">    &#125;,</span><br><span class="line">    between(a: K, b: K) &#123;</span><br><span class="line">      <span class="keyword">return</span> useMediaQuery(<span class="string">`(min-width: <span class="subst">$&#123;getValue(a)&#125;</span>) and (max-width: <span class="subst">$&#123;getValue(b, -0.1)&#125;</span>)`</span>, options)</span><br><span class="line">    &#125;,</span><br><span class="line">    isGreater(k: K) &#123;</span><br><span class="line">      <span class="keyword">return</span> match(<span class="string">`(min-width: <span class="subst">$&#123;getValue(k)&#125;</span>)`</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    isSmaller(k: K) &#123;</span><br><span class="line">      <span class="keyword">return</span> match(<span class="string">`(max-width: <span class="subst">$&#123;getValue(k, -0.1)&#125;</span>)`</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    isInBetween(a: K, b: K) &#123;</span><br><span class="line">      <span class="keyword">return</span> match(<span class="string">`(min-width: <span class="subst">$&#123;getValue(a)&#125;</span>) and (max-width: <span class="subst">$&#123;getValue(b, -0.1)&#125;</span>)`</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="即返回响应式变量，又返回工具方法"><a href="#即返回响应式变量，又返回工具方法" class="headerlink" title="即返回响应式变量，又返回工具方法"></a>即返回响应式变量，又返回工具方法</h4><p>典型的比如 <a href="https://vueuse.org/core/useFetch/" target="_blank" rel="noopener">useFetch</a></p>
+<p>请求数据不仅需要url，还要指定请求方法，还需要制定request 的content-type，这些参数如果以函数参数的形式传入，会让api变得臃肿不堪。vueuse使用了链式调用的方式来设置各个参数，看起来非常优雅。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Request with default config</span></span><br><span class="line"><span class="keyword">const</span> &#123; isFetching, error, data &#125; = useFetch(url)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Request will be sent with GET method and data will be parsed as JSON</span></span><br><span class="line"><span class="keyword">const</span> &#123; data &#125; = useFetch(url).get().json()</span><br><span class="line"></span><br><span class="line"><span class="comment">// Request will be sent with POST method and data will be parsed as text</span></span><br><span class="line"><span class="keyword">const</span> &#123; data &#125; = useFetch(url).post().text()</span><br><span class="line"></span><br><span class="line"><span class="comment">// Or set the method using the options</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Request will be sent with GET method and data will be parsed as blob</span></span><br><span class="line"><span class="keyword">const</span> &#123; data &#125; = useFetch(url, &#123; method: <span class="string">'GET'</span> &#125;, &#123; refetch: <span class="literal">true</span> &#125;).blob()</span><br></pre></td></tr></table></figure>
+<p><code>useFetch</code> 的实现也不难</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useFetch</span>&lt;<span class="title">T</span>&gt;(<span class="params">url: MaybeRef&lt;<span class="built_in">string</span>&gt;, ...args: <span class="built_in">any</span>[]</span>): <span class="title">UseFetchReturn</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> supportsAbort = <span class="keyword">typeof</span> AbortController === <span class="string">'function'</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> fetchOptions: RequestInit = &#123;&#125;</span><br><span class="line">  <span class="keyword">let</span> options: UseFetchOptions = &#123; immediate: <span class="literal">true</span>, refetch: <span class="literal">false</span> &#125;</span><br><span class="line">  <span class="comment">// 默认配置</span></span><br><span class="line">  <span class="keyword">const</span> config = &#123;</span><br><span class="line">    method: <span class="string">'get'</span>,</span><br><span class="line">    <span class="keyword">type</span>: <span class="string">'text'</span> <span class="keyword">as</span> DataType,</span><br><span class="line">    payload: <span class="literal">undefined</span> <span class="keyword">as</span> unknown,</span><br><span class="line">    payloadType: <span class="string">'json'</span> <span class="keyword">as</span> PayloadType,</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">let</span> initialized = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 处理多个参数</span></span><br><span class="line">  <span class="keyword">if</span> (args.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isFetchOptions(args[<span class="number">0</span>]))</span><br><span class="line">      options = &#123; ...options, ...args[<span class="number">0</span>] &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      fetchOptions = args[<span class="number">0</span>]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (args.length &gt; <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isFetchOptions(args[<span class="number">1</span>]))</span><br><span class="line">      options = &#123; ...options, ...args[<span class="number">1</span>] &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> &#123;</span><br><span class="line">    fetch = defaultWindow?.fetch,</span><br><span class="line">  &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 定义响应式变量</span></span><br><span class="line">  <span class="keyword">const</span> isFinished = ref(<span class="literal">false</span>)</span><br><span class="line">  <span class="keyword">const</span> isFetching = ref(<span class="literal">false</span>)</span><br><span class="line">  <span class="keyword">const</span> aborted = ref(<span class="literal">false</span>)</span><br><span class="line">  <span class="keyword">const</span> statusCode = ref&lt;<span class="built_in">number</span> | <span class="literal">null</span>&gt;(<span class="literal">null</span>)</span><br><span class="line">  <span class="keyword">const</span> response = shallowRef&lt;Response | <span class="literal">null</span>&gt;(<span class="literal">null</span>)</span><br><span class="line">  <span class="keyword">const</span> error = ref&lt;<span class="built_in">any</span>&gt;(<span class="literal">null</span>)</span><br><span class="line">  <span class="keyword">const</span> data = shallowRef&lt;T | <span class="literal">null</span>&gt;(<span class="literal">null</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 取消相关</span></span><br><span class="line">  <span class="keyword">const</span> canAbort = computed(<span class="function"><span class="params">()</span> =&gt;</span> supportsAbort &amp;&amp; isFetching.value)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> controller: AbortController | <span class="literal">undefined</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> abort = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (supportsAbort &amp;&amp; controller)</span><br><span class="line">      controller.abort()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 发出请求的方法</span></span><br><span class="line">  <span class="keyword">const</span> execute = <span class="keyword">async</span>() =&gt; &#123;</span><br><span class="line">    initialized = <span class="literal">true</span></span><br><span class="line">    isFetching.value = <span class="literal">true</span></span><br><span class="line">    isFinished.value = <span class="literal">false</span></span><br><span class="line">    error.value = <span class="literal">null</span></span><br><span class="line">    statusCode.value = <span class="literal">null</span></span><br><span class="line">    aborted.value = <span class="literal">false</span></span><br><span class="line">    controller = <span class="literal">undefined</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (supportsAbort) &#123;</span><br><span class="line">      controller = <span class="keyword">new</span> AbortController()</span><br><span class="line">      controller.signal.onabort = <span class="function"><span class="params">()</span> =&gt;</span> aborted.value = <span class="literal">true</span></span><br><span class="line">      fetchOptions = &#123;</span><br><span class="line">        ...fetchOptions,</span><br><span class="line">        signal: controller.signal,</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> defaultFetchOptions: RequestInit = &#123;</span><br><span class="line">      method: config.method,</span><br><span class="line">      headers: &#123;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (config.payload) &#123;</span><br><span class="line">      <span class="keyword">const</span> headers = defaultFetchOptions.headers <span class="keyword">as</span> Record&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;</span><br><span class="line">      <span class="keyword">if</span> (config.payloadType === <span class="string">'json'</span>) &#123;</span><br><span class="line">        defaultFetchOptions.body = <span class="built_in">JSON</span>.stringify(config.payload)</span><br><span class="line">        headers[<span class="string">'Content-Type'</span>] = <span class="string">'application/json'</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        defaultFetchOptions.body = config.payload <span class="keyword">as</span> <span class="built_in">any</span></span><br><span class="line">        headers[<span class="string">'Content-Type'</span>] = config.payloadType === <span class="string">'formData'</span></span><br><span class="line">          ? <span class="string">'multipart/form-data'</span></span><br><span class="line">          : <span class="string">'text/plain'</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> isCanceled = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">const</span> context: BeforeFetchContext = &#123; url: unref(url), options: fetchOptions, cancel: <span class="function"><span class="params">()</span> =&gt;</span> &#123; isCanceled = <span class="literal">true</span> &#125; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (options.beforeFetch)</span><br><span class="line">      <span class="built_in">Object</span>.assign(context, <span class="keyword">await</span> options.beforeFetch(context))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (isCanceled || !fetch)</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">      fetch(</span><br><span class="line">        context.url,</span><br><span class="line">        &#123;</span><br><span class="line">          ...defaultFetchOptions,</span><br><span class="line">          ...context.options,</span><br><span class="line">          headers: &#123;</span><br><span class="line">            ...defaultFetchOptions.headers,</span><br><span class="line">            ...context.options?.headers,</span><br><span class="line">          &#125;,</span><br><span class="line">        &#125;,</span><br><span class="line">      )</span><br><span class="line">        .then(<span class="keyword">async</span>(fetchResponse) =&gt; &#123;</span><br><span class="line">        	<span class="comment">// 修改响应式变量</span></span><br><span class="line">          response.value = fetchResponse</span><br><span class="line">          statusCode.value = fetchResponse.status</span><br><span class="line"></span><br><span class="line">          <span class="keyword">await</span> fetchResponse[config.type]().then(<span class="function"><span class="params">text</span> =&gt;</span> data.value = text <span class="keyword">as</span> <span class="built_in">any</span>)</span><br><span class="line"></span><br><span class="line">          <span class="comment">// see: https://www.tjvantoll.com/2015/09/13/fetch-and-errors/</span></span><br><span class="line">          <span class="keyword">if</span> (!fetchResponse.ok)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(fetchResponse.statusText)</span><br><span class="line"></span><br><span class="line">          resolve(fetchResponse)</span><br><span class="line">        &#125;)</span><br><span class="line">        .catch(<span class="function">(<span class="params">fetchError</span>) =&gt;</span> &#123;</span><br><span class="line">          error.value = fetchError.message || fetchError.name</span><br><span class="line">        &#125;)</span><br><span class="line">        .finally(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          isFinished.value = <span class="literal">true</span></span><br><span class="line">          isFetching.value = <span class="literal">false</span></span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 处理函数参数ref的变化</span></span><br><span class="line">  watch(</span><br><span class="line">    () =&gt; [</span><br><span class="line">      unref(url),</span><br><span class="line">      unref(options.refetch),</span><br><span class="line">    ],</span><br><span class="line">    () =&gt; unref(options.refetch) &amp;&amp; execute(),</span><br><span class="line">    &#123; deep: <span class="literal">true</span> &#125;,</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> base: UseFetchReturnBase&lt;T&gt; = &#123;</span><br><span class="line">    isFinished,</span><br><span class="line">    statusCode,</span><br><span class="line">    response,</span><br><span class="line">    error,</span><br><span class="line">    data,</span><br><span class="line">    isFetching,</span><br><span class="line">    canAbort,</span><br><span class="line">    aborted,</span><br><span class="line">    abort,</span><br><span class="line">    execute,</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 将数据和链式调用的方法一并放回</span></span><br><span class="line">  <span class="keyword">const</span> shell: UseFetchReturn&lt;T&gt; = &#123;</span><br><span class="line">    ...base,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">get</span>: setMethod(<span class="string">'get'</span>),</span><br><span class="line">    put: setMethod(<span class="string">'put'</span>),</span><br><span class="line">    post: setMethod(<span class="string">'post'</span>),</span><br><span class="line">    <span class="keyword">delete</span>: setMethod(<span class="string">'delete'</span>),</span><br><span class="line"></span><br><span class="line">    json: setType(<span class="string">'json'</span>),</span><br><span class="line">    text: setType(<span class="string">'text'</span>),</span><br><span class="line">    blob: setType(<span class="string">'blob'</span>),</span><br><span class="line">    arrayBuffer: setType(<span class="string">'arrayBuffer'</span>),</span><br><span class="line">    formData: setType(<span class="string">'formData'</span>),</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">setMethod</span>(<span class="params">method: <span class="built_in">string</span></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function">(<span class="params">payload?: unknown, payloadType?: PayloadType</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (!initialized) &#123;</span><br><span class="line">        config.method = method</span><br><span class="line">        config.payload = payload</span><br><span class="line">        config.payloadType = payloadType || <span class="keyword">typeof</span> payload === <span class="string">'string'</span> ? <span class="string">'text'</span> : <span class="string">'json'</span></span><br><span class="line">        <span class="keyword">return</span> shell <span class="keyword">as</span> <span class="built_in">any</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">undefined</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">setType</span>(<span class="params"><span class="keyword">type</span>: DataType</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (!initialized) &#123;</span><br><span class="line">        config.type = <span class="keyword">type</span></span><br><span class="line">        <span class="keyword">return</span> base <span class="keyword">as</span> <span class="built_in">any</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">undefined</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 将请求放入宏任务队列，比链式调用后执行</span></span><br><span class="line">  <span class="keyword">if</span> (options.immediate)</span><br><span class="line">    setTimeout(execute, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> shell</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="返回cleanup-函数"><a href="#返回cleanup-函数" class="headerlink" title="返回cleanup 函数"></a>返回<code>cleanup</code> 函数</h4><p>典型地如 <code>useEventListener</code> 就返回了解除绑定的函数, 一般用在 使用事件绑定的函数中。</p>
+<p>以 <code>onClickOutside</code>为例</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useEventListener</span>(<span class="params">...args: <span class="built_in">any</span>[]</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> target: MaybeRef&lt;EventTarget&gt; | <span class="literal">undefined</span></span><br><span class="line">  <span class="keyword">let</span> event: <span class="built_in">string</span></span><br><span class="line">  <span class="keyword">let</span> listener: <span class="built_in">any</span></span><br><span class="line">  <span class="keyword">let</span> options: <span class="built_in">any</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (isString(args[<span class="number">0</span>])) &#123;</span><br><span class="line">    [event, listener, options] = args</span><br><span class="line">    target = defaultWindow</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    [target, event, listener, options] = args</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!target)</span><br><span class="line">    <span class="keyword">return</span> noop</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> cleanup = noop</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> stopWatch = watch(</span><br><span class="line">    () =&gt; unref(target),</span><br><span class="line">    (el) =&gt; &#123;</span><br><span class="line">      cleanup()</span><br><span class="line">      <span class="keyword">if</span> (!el)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">      el.addEventListener(event, listener, options)</span><br><span class="line"></span><br><span class="line">      cleanup = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        el.removeEventListener(event, listener, options)</span><br><span class="line">        cleanup = noop</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123; immediate: <span class="literal">true</span>, flush: <span class="string">'post'</span> &#125;,</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> stop = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    stopWatch()</span><br><span class="line">    cleanup()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tryOnUnmounted(stop)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> stop</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本文从函数的结构上分析了一下 composition api, 当然composition api还有一些固定的模式可以学习，可以查看下一篇文章。</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -243,7 +263,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -256,421 +276,144 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://colgin.com/2021/06/14/rethink-vue-composition/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/13/dynamic-param-composition-api/" class="archive-article-date">
-  	<time datetime="2021-06-13T11:18:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-13</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2021/06/22/patterns-in-vue-composition-api/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Vue Composition Api中常见的几种模式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/06/13/dynamic-param-composition-api/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">composition api 的参数传递</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/13/dynamic-param-composition-api/">composition api 的参数传递</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Composition Api</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#逻辑抽离与关注点分离"><span class="toc-number">1.</span> <span class="toc-text">逻辑抽离与关注点分离</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#组合"><span class="toc-number">1.1.</span> <span class="toc-text">组合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#组织"><span class="toc-number">1.2.</span> <span class="toc-text">组织</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数的参数"><span class="toc-number">2.</span> <span class="toc-text">函数的参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#不考虑参数变化"><span class="toc-number">2.1.</span> <span class="toc-text">不考虑参数变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#考虑参数变化"><span class="toc-number">2.2.</span> <span class="toc-text">考虑参数变化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#传递一个ref"><span class="toc-number">2.2.1.</span> <span class="toc-text">传递一个ref</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#传递一个函数"><span class="toc-number">2.2.2.</span> <span class="toc-text">传递一个函数</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数的返回值"><span class="toc-number">3.</span> <span class="toc-text">函数的返回值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#返回响应式变量"><span class="toc-number">3.0.1.</span> <span class="toc-text">返回响应式变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#返回创建响应式变量的方法"><span class="toc-number">3.0.2.</span> <span class="toc-text">返回创建响应式变量的方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#即返回响应式变量，又返回工具方法"><span class="toc-number">3.0.3.</span> <span class="toc-text">即返回响应式变量，又返回工具方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#返回cleanup-函数"><span class="toc-number">3.0.4.</span> <span class="toc-text">返回cleanup 函数</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/12/renderer/" class="archive-article-date">
-  	<time datetime="2021-06-11T17:40:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/12/renderer/">renderer</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">React</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">renderer</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/React/" class="article-tag-list-link color1">React</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/04/broken-thoughts/" class="archive-article-date">
-  	<time datetime="2021-06-04T01:03:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/04/broken-thoughts/">broken_thoughts</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Note/" class="article-tag-list-link color5">Note</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/28/type-challenges/" class="archive-article-date">
-  	<time datetime="2021-05-27T17:03:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/28/type-challenges/">type-challenges</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">TypeScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Daily</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/typescript/" class="article-tag-list-link color1">typescript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/28/security-in-language/" class="archive-article-date">
-  	<time datetime="2021-05-27T16:20:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/28/security-in-language/">从stackblitz看security</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Node</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/思考/" class="article-tag-list-link color3">思考</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/15/promise-wrapper/" class="archive-article-date">
-  	<time datetime="2021-05-15T07:51:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/15/promise-wrapper/">Promise的二次封装</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/JavaScript/" class="article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/03/07/component-update-in-vue3/" class="archive-article-date">
-  	<time datetime="2021-03-07T07:52:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/03/07/component-update-in-vue3/">Vue3中的shouldComponentUpdate</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue3</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Source Code</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/03/07/watch-in-vue3/" class="archive-article-date">
-  	<time datetime="2021-03-07T07:26:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/03/07/watch-in-vue3/">Vue3中的watch执行时机</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue3</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Source Code</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
 
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/2021/page/2/">2</a><a class="extend next" rel="next" href="/archives/2021/page/2/">Next &raquo;</a>
-    </nav>
+  
+
+  
+  
+      <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+
+<script>
+    var gitalk = new Gitalk({
+      clientID: 'a95b74318f4522128abf',
+      clientSecret: '5fb7f1cb62419a8fe164e75e4bf37d4aa2b307b3',
+      repo: 'colgin.github.io',
+      owner: 'colgin',
+      admin: ['colgin'],
+      id: md5(window.location.pathname),
+      distractionFreeMode: true
+  })
+
+    gitalk.render('gitalk-container')
+</script>
+
   
 
 
@@ -694,8 +437,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

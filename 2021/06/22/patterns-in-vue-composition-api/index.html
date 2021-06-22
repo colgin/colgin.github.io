@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://colgin.com">
-  <title>Archives: 2021 | colgin&#39;s Blogs</title>
+  <title>Vue Composition Api中常见的几种模式 | colgin&#39;s Blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="个人博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="colgin&#39;s Blogs">
-<meta property="og:url" content="http://colgin.com/archives/2021/index.html">
+  <meta name="description" content="看了下vueuse的实现，开拓了一下视野，不仅仅是学习到了composition api封装的模式，更有代码组织上的学问。">
+<meta name="keywords" content="Vue,Composition api">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue Composition Api中常见的几种模式">
+<meta property="og:url" content="http://colgin.com/2021/06/22/patterns-in-vue-composition-api/index.html">
 <meta property="og:site_name" content="colgin&#39;s Blogs">
-<meta property="og:description" content="个人博客">
+<meta property="og:description" content="看了下vueuse的实现，开拓了一下视野，不仅仅是学习到了composition api封装的模式，更有代码组织上的学问。">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-06-22T16:45:04.258Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="colgin&#39;s Blogs">
-<meta name="twitter:description" content="个人博客">
+<meta name="twitter:title" content="Vue Composition Api中常见的几种模式">
+<meta name="twitter:description" content="看了下vueuse的实现，开拓了一下视野，不仅仅是学习到了composition api封装的模式，更有代码组织上的学问。">
   
     <link rel="alternative" href="/atom.xml" title="colgin&#39;s Blogs" type="application/atom+xml">
   
@@ -145,36 +147,177 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-patterns-in-vue-composition-api" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Vue Composition Api中常见的几种模式
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/22/patterns-in-vue-composition-api/" class="archive-article-date">
+
+        
+        <a href="/2021/06/22/patterns-in-vue-composition-api/" class="archive-article-date">
   	<time datetime="2021-06-22T15:30:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-22</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/22/patterns-in-vue-composition-api/">Vue Composition Api中常见的几种模式</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>看了下vueuse的实现，开拓了一下视野，不仅仅是学习到了composition api封装的模式，更有代码组织上的学问。<a id="more"></a></p>
+<h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>首先我们需要思考的composition api和普通的函数有什么区别。区别在于在composition api中可以是响应式，所谓的响应式，最主要的特征是“变”，是变量的值跟着变；还是你修改变量的值，别的地方会跟着变。这是不同的思路。</p>
+<h2 id="常见的模式"><a href="#常见的模式" class="headerlink" title="常见的模式"></a>常见的模式</h2><h3 id="状态-事件"><a href="#状态-事件" class="headerlink" title="状态 + 事件"></a>状态 + 事件</h3><p>通过全局状态或者一些全局api 获取到初始状态（当然也有可能是通过函数参数将初始状态传入），根据初始状态创建 <code>Ref</code>, 然后通过事件监听状态的变化，在状态变化时修改 <code>Ref</code> 的值。如果要将 响应式状态返回的话，还需要监听 响应式状态值的变化，变化之后，将值写到全局状态。</p>
+<h4 id="固定参数，结果是浏览器依据环境变化的"><a href="#固定参数，结果是浏览器依据环境变化的" class="headerlink" title="固定参数，结果是浏览器依据环境变化的"></a>固定参数，结果是浏览器依据环境变化的</h4><p>也就是说往往是可读不可写的（readonly），那有人就要问了，不可写你直接读取它不就行了，为啥还需要响应式呢？原因在于这种状态虽然不可写，但是由于外界环境的变化，会自动发生变化。比如 <code>useMediaQuery</code>的结果就和显示区域大小有关。</p>
+<p>比如<code>useMediaQuery</code> 就是利用了<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/matchMedia" target="_blank" rel="noopener">matchMedia</a> api 实现了从全局获取数据，以及监听变化的功能。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Reactive Media Query.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/useMediaQuery</span></span><br><span class="line"><span class="comment"> * @param query</span></span><br><span class="line"><span class="comment"> * @param options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useMediaQuery</span>(<span class="params">query: <span class="built_in">string</span>, options: ConfigurableWindow = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="built_in">window</span> = defaultWindow &#125; = options</span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">window</span>)</span><br><span class="line">    <span class="keyword">return</span> ref(<span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> mediaQuery = <span class="built_in">window</span>.matchMedia(query)</span><br><span class="line">  <span class="keyword">const</span> matches = ref(mediaQuery.matches)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> handler = <span class="function">(<span class="params">event: MediaQueryListEvent</span>) =&gt;</span> &#123;</span><br><span class="line">    matches.value = event.matches</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="string">'addEventListener'</span> <span class="keyword">in</span> mediaQuery) &#123;</span><br><span class="line">    mediaQuery.addEventListener(<span class="string">'change'</span>, handler)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// @ts-expect-error - fallback for Safari &lt; 14 and older browsers</span></span><br><span class="line">    mediaQuery.addListener(handler)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tryOnUnmounted(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="string">'removeEventListener'</span> <span class="keyword">in</span> mediaQuery) &#123;</span><br><span class="line">      mediaQuery.removeEventListener(<span class="string">'change'</span>, handler)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// @ts-expect-error - fallback for Safari &lt; 14 and older browsers</span></span><br><span class="line">      mediaQuery.removeListener(handler)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> matches</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用时</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> isLargeScreen = useMediaQuery(<span class="string">'(min-width: 1024px)'</span>)</span><br></pre></td></tr></table></figure>
+<p>除了 <code>useMediaQuery</code>, 还有许多</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>初始值</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>useMediaQuery</td>
+<td>window.matchMedia</td>
+<td>window的blur和focus事件</td>
+</tr>
+<tr>
+<td>useBattery</td>
+<td>navigator.getBattery()</td>
+<td>Battery 的 ‘chargingchange’, ‘chargingtimechange’, ‘dischargingtimechange’</td>
+</tr>
+<tr>
+<td>usePermission</td>
+<td>navigator.permissions</td>
+<td>navigator.permissions 返回的status 的change事件</td>
+</tr>
+<tr>
+<td>usePerferredLanguages</td>
+<td>navigator.languages</td>
+<td>Window的 languagechange事件</td>
+</tr>
+<tr>
+<td>useDeviceMotion</td>
+<td>无</td>
+<td>Window 的 devicemotion事件</td>
+</tr>
+<tr>
+<td>useDeviceOrientation</td>
+<td>无</td>
+<td>window的 deviceorientation事件</td>
+</tr>
+<tr>
+<td>useDocumentVisibility</td>
+<td>Document.visiblityState</td>
+<td>Document 的 visibilitychange事件</td>
+</tr>
+<tr>
+<td>useElementBounding</td>
+<td>无</td>
+<td>ResizeObserver</td>
+</tr>
+<tr>
+<td>useResizeObserver</td>
+<td>无</td>
+<td>Window.ResizeObserver 回调</td>
+</tr>
+<tr>
+<td>useGeolocation</td>
+<td>无</td>
+<td>Navigator.geolocation.watchPosition 回调</td>
+</tr>
+<tr>
+<td>useMouse</td>
+<td>无</td>
+<td>window的mouse move</td>
+</tr>
+<tr>
+<td>useMutationObserver</td>
+<td>无</td>
+<td>window.MutationObserver的回调</td>
+</tr>
+<tr>
+<td>useNetwork</td>
+<td>Navigator.connection</td>
+<td>window的offline,online事件，connection的change事件</td>
+</tr>
+<tr>
+<td>useWindowScroll</td>
+<td>window.pageXOffest, window.pageYOffset</td>
+<td>Window 的scroll事件</td>
+</tr>
+</tbody>
+</table>
+<p><code>useResizeObserver</code> 使用 <code>window.ResizeObserver</code>的回调更新值，也可以做到响应式</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">useResizeObserver</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  target: MaybeElementRef,</span></span></span><br><span class="line"><span class="function"><span class="params">  callback: ResizeObserverCallback,</span></span></span><br><span class="line"><span class="function"><span class="params">  options: ResizeObserverOptions = &#123;&#125;,</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="built_in">window</span> = defaultWindow, ...observerOptions &#125; = options</span><br><span class="line">  <span class="keyword">let</span> observer: ResizeObserver | <span class="literal">undefined</span></span><br><span class="line">  <span class="keyword">const</span> isSupported = <span class="built_in">window</span> &amp;&amp; <span class="string">'ResizeObserver'</span> <span class="keyword">in</span> <span class="built_in">window</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> cleanup = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (observer) &#123;</span><br><span class="line">      observer.disconnect()</span><br><span class="line">      observer = <span class="literal">undefined</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> stopWatch = watch(</span><br><span class="line">    () =&gt; unrefElement(target),</span><br><span class="line">    (el) =&gt; &#123;</span><br><span class="line">      cleanup()</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (isSupported &amp;&amp; <span class="built_in">window</span> &amp;&amp; el) &#123;</span><br><span class="line">        <span class="comment">// @ts-expect-error missing type</span></span><br><span class="line">        observer = <span class="keyword">new</span> <span class="built_in">window</span>.ResizeObserver(callback)</span><br><span class="line">        observer!.observe(el, observerOptions)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123; immediate: <span class="literal">true</span>, flush: <span class="string">'post'</span> &#125;,</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> stop = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    cleanup()</span><br><span class="line">    stopWatch()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tryOnUnmounted(stop)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    isSupported,</span><br><span class="line">    stop,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的 <code>isSupported</code>是普通变量，因为这种不会变化。</p>
+<h4 id="变化的参数"><a href="#变化的参数" class="headerlink" title="变化的参数"></a>变化的参数</h4><p>浏览器不会无故变化，由外部控制变化。从实现方式上来看，可以通过 watch函数参数来监听外部变化。此处以 <code>useFavicon</code>为例。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Reactive favicon.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/useFavicon</span></span><br><span class="line"><span class="comment"> * @param newIcon</span></span><br><span class="line"><span class="comment"> * @param options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useFavicon</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  newIcon: MaybeRef&lt;<span class="built_in">string</span> | <span class="literal">null</span> | <span class="literal">undefined</span>&gt; = <span class="literal">null</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">  options: FaviconOptions = &#123;&#125;,</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123;</span><br><span class="line">    baseUrl = <span class="string">''</span>,</span><br><span class="line">    rel = <span class="string">'icon'</span>,</span><br><span class="line">    <span class="built_in">document</span> = defaultDocument,</span><br><span class="line">  &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> favicon = isRef(newIcon)</span><br><span class="line">    ? newIcon</span><br><span class="line">    : ref&lt;<span class="built_in">string</span> | <span class="literal">null</span>&gt;(newIcon)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> applyIcon = <span class="function">(<span class="params">icon: <span class="built_in">string</span></span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">document</span>?.head</span><br><span class="line">      .querySelectorAll&lt;HTMLLinkElement&gt;(<span class="string">`link[rel*="<span class="subst">$&#123;rel&#125;</span>"]`</span>)</span><br><span class="line">      .forEach(<span class="function"><span class="params">el</span> =&gt;</span> el.href = <span class="string">`<span class="subst">$&#123;baseUrl&#125;</span><span class="subst">$&#123;icon&#125;</span>`</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  watch(</span><br><span class="line">    favicon,</span><br><span class="line">    (i, o) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (isString(i) &amp;&amp; i !== o)</span><br><span class="line">        applyIcon(i)</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123; immediate: <span class="literal">true</span> &#125;,</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> favicon</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除了 <code>useFavicon</code>之外，还有 <code>useTitle</code>, <code>useCssVar</code> 也是同样的思路。</p>
+<h4 id="返回响应式的状态与方法"><a href="#返回响应式的状态与方法" class="headerlink" title="返回响应式的状态与方法"></a>返回响应式的状态与方法</h4><p>有些情况，我们需要修改状态，但是又不能简单使用第二种方式。比如 <code>useClipboard</code>, <code>useFullscreen</code>。这里以<code>useFullscreen</code> 为例，他可以控制将某个元素设置为全屏模式</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> el = ref&lt;HTMLElement | <span class="literal">null</span>&gt;(<span class="literal">null</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; isFullscreen, enter, exit, toggle &#125; = useFullscreen(el)</span><br></pre></td></tr></table></figure>
+<p>实现上</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> FunctionMap = [</span><br><span class="line">  <span class="string">'requestFullscreen'</span>,</span><br><span class="line">  <span class="string">'exitFullscreen'</span>,</span><br><span class="line">  <span class="string">'fullscreenElement'</span>,</span><br><span class="line">  <span class="string">'fullscreenEnabled'</span>,</span><br><span class="line">  <span class="string">'fullscreenchange'</span>,</span><br><span class="line">  <span class="string">'fullscreenerror'</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment">// from: https://github.com/sindresorhus/screenfull.js/blob/master/src/screenfull.js</span></span><br><span class="line"><span class="keyword">const</span> <span class="function"><span class="keyword">function</span><span class="title">sMap</span>: <span class="title">FunctionMap</span>[] = [</span></span><br><span class="line"><span class="function">  [</span></span><br><span class="line"><span class="function">    '<span class="title">requestFullscreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">exitFullscreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">fullscreenElement</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">fullscreenEnabled</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">fullscreenchange</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">fullscreenerror</span>',</span></span><br><span class="line"><span class="function">  ],</span></span><br><span class="line"><span class="function">  // <span class="title">New</span> <span class="title">WebKit</span></span></span><br><span class="line"><span class="function">  [</span></span><br><span class="line"><span class="function">    '<span class="title">webkitRequestFullscreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitExitFullscreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitFullscreenElement</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitFullscreenEnabled</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitfullscreenchange</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitfullscreenerror</span>',</span></span><br><span class="line"><span class="function">  ],</span></span><br><span class="line"><span class="function">  // <span class="title">Old</span> <span class="title">WebKit</span></span></span><br><span class="line"><span class="function">  [</span></span><br><span class="line"><span class="function">    '<span class="title">webkitRequestFullScreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitCancelFullScreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitCurrentFullScreenElement</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitCancelFullScreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitfullscreenchange</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">webkitfullscreenerror</span>',</span></span><br><span class="line"><span class="function">  ],</span></span><br><span class="line"><span class="function">  [</span></span><br><span class="line"><span class="function">    '<span class="title">mozRequestFullScreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">mozCancelFullScreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">mozFullScreenElement</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">mozFullScreenEnabled</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">mozfullscreenchange</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">mozfullscreenerror</span>',</span></span><br><span class="line"><span class="function">  ],</span></span><br><span class="line"><span class="function">  [</span></span><br><span class="line"><span class="function">    '<span class="title">msRequestFullscreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">msExitFullscreen</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">msFullscreenElement</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">msFullscreenEnabled</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">MSFullscreenChange</span>',</span></span><br><span class="line"><span class="function">    '<span class="title">MSFullscreenError</span>',</span></span><br><span class="line"><span class="function">  ],</span></span><br><span class="line"><span class="function">] <span class="title">as</span> <span class="title">any</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">/**</span></span><br><span class="line"><span class="function"> * <span class="title">Reactive</span> <span class="title">Fullscreen</span> <span class="title">API</span>.</span></span><br><span class="line"><span class="function"> *</span></span><br><span class="line"><span class="function"> * @<span class="title">link</span> <span class="title">https</span>://<span class="title">vueuse</span>.<span class="title">org</span>/<span class="title">useFullscreen</span></span></span><br><span class="line"><span class="function"> * @<span class="title">param</span> <span class="title">target</span></span></span><br><span class="line"><span class="function"> * @<span class="title">param</span> <span class="title">options</span></span></span><br><span class="line"><span class="function"> */</span></span><br><span class="line"><span class="function"><span class="title">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useFullscreen</span>(<span class="params"></span></span></span></span><br><span class="line"><span class="function"><span class="function"><span class="params">  target?: MaybeElementRef,</span></span></span></span><br><span class="line"><span class="function"><span class="function"><span class="params">  options: ConfigurableDocument = &#123;&#125;,</span></span></span></span><br><span class="line"><span class="function"><span class="function"><span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="function">  <span class="title">const</span> </span>&#123; <span class="built_in">document</span> = defaultDocument &#125; = options</span><br><span class="line">  <span class="keyword">const</span> targetRef = ref(target || <span class="built_in">document</span>?.querySelector(<span class="string">'html'</span>))</span><br><span class="line">  <span class="keyword">const</span> isFullscreen = ref(<span class="literal">false</span>)</span><br><span class="line">  <span class="keyword">let</span> isSupported = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> map: FunctionMap = <span class="function"><span class="keyword">function</span><span class="title">sMap</span>[0]</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  <span class="title">if</span> (<span class="params">!<span class="built_in">document</span></span>) </span>&#123;</span><br><span class="line">    isSupported = <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> m of <span class="function"><span class="keyword">function</span><span class="title">sMap</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (m[<span class="number">1</span>] <span class="keyword">in</span> <span class="built_in">document</span>) &#123;</span><br><span class="line">        map = m</span><br><span class="line">        isSupported = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> [REQUEST, EXIT, ELEMENT,, EVENT] = map</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">exit</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!isSupported)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">document</span>?.[ELEMENT])</span><br><span class="line">      <span class="keyword">await</span> <span class="built_in">document</span>[EXIT]()</span><br><span class="line"></span><br><span class="line">    isFullscreen.value = <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">enter</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!isSupported)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> exit()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (targetRef.value) &#123;</span><br><span class="line">      <span class="keyword">await</span> targetRef.value[REQUEST]()</span><br><span class="line">      isFullscreen.value = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">toggle</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isFullscreen.value)</span><br><span class="line">      <span class="keyword">await</span> exit()</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      <span class="keyword">await</span> enter()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">document</span>) &#123;</span><br><span class="line">    useEventListener(<span class="built_in">document</span>, EVENT, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      isFullscreen.value = !!<span class="built_in">document</span>?.[ELEMENT]</span><br><span class="line">    &#125;, <span class="literal">false</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    isSupported,</span><br><span class="line">    isFullscreen,</span><br><span class="line">    enter,</span><br><span class="line">    exit,</span><br><span class="line">    toggle,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到返回了当前的状态，以及用来控制状态的方法。其实这种场景如果使用返回响应式变量，通过修改响应式变量的方式也可以实现 “部分功能”，比如<code>isFullscreen.value = false</code> 就将改元素退出全屏。也不是不可以，只不过这里 使用<code>enter</code>, <code>exit</code>, <code>toggle</code> 语义功能上来说会更加完整，而且，函数还可以传递参数（比如useClipboard)。还有<code>useScriptTag</code>，<code>useShare</code> 也是类似的思路。</p>
+<p>可以看下 <code>useShare</code> 是一个典型的例子，需要返回函数用来传递参数</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; share, isSupported &#125; = useShare()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">startShare</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  share(&#123;</span><br><span class="line">    title: <span class="string">'Hello'</span>,</span><br><span class="line">    text: <span class="string">'Hello my friend!'</span>,</span><br><span class="line">    url: location.href,</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> shareOptions = ref&lt;ShareOptions&gt;(&#123; text: <span class="string">'foo'</span> &#125;)</span><br><span class="line"><span class="keyword">const</span> &#123; share, isSupported &#125; = useShare(shareOptions)</span><br><span class="line"></span><br><span class="line">shareOptions.value.text = <span class="string">'bar'</span></span><br><span class="line"></span><br><span class="line">share()</span><br></pre></td></tr></table></figure>
+<p>可以接收一个参数是一个配置对象。也可以直接往 <code>share</code>里传配置对象</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useShare</span>(<span class="params">shareOptions: MaybeRef&lt;ShareOptions&gt; = &#123;&#125;, options: ConfigurableNavigator = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; navigator = defaultNavigator &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> _navigator = (navigator <span class="keyword">as</span> NavigatorWithShare)</span><br><span class="line">  <span class="keyword">const</span> isSupported = _navigator &amp;&amp; <span class="string">'canShare'</span> <span class="keyword">in</span> _navigator</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> share = <span class="keyword">async</span>(overrideOptions: MaybeRef&lt;ShareOptions&gt; = &#123;&#125;) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (isSupported) &#123;</span><br><span class="line">      <span class="keyword">const</span> data = &#123;</span><br><span class="line">        ...unref(shareOptions),</span><br><span class="line">        ...unref(overrideOptions),</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">let</span> granted = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (data.files &amp;&amp; _navigator.canShare)</span><br><span class="line">        granted = _navigator.canShare(&#123; files: data.files &#125;)</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (granted)</span><br><span class="line">        <span class="keyword">return</span> _navigator.share!(data)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    isSupported,</span><br><span class="line">    share,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="监听事件"><a href="#监听事件" class="headerlink" title="监听事件"></a>监听事件</h4><p>可以将 , domRef传入composition api中，达到事件监听。比如 <code>onClickOutisde</code>, <code>onKeyStroke</code>, <code>onStartTyping</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> events = [<span class="string">'mousedown'</span>, <span class="string">'touchstart'</span>, <span class="string">'pointerdown'</span>] <span class="keyword">as</span> <span class="keyword">const</span></span><br><span class="line"><span class="keyword">type</span> EventType = WindowEventMap[(<span class="keyword">typeof</span> events)[<span class="built_in">number</span>]]</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Listen for clicks outside of an element.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/onClickOutside</span></span><br><span class="line"><span class="comment"> * @param target</span></span><br><span class="line"><span class="comment"> * @param handler</span></span><br><span class="line"><span class="comment"> * @param options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">onClickOutside</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  target: MaybeElementRef,</span></span></span><br><span class="line"><span class="function"><span class="params">  handler: (evt: EventType) =&gt; <span class="built_in">void</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">  options: ConfigurableWindow = &#123;&#125;,</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="built_in">window</span> = defaultWindow &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">window</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> listener = <span class="function">(<span class="params">event: EventType</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> el = unrefElement(target)</span><br><span class="line">    <span class="keyword">if</span> (!el)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (el === event.target || event.composedPath().includes(el))</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    handler(event)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> disposables: Fn[] = events</span><br><span class="line">    .map(<span class="function"><span class="params">event</span> =&gt;</span> useEventListener(<span class="built_in">window</span>, event, listener, &#123; passive: <span class="literal">true</span> &#125;))</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> stop = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    disposables.forEach(<span class="function"><span class="params">stop</span> =&gt;</span> stop())</span><br><span class="line">    disposables = []</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tryOnUnmounted(stop)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> stop</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>onStartTyping</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> isFocusedElementEditable = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; activeElement, body &#125; = <span class="built_in">document</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!activeElement)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// If not element has focus, we assume it is not editable, too.</span></span><br><span class="line">  <span class="keyword">if</span> (activeElement === body)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Assume &lt;input&gt; and &lt;textarea&gt; elements are editable.</span></span><br><span class="line">  <span class="keyword">switch</span> (activeElement.tagName) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'INPUT'</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'TEXTAREA'</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check if any other focused element id editable.</span></span><br><span class="line">  <span class="keyword">return</span> activeElement.hasAttribute(<span class="string">'contenteditable'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> isTypedCharValid = (&#123;</span><br><span class="line">  keyCode,</span><br><span class="line">  metaKey,</span><br><span class="line">  ctrlKey,</span><br><span class="line">  altKey,</span><br><span class="line">&#125;: KeyboardEvent) =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span> (metaKey || ctrlKey || altKey)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 0...9</span></span><br><span class="line">  <span class="keyword">if</span> ((keyCode &gt;= <span class="number">48</span> &amp;&amp; keyCode &lt;= <span class="number">57</span>) || (keyCode &gt;= <span class="number">96</span> &amp;&amp; keyCode &lt;= <span class="number">105</span>))</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// a...z</span></span><br><span class="line">  <span class="keyword">if</span> (keyCode &gt;= <span class="number">65</span> &amp;&amp; keyCode &lt;= <span class="number">90</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// All other keys.</span></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Fires when users start typing on non-editable elements.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/onStartTyping</span></span><br><span class="line"><span class="comment"> * @param callback</span></span><br><span class="line"><span class="comment"> * @param options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">onStartTyping</span>(<span class="params">callback: (event: KeyboardEvent) =&gt; <span class="built_in">void</span>, options: ConfigurableDocument = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="built_in">document</span> = defaultDocument &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> keydown = <span class="function">(<span class="params">event: KeyboardEvent</span>) =&gt;</span> &#123;</span><br><span class="line">    !isFocusedElementEditable()</span><br><span class="line">      &amp;&amp; isTypedCharValid(event)</span><br><span class="line">      &amp;&amp; callback(event)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">document</span>)</span><br><span class="line">    useEventListener(<span class="built_in">document</span>, <span class="string">'keydown'</span>, keydown, &#123; passive: <span class="literal">true</span> &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>原理都一样，监听事件，调用回调。只不过是使用composition api的方式来实现</p>
+<h4 id="回调"><a href="#回调" class="headerlink" title="回调"></a>回调</h4><p>vueuse 中还有一些 <code>useRafFn</code>, <code>useTimeoutFn</code>, <code>useIntervalFn</code> 这类函数。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useRafFn</span>(<span class="params">fn: Fn, options: RafFnOptions = &#123;&#125;</span>): <span class="title">RafFnReturn</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123;</span><br><span class="line">    immediate = <span class="literal">true</span>,</span><br><span class="line">    <span class="built_in">window</span> = defaultWindow,</span><br><span class="line">  &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> isActive = ref(<span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">loop</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!isActive.value)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    fn()</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">window</span>)</span><br><span class="line">      <span class="built_in">window</span>.requestAnimationFrame(loop)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">resume</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!isActive.value) &#123;</span><br><span class="line">      isActive.value = <span class="literal">true</span></span><br><span class="line">      loop()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">pause</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    isActive.value = <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (immediate)</span><br><span class="line">    resume()</span><br><span class="line"></span><br><span class="line">  tryOnUnmounted(pause)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    isActive,</span><br><span class="line">    pause,</span><br><span class="line">    resume,</span><br><span class="line">    stop: pause,</span><br><span class="line">    start: resume,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="其他有意思的实现"><a href="#其他有意思的实现" class="headerlink" title="其他有意思的实现"></a>其他有意思的实现</h2><p> <code>usePageLeave</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">usePageLeave</span>(<span class="params">options: ConfigurableWindow = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="built_in">window</span> = defaultWindow &#125; = options</span><br><span class="line">  <span class="keyword">const</span> isLeft = ref(<span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> handler = <span class="function">(<span class="params">event: MouseEvent</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">window</span>)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    event = event || (<span class="built_in">window</span>.event <span class="keyword">as</span> <span class="built_in">any</span>)</span><br><span class="line">    <span class="comment">// @ts-ignore</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">from</span> = event.relatedTarget || event.toElement</span><br><span class="line">    isLeft.value = !<span class="keyword">from</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">window</span>) &#123;</span><br><span class="line">    useEventListener(<span class="built_in">window</span>, <span class="string">'mouseout'</span>, handler, &#123; passive: <span class="literal">true</span> &#125;)</span><br><span class="line">    useEventListener(<span class="built_in">window</span>.document, <span class="string">'mouseleave'</span>, handler, &#123; passive: <span class="literal">true</span> &#125;)</span><br><span class="line">    useEventListener(<span class="built_in">window</span>.document, <span class="string">'mouseenter'</span>, handler, &#123; passive: <span class="literal">true</span> &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> isLeft</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>视差滚动<code>useParallax</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useParallax</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  target: MaybeElementRef,</span></span></span><br><span class="line"><span class="function"><span class="params">  options: ParallaxOptions = &#123;&#125;,</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">ParallaxReturn</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123;</span><br><span class="line">    deviceOrientationTiltAdjust = <span class="function"><span class="params">i</span> =&gt;</span> i,</span><br><span class="line">    deviceOrientationRollAdjust = <span class="function"><span class="params">i</span> =&gt;</span> i,</span><br><span class="line">    mouseTiltAdjust = <span class="function"><span class="params">i</span> =&gt;</span> i,</span><br><span class="line">    mouseRollAdjust = <span class="function"><span class="params">i</span> =&gt;</span> i,</span><br><span class="line">    <span class="built_in">window</span> = defaultWindow,</span><br><span class="line">  &#125; = options</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> orientation = reactive(useDeviceOrientation(&#123; <span class="built_in">window</span> &#125;))</span><br><span class="line">  <span class="keyword">const</span> &#123;</span><br><span class="line">    elementX: x,</span><br><span class="line">    elementY: y,</span><br><span class="line">    elementWidth: width,</span><br><span class="line">    elementHeight: height,</span><br><span class="line">  &#125; = useMouseInElement(target, &#123; handleOutside: <span class="literal">false</span>, <span class="built_in">window</span> &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> source = computed(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (orientation.isSupported</span><br><span class="line">      &amp;&amp; ((orientation.alpha != <span class="literal">null</span> &amp;&amp; orientation.alpha !== <span class="number">0</span>) || (orientation.gamma != <span class="literal">null</span> &amp;&amp; orientation.gamma !== <span class="number">0</span>))</span><br><span class="line">    )</span><br><span class="line">      <span class="keyword">return</span> <span class="string">'deviceOrientation'</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'mouse'</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> roll = computed(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (source.value === <span class="string">'deviceOrientation'</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> value = -orientation.beta! <span class="regexp">/ 90</span></span><br><span class="line"><span class="regexp">      return deviceOrientationRollAdjust(value)</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">    else &#123;</span></span><br><span class="line"><span class="regexp">      const value = -(y.value - height.value /</span> <span class="number">2</span>) / height.value</span><br><span class="line">      <span class="keyword">return</span> mouseRollAdjust(value)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> tilt = computed(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (source.value === <span class="string">'deviceOrientation'</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> value = orientation.gamma! <span class="regexp">/ 90</span></span><br><span class="line"><span class="regexp">      return deviceOrientationTiltAdjust(value)</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">    else &#123;</span></span><br><span class="line"><span class="regexp">      const value = (x.value - width.value /</span> <span class="number">2</span>) / width.value</span><br><span class="line">      <span class="keyword">return</span> mouseTiltAdjust(value)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123; roll, tilt, source &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>templateRef 的实现也很有意思，它的用法是不需要返回ref，直接绑定dom</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">template&gt;</span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">"target"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">lang</span>=<span class="string">"ts"</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> &#123; templateRef &#125; <span class="keyword">from</span> <span class="string">'@vueuse/core'</span></span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line"><span class="undefined">  setup() &#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> target = templateRef(<span class="string">'target'</span>)</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">    <span class="comment">// no need to return the `target`, it will bind to the ref magically</span></span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="undefined">&#125;</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Shorthand for binding ref to template element.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @link https://vueuse.org/templateRef</span></span><br><span class="line"><span class="comment"> * @param key</span></span><br><span class="line"><span class="comment"> * @param initialValue</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">templateRef</span>&lt;<span class="title">T</span> <span class="title">extends</span> <span class="title">Element</span> | <span class="title">null</span>&gt;(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  key: <span class="built_in">string</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">  initialValue: T | <span class="literal">null</span> = <span class="literal">null</span>,</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">Readonly</span>&lt;<span class="title">Ref</span>&lt;<span class="title">T</span>&gt;&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> instance = getCurrentInstance()</span><br><span class="line">  <span class="keyword">let</span> _trigger = <span class="function"><span class="params">()</span> =&gt;</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> element = customRef(<span class="function">(<span class="params">track, trigger</span>) =&gt;</span> &#123;</span><br><span class="line">    _trigger = trigger</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="keyword">get</span>() &#123;</span><br><span class="line">        track()</span><br><span class="line">        <span class="keyword">return</span> instance?.proxy?.$refs[key] ?? initialValue</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="keyword">set</span>() &#123;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  onMounted(_trigger)</span><br><span class="line">  onUpdated(_trigger)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> element <span class="keyword">as</span> Readonly&lt;Ref&lt;T&gt;&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>利用自定义Ref在 get的时候返回instance的 ref，然后在 渲染完成之后手动调用 trigger 触发更新，依赖于这个ref的变量将会重新取值。</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -190,7 +333,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -203,474 +346,135 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://colgin.com/2021/06/22/patterns-in-vue-composition-api/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/14/rethink-vue-composition/" class="archive-article-date">
-  	<time datetime="2021-06-14T02:33:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-14</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/06/14/rethink-vue-composition/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Rethink vue composition api</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/14/rethink-vue-composition/">Rethink vue composition api</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Composition api</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前提"><span class="toc-number">1.</span> <span class="toc-text">前提</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常见的模式"><span class="toc-number">2.</span> <span class="toc-text">常见的模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#状态-事件"><span class="toc-number">2.1.</span> <span class="toc-text">状态 + 事件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#固定参数，结果是浏览器依据环境变化的"><span class="toc-number">2.1.1.</span> <span class="toc-text">固定参数，结果是浏览器依据环境变化的</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#变化的参数"><span class="toc-number">2.1.2.</span> <span class="toc-text">变化的参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#返回响应式的状态与方法"><span class="toc-number">2.1.3.</span> <span class="toc-text">返回响应式的状态与方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#监听事件"><span class="toc-number">2.1.4.</span> <span class="toc-text">监听事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#回调"><span class="toc-number">2.1.5.</span> <span class="toc-text">回调</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他有意思的实现"><span class="toc-number">3.</span> <span class="toc-text">其他有意思的实现</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/13/dynamic-param-composition-api/" class="archive-article-date">
-  	<time datetime="2021-06-13T11:18:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/13/dynamic-param-composition-api/">composition api 的参数传递</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Composition Api</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/12/renderer/" class="archive-article-date">
-  	<time datetime="2021-06-11T17:40:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/12/renderer/">renderer</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">React</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">renderer</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/React/" class="article-tag-list-link color1">React</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/06/04/broken-thoughts/" class="archive-article-date">
-  	<time datetime="2021-06-04T01:03:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/06/04/broken-thoughts/">broken_thoughts</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Note/" class="article-tag-list-link color5">Note</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/28/type-challenges/" class="archive-article-date">
-  	<time datetime="2021-05-27T17:03:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/28/type-challenges/">type-challenges</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">TypeScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Daily</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/typescript/" class="article-tag-list-link color1">typescript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/28/security-in-language/" class="archive-article-date">
-  	<time datetime="2021-05-27T16:20:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/28/security-in-language/">从stackblitz看security</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Node</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/思考/" class="article-tag-list-link color3">思考</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/15/promise-wrapper/" class="archive-article-date">
-  	<time datetime="2021-05-15T07:51:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/15/promise-wrapper/">Promise的二次封装</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/JavaScript/" class="article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/03/07/component-update-in-vue3/" class="archive-article-date">
-  	<time datetime="2021-03-07T07:52:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/03/07/component-update-in-vue3/">Vue3中的shouldComponentUpdate</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue3</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Source Code</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/03/07/watch-in-vue3/" class="archive-article-date">
-  	<time datetime="2021-03-07T07:26:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/03/07/watch-in-vue3/">Vue3中的watch执行时机</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue3</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Source Code</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Vue/" class="article-tag-list-link color4">Vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
 
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/2021/page/2/">2</a><a class="extend next" rel="next" href="/archives/2021/page/2/">Next &raquo;</a>
-    </nav>
+  
+
+  
+  
+      <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+
+<script>
+    var gitalk = new Gitalk({
+      clientID: 'a95b74318f4522128abf',
+      clientSecret: '5fb7f1cb62419a8fe164e75e4bf37d4aa2b307b3',
+      repo: 'colgin.github.io',
+      owner: 'colgin',
+      admin: ['colgin'],
+      id: md5(window.location.pathname),
+      distractionFreeMode: true
+  })
+
+    gitalk.render('gitalk-container')
+</script>
+
   
 
 
@@ -694,8 +498,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
