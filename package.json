@@ -26,6 +26,7 @@
     "gatsby-transformer-remark": "^5.17.0",
     "gatsby-transformer-sharp": "^4.17.0",
     "lxgw-wenkai-lite-webfont": "^1.6.0",
+    "new-github-issue-url": "^1.0.0",
     "prismjs": "^1.28.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
