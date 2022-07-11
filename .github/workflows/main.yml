@@ -33,11 +33,11 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: install
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       # Runs a set of commands using the runners shell
       - name: build
-        run: npm run build
+        run: yarn run build
         
       # Deploy to gh-pages brnach
       - name: deploy to git-pages
