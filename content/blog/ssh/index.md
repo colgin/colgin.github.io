@@ -57,6 +57,18 @@ IdentityFile ~/.ssh/ecs_rsa
 
 这样之后就可以直接`ssh tengxunyun` 登录服务器了。是不是一下子方便了很多呢？
 
+除了上面提到的这些配置登录信息的字段外，还可以配置ssh保持连接，防止断掉
+
+```
+Host *
+ServerAliveInterval 30
+TCPKeepAlive yes
+ServerAliveCountMax 6
+Compression yes
+```
+
+更多配置可以通过`man ssh config`查阅。
+
 ### sshd 
 
 sshd是服务器端ssh的守护进程，可以做一些ssh登录配置，其配置文件在`/etc/ssh/sshd_config`
