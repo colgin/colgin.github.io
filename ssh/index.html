@@ -34,6 +34,13 @@ HostName 11.22.33.44
 User root
 IdentityFile ~/.ssh/ecs_rsa</code></pre></div>
 <p>这样之后就可以直接<code class="language-text">ssh tengxunyun</code> 登录服务器了。是不是一下子方便了很多呢？</p>
+<p>除了上面提到的这些配置登录信息的字段外，还可以配置ssh保持连接，防止断掉</p>
+<div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">Host *
+ServerAliveInterval 30
+TCPKeepAlive yes
+ServerAliveCountMax 6
+Compression yes</code></pre></div>
+<p>更多配置可以通过<code class="language-text">man ssh config</code>查阅。</p>
 <h3>sshd</h3>
 <p>sshd是服务器端ssh的守护进程，可以做一些ssh登录配置，其配置文件在<code class="language-text">/etc/ssh/sshd_config</code></p>
 <div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text"># 禁用密码登录

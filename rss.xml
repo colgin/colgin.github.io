@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[A personal blog to record what I meeting in my daily job.]]></description><link>https://colgin.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Mon, 11 Jul 2022 17:56:13 GMT</lastBuildDate><item><title><![CDATA[vue如何打包分发代码]]></title><description><![CDATA[随着前端工程变得越来越复杂，各种构建工具也层出不穷，原生esm 的支持，同构应用需要在node 环境下运行代码，本文将以vue 框架入手，探讨库作者应该如何给不同场景提供不同的文件。 首先可以知道vue 是一个monorepo的架构，各个子包都使用同一份rollup…]]></description><link>https://colgin.github.io/vue-bundle/</link><guid isPermaLink="false">https://colgin.github.io/vue-bundle/</guid><pubDate>Sun, 03 Jul 2022 17:59:30 GMT</pubDate><content:encoded>&lt;p&gt;随着前端工程变得越来越复杂，各种构建工具也层出不穷，原生esm 的支持，同构应用需要在node 环境下运行代码，本文将以vue 框架入手，探讨库作者应该如何给不同场景提供不同的文件。&lt;!-- more --&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[A personal blog to record what I meeting in my daily job.]]></description><link>https://colgin.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sat, 16 Jul 2022 04:19:00 GMT</lastBuildDate><item><title><![CDATA[vue如何打包分发代码]]></title><description><![CDATA[随着前端工程变得越来越复杂，各种构建工具也层出不穷，原生esm 的支持，同构应用需要在node 环境下运行代码，本文将以vue 框架入手，探讨库作者应该如何给不同场景提供不同的文件。 首先可以知道vue 是一个monorepo的架构，各个子包都使用同一份rollup…]]></description><link>https://colgin.github.io/vue-bundle/</link><guid isPermaLink="false">https://colgin.github.io/vue-bundle/</guid><pubDate>Sun, 03 Jul 2022 17:59:30 GMT</pubDate><content:encoded>&lt;p&gt;随着前端工程变得越来越复杂，各种构建工具也层出不穷，原生esm 的支持，同构应用需要在node 环境下运行代码，本文将以vue 框架入手，探讨库作者应该如何给不同场景提供不同的文件。&lt;!-- more --&gt;&lt;/p&gt;
 &lt;p&gt;首先可以知道vue 是一个monorepo的架构，各个子包都使用同一份rollup 配置文件进行打包。配置文件可以查看&lt;a href=&quot;https://github.com/vuejs/core/blob/main/rollup.config.js&quot;&gt;vuejs/core rollup.js&lt;/a&gt;。&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; outputConfigs &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
   &lt;span class=&quot;token string-property property&quot;&gt;&apos;esm-bundler&apos;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
@@ -344,6 +344,13 @@ HostName 11.22.33.44
 User root
 IdentityFile ~/.ssh/ecs_rsa&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;这样之后就可以直接&lt;code class=&quot;language-text&quot;&gt;ssh tengxunyun&lt;/code&gt; 登录服务器了。是不是一下子方便了很多呢？&lt;/p&gt;
+&lt;p&gt;除了上面提到的这些配置登录信息的字段外，还可以配置ssh保持连接，防止断掉&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Host *
+ServerAliveInterval 30
+TCPKeepAlive yes
+ServerAliveCountMax 6
+Compression yes&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;更多配置可以通过&lt;code class=&quot;language-text&quot;&gt;man ssh config&lt;/code&gt;查阅。&lt;/p&gt;
 &lt;h3&gt;sshd&lt;/h3&gt;
 &lt;p&gt;sshd是服务器端ssh的守护进程，可以做一些ssh登录配置，其配置文件在&lt;code class=&quot;language-text&quot;&gt;/etc/ssh/sshd_config&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# 禁用密码登录
