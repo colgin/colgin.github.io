@@ -175,7 +175,7 @@ const parseData = formSchema.parse({
 	a: 4,
 	b: 'hell',
 	c: false,
-  z: null
+	z: null
 })
 
 // { a: number, b: string, c: boolean, z: null }
