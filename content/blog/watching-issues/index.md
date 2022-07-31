@@ -21,3 +21,10 @@ vite本身不会提供生成类型文件的能力，如果是纯ts 项目可以�
 [sindresorhus:Why don't you add ES5 transpiled code to your modules for browsers?](https://github.com/sindresorhus/ama/issues/446)
 
 探讨库作者要不要提供转译好的代码，转译到es5还是es6？
+
+[Add flag to not transpile dynamic import() when module is CommonJS](https://github.com/microsoft/TypeScript/issues/43329)
+Node 12+ 已经支持 dynamic import 语句，这也是 node 中使用纯 esm 模块的唯一方式，但是这个语句，tsc 会将其编译为 `require` 语句。
+
+[Pure ESM package](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c)
+
+esm 已经被 Node 原生支持了，[Chalk 5.0](https://github.com/chalk/chalk/releases/tag/v5.0.0) 已经只导出 esm 格式的文件了。
