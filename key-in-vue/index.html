@@ -83,7 +83,36 @@
 <p>可以在<a href="https://codesandbox.io/s/vue-key-yd5lp">codesandbox</a>查看具体效果</p>
 <p>之后的讨论只在上面的代码基础上修改Child组件上key的值。</p>
 <p>首先将key绑定为下标索引值。渲染出来是没有毛病的，但是前面我们看到key作用的时间是在diff的时候，当数据发生变化的时候，vnode节点树就会重新生成，之后通过diff找到修改的地方，然后把修改的地方通过dom方法修改（diff算法可以看看<a href="https://github.com/vuejs/vue/blob/dev/src/core/vdom/patch.js">vue源码</a>或者<a href="https://github.com/snabbdom/snabbdom">snabbdom</a>，二者都采用了双端比较的算法，此处不讨论过多细节），所以，可以先可以在input里输入一些文字，这些文字是存在组件内部state的，然后，点击第二个Chlld的删除，此时却发现，只有外部的info显示更新了，而input里面的文字竟然没有更新</p>
-<p><img src="https://i.loli.net/2020/07/01/EJarH1Nf9ZL4uWe.png" alt="https://i.loli.net/2020/07/01/EJarH1Nf9ZL4uWe.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 476px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/e7468f7b8414b7adbd7a5aaa91960303/f2205/index-key.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 34.177215189873415%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAABYlAAAWJQFJUiTwAAAA+0lEQVQoz42RQWuEMBCF/f+/x4t6EQ/tweLSSo9FVylEXYgaNTEmeWWybE8u7cBjhjDMfHkTaK2hlPJalgXHcWDbNp+fS8NaB4p93yGV8rVzDkFRFIjjGFmWIYoiMMZQ1/Vvw5mMsei6DpfiDW1zRd8x32+tRdD3PTjnGMcRwzB4UU20D/IzTbNAw0bcZg0uNIQQfmiQ5znCMESSJEjT1NO2bYuqqk4praOvOvDV4fOrx2t+wct7g4+yvA8kD8gz2jDPM6Zp8pm8NcacemjMAakOfN8krkyg4wr7fvcxWNcVZVmCvCSy/4R79k5HIZIHnZTSG/vsGH+JCH8AGQsaHg9Qvs0AAAAASUVORK5CYII='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="use index as key"
+        title="use index as key"
+        src="/static/e7468f7b8414b7adbd7a5aaa91960303/f2205/index-key.png"
+        srcset="/static/e7468f7b8414b7adbd7a5aaa91960303/c26ae/index-key.png 158w,
+/static/e7468f7b8414b7adbd7a5aaa91960303/6bdcf/index-key.png 315w,
+/static/e7468f7b8414b7adbd7a5aaa91960303/f2205/index-key.png 476w"
+        sizes="(max-width: 476px) 100vw, 476px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <p>这是为什么呢？让我们回想一下当点击删除的时候发生了什么。首先是数据更新，数据更新之后会触发重新生成vnode，然后进行diff，diff完之后会修改dom。这个diff过程就是key作用的地方，两次的vnode结果大概如下</p>
 <div class="gatsby-highlight" data-language="jsx"><pre class="language-jsx"><code class="language-jsx"><span class="token comment">// 前</span>
 <span class="token punctuation">{</span>
@@ -229,14 +258,103 @@
 <p>看到这里，应该可以知道，前后两次vnode的第二个Child节点，由于tag一样，key都是1，所以这里会复用原来的组件实例，然后调用patchVnode去更新，比如这里就是新vnode与旧版的vnode的name不一样，这些将会通过更新来实现。至于为什么input输入框里的内容没有变，原因是Child组件被复用了，input里的内容受到组件内部state的影响，既然组件没有被销毁，那么就说明了state没有被修改，<strong>这种情况的复用和修改一个组件的props效果是一样的，这也就是文档上所说的就地复用/修改</strong>。</p>
 <p>其实还可以通过count来观察到组件是否是新建的实例，每新建一个实例count就会加1，而key为index，删除了第二条元素，发现最后面的count还是之前的2。这说明了这个Child实例就是之前三个user渲染出来的第二项。</p>
 <p>如果key是user.id的话，删除任意一个元素，sameVnode由于key不相等，不会想之前那样简单复用了，而是根据key去找在旧的children里与当前key相等的元素进行复用，找不到就会创建新的实例，这种情况input 和 后面的count都准确渲染了</p>
-<p><img src="https://i.loli.net/2020/07/02/AZnW8yIF5qCv2JU.png" alt="https://i.loli.net/2020/07/02/AZnW8yIF5qCv2JU.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 580px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/b6272/id-as-key.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 31.645569620253163%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAGCAYAAADDl76dAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAuElEQVQY05WQyQqEMBBE/f/v8igKuSi4oEKUoCIKGtBoSQVmiMocpqBIk+Wlur08z5EkCYQQ6Pse4zjiPE8cx/HyPM9QStl727aB4l1XHoFFUSCOY3Rdh2masO+7fcDVrQmq6xrrumJZli/EhXpRFCEIAoRhCN/3kaYphmGwh8aYmykpJcqytNZav4FM1LYtmqax7fJnpmGLTyDNdDRTf0A3IOeSZRmqqrrN4jmbX3rN0N1g/a+fCS8FVdHHwPlnRwAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="use id as key"
+        title="use id as key"
+        src="/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/b6272/id-as-key.png"
+        srcset="/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/c26ae/id-as-key.png 158w,
+/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/6bdcf/id-as-key.png 315w,
+/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/b6272/id-as-key.png 580w"
+        sizes="(max-width: 580px) 100vw, 580px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <p>如果不传key，每次sameVnode中比较<code class="language-text">undefined === undefined</code>都是成立的，复用也会出现前面说到的和使用索引作为key一样的问题。</p>
 <p>按照上面的分析，可以很快的分析出插入时候的情况。插入是将第二个删除，插入第四个。</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 	<span class="token keyword">this</span><span class="token punctuation">.</span>users<span class="token punctuation">.</span><span class="token function">splice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">id</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'four'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre></div>
 <p>使用索引作为key时，</p>
-<p><img src="https://i.loli.net/2020/07/02/TYtBVCvr7DkHEuG.png" alt="https://i.loli.net/2020/07/02/TYtBVCvr7DkHEuG.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/1243f5eb2f1cd360718060644d6a28b0/6af66/index.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 41.139240506329116%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAAA6ElEQVQoz4WQbWuDMBSF8/9/ml/cOltNQQQ12xQnmtZ3zSknUGhrtl04hLzc55xcMY4j2rZFXdfo+x7cb9u20zzP9r7rOqzrCpYxBq8lsiyD7/vwPA95nlswAcuyPElrjSRJ7D3hd+ArVCilIKVEEASI4xhN0+yATMR0NE/T1ML/THg8BpAyQhiGoME0TbuEPCvLElVV2ZWmLqhQn184RWeE0Rnvhw8olWMYBtvAZBSBbCSIYymK4tc5ilIbHGSGt0hBj3iazaPuiR7L+eXrsOK7uqD4uaKf2GScD11GzoRuV+NM+R+MwBuuI25Rk24i1QAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="index"
+        title="index"
+        src="/static/1243f5eb2f1cd360718060644d6a28b0/f058b/index.png"
+        srcset="/static/1243f5eb2f1cd360718060644d6a28b0/c26ae/index.png 158w,
+/static/1243f5eb2f1cd360718060644d6a28b0/6bdcf/index.png 315w,
+/static/1243f5eb2f1cd360718060644d6a28b0/f058b/index.png 630w,
+/static/1243f5eb2f1cd360718060644d6a28b0/6af66/index.png 640w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <p>使用user.id作为key时</p>
-<p><img src="https://i.loli.net/2020/07/02/rdL29i5n8ywSCHX.png" alt="https://i.loli.net/2020/07/02/rdL29i5n8ywSCHX.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/374ac/id.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 39.87341772151899%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAAA6klEQVQoz42QiwrCMAxF9/+/NlAmKjrGqu0ebFQ3N92je1xJoVKcAy+EpCQ5TeLUdQ0pJbIsA8Vt22KaJozjqL0xpZTOV1WFeZ5BMt6WE4YhPM+D67pIkgRFUWgYAYZh+BiBgiDQefrAAL+hDmMMvu9riBHFNozeTdNACIE4jlGW5fqElwvD8bAH51cIwSHlDV3XLaB93yNNU+R5rm11woBxbHYnuNs9NltPNxGQCu0bkujWURRp4NodHS4VDv4Vu3OCl8KnyIbZUFs/V362I+6PBkXVQQ1UQGvgp8yK9qqLCb9aFk3/QGzgGwlmbzzseXtQAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="id"
+        title="id"
+        src="/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/f058b/id.png"
+        srcset="/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/c26ae/id.png 158w,
+/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/6bdcf/id.png 315w,
+/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/f058b/id.png 630w,
+/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/374ac/id.png 634w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <p>可以看到这里count增加了，说明是创建了新的实例。</p></section><hr/><footer><div class="bio"><div data-gatsby-image-wrapper="" style="width:50px;height:50px" class="gatsby-image-wrapper bio-avatar"><div aria-hidden="true" data-placeholder-image="" style="opacity:1;transition:opacity 500ms linear;background-color:#f8f8f8;width:50px;height:50px;position:relative"></div><picture><source type="image/avif" data-srcset="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/d4bf4/avatar.avif 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/ee81f/avatar.avif 100w" sizes="50px"/><source type="image/webp" data-srcset="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/3faea/avatar.webp 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/6a679/avatar.webp 100w" sizes="50px"/><img data-gatsby-image-ssr="" layout="fixed" data-main-image="" style="opacity:0" sizes="50px" decoding="async" loading="lazy" data-src="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e5610/avatar.png" data-srcset="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e5610/avatar.png 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e9b55/avatar.png 100w" alt="Profile picture"/></picture><noscript><picture><source type="image/avif" srcSet="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/d4bf4/avatar.avif 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/ee81f/avatar.avif 100w" sizes="50px"/><source type="image/webp" srcSet="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/3faea/avatar.webp 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/6a679/avatar.webp 100w" sizes="50px"/><img data-gatsby-image-ssr="" layout="fixed" data-main-image="" style="opacity:0" sizes="50px" decoding="async" loading="lazy" src="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e5610/avatar.png" srcSet="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e5610/avatar.png 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e9b55/avatar.png 100w" alt="Profile picture"/></picture></noscript><script type="module">const t="undefined"!=typeof HTMLImageElement&&"loading"in HTMLImageElement.prototype;if(t){const t=document.querySelectorAll("img[data-main-image]");for(let e of t){e.dataset.src&&(e.setAttribute("src",e.dataset.src),e.removeAttribute("data-src")),e.dataset.srcset&&(e.setAttribute("srcset",e.dataset.srcset),e.removeAttribute("data-srcset"));const t=e.parentNode.querySelectorAll("source[data-srcset]");for(let e of t)e.setAttribute("srcset",e.dataset.srcset),e.removeAttribute("data-srcset");e.complete&&(e.style.opacity=1,e.parentNode.parentNode.querySelector("[data-placeholder-image]").style.opacity=0)}}</script></div><p>Written by <strong>Colgin</strong> <!-- -->who lives and works in China, focus on web development.<!-- --> <a href="https://github.com/colgin/colgin.github.io/issues/new?body=%23%23+context+%0A%0A+%5BVue%E4%B8%AD%E7%9A%84key%5D%28undefined%29+%0A%0A+%23%23+description+%0A%0A+write+something+here" target="_blank" rel="noreferrer">You can comment on github</a></p></div></footer></article><nav class="blog-post-nav"><ul style="display:flex;flex-wrap:wrap;justify-content:space-between;list-style:none;padding:0"><li><a rel="prev" href="/main-field-in-package-json/">← <!-- -->package.json里的main字段</a></li><li><a rel="next" href="/scope-slots-and-render-in-vue/">Vue中的scope slot和render函数<!-- --> →</a></li></ul></nav></main></div></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/key-in-vue/";window.___webpackCompilationHash="e5213d29e0e57a711644";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"polyfill":["/polyfill-67664a8ccc6c9f02b880.js"],"app":["/app-e5a81ed15cd3afa6489c.js"],"component---src-pages-404-js":["/component---src-pages-404-js-27981ca7dd461cb4280e.js"],"component---src-pages-index-js":["/component---src-pages-index-js-0cfaeeffcb942e249934.js"],"component---src-pages-using-typescript-tsx":["/component---src-pages-using-typescript-tsx-2f9b97cf148785549d09.js"],"component---src-templates-blog-post-js":["/component---src-templates-blog-post-js-c85e92099f099d70c03c.js"]};/*]]>*/</script><script src="/polyfill-67664a8ccc6c9f02b880.js" nomodule=""></script><script src="/app-e5a81ed15cd3afa6489c.js" async=""></script><script src="/framework-20708a169de42a473112.js" async=""></script><script src="/webpack-runtime-943dc5132cc65ecdea14.js" async=""></script></body></html>

@@ -200,7 +200,36 @@ indent_style <span class="token operator">=</span> tab</code></pre></div>
 <li>Expressive HTTP middleware framework for node.js to make web applications and APIs more enjoyable to write. Koa’s middleware stack flows in a stack-like manner, allowing you to perform actions downstream then filter and manipulate the response upstream</li>
 </ul>
 <p>koa提供了一个web框架的核心部分，不包含路由处理，静态文件处理（这些都是通过中间件来实现），我们经常会把这种叫做洋葱模型。</p>
-<p>!<img src="https://i.loli.net/2020/05/23/FBRVDXMQpwJny6e.png" alt="2892151181-5ab48de7b5013_articlex.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 478px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/62c210d99d9af8aaa2e1eccf88f9a426/50978/core-of-koa.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 91.13924050632912%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAACXBIWXMAAAsTAAALEwEAmpwYAAADFUlEQVQ4y4VU20uTYRzev1EQBd0U9CcUdF1UdFOWiAeKLryTJhNBWrSau6q8sKHRMpmhsBNuU+YBNvG0DY+bZzc3z6dN8bzpE89PvrVZ0Qu/8b17fzzf83ue5/1UZ2dnYHGlUilEo1GMjY2hubkZRqMRVVVV0Gq1cLvd0pPd/7eluvjH1NQUrFYrXC4XJicnMTQ0BJ1Oh9LSUqytrUnP6enpvwGXlpZweHiIk5MTYbi/v4+Dg4OcpoWFBWg0Gvj9/gwgS2GbXSqn0wm73S6Menp6wP329nYOIPcVFRXwer3/Z8gfstvZ2RGGrGygWCwmepIh5eA6OjpCKBQSCTY2NrC+vi61uroKlSLw1/p67O3tyfPExAQcDocYwSLz7u5uDAwMyDkl6uvrk/+Vybj3eDxQpdNpaTJ80CPgD8Dc1ISGhgaMjIwII2rMN8/OzqK1tfUPfTnd8fHx75EVQJvFipLiYng6PFhZWcHMzIyMRAAyX15eFhb9/f05gJ8/fkI0EpFnYmUAaUzek6dYXFxEJBIRVru7u0gmk+I8taTbCku+rKSwCK9evDw3Kn3uukpx7UdjI/LznuHWjZsIBgJIpdPY3NyUkbg4Fl8eDAbx9o0WVy5dxvWr1xCPxXKcF0CORN16e3tRWFCAB/fuw+10SZPP64XDbsdPcxPev9Oh4Hk+Hj98hLu378iZcsMUczOxMZlMiMfjSCSTCIfCYhCvYflrNUqKiqApL8f3byYYvxjFccpwccnICtWWlhb4fD4BoT48pJ6dnZ0IBALwdHTIOYPf1tYmrKjz1taWZFBxOgNIV+vq6jIfBzYRkHeZug0ODkqYa2pq0NXVhfn5eckro8X+ubk5AVVlC0oH29vbBTwcDktUhoeHhSE/FAy7Xq8XxwnAbI6OjkpW6YPERhGTTTabDWq1WkZisAlCMGpmNptRXV2N8fFxGZWTEJB7Mmd2ZWQFkFrU1tairKwMlZWVMBgMoiuLY1osFsknpSBzTjE9PS2TUBbuhaHijrIYZorPO6p8eQjABCisqB/BqB9HTyQSmSv5C6r7860EfxLZAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="core of koa"
+        title="core of koa"
+        src="/static/62c210d99d9af8aaa2e1eccf88f9a426/50978/core-of-koa.png"
+        srcset="/static/62c210d99d9af8aaa2e1eccf88f9a426/c26ae/core-of-koa.png 158w,
+/static/62c210d99d9af8aaa2e1eccf88f9a426/6bdcf/core-of-koa.png 315w,
+/static/62c210d99d9af8aaa2e1eccf88f9a426/50978/core-of-koa.png 478w"
+        sizes="(max-width: 478px) 100vw, 478px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <p>实际使用中使用use来给koa应用注册中间件，中间件按照注册顺序按序调用，前面的中间件可以调用next()来控制下一个中间件的执行。</p>
 <div class="gatsby-highlight" data-language="jsx"><pre class="language-jsx"><code class="language-jsx"><span class="token keyword">const</span> Koa <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'koa'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Koa</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -425,7 +454,7 @@ app<span class="token punctuation">.</span><span class="token function">listen</
 
 	<span class="token comment">// assertion</span>
 	<span class="token literal-property property">assert</span><span class="token operator">:</span> httpAssert<span class="token punctuation">,</span>
-	
+
 	<span class="token comment">// throw error</span>
 	<span class="token keyword">throw</span><span class="token punctuation">(</span><span class="token operator">...</span>arg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
 		<span class="token keyword">throw</span> <span class="token function">createError</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span>
@@ -528,7 +557,7 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 		<span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>req<span class="token punctuation">.</span>method
 	<span class="token punctuation">}</span><span class="token punctuation">,</span>
 	<span class="token keyword">set</span> <span class="token function">method</span><span class="token punctuation">(</span><span class="token parameter">val</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-		<span class="token keyword">this</span><span class="token punctuation">.</span>req<span class="token punctuation">.</span>method <span class="token operator">=</span> val	
+		<span class="token keyword">this</span><span class="token punctuation">.</span>req<span class="token punctuation">.</span>method <span class="token operator">=</span> val
 	<span class="token punctuation">}</span><span class="token punctuation">,</span>
 	<span class="token keyword">get</span> <span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 		<span class="token keyword">const</span> str <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>querystring<span class="token punctuation">;</span>
@@ -545,10 +574,10 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 	<span class="token keyword">set</span> <span class="token function">querystring</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 		<span class="token keyword">const</span> url <span class="token operator">=</span> <span class="token function">parse</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>req<span class="token punctuation">)</span>
 		<span class="token keyword">if</span> <span class="token punctuation">(</span>url<span class="token punctuation">.</span>search <span class="token operator">===</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">?</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>str<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
-		
+
 		url<span class="token punctuation">.</span>search <span class="token operator">=</span> str
 		url<span class="token punctuation">.</span>patch <span class="token operator">=</span> <span class="token keyword">null</span>
-		
+
 		<span class="token keyword">this</span><span class="token punctuation">.</span>url <span class="token operator">=</span> <span class="token function">stringify</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
 	<span class="token punctuation">}</span><span class="token punctuation">,</span>
 	<span class="token keyword">get</span> <span class="token function">socket</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>

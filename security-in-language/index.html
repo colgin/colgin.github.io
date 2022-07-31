@@ -5,8 +5,72 @@
 <p>stackblitz这个功能配合PWA，完全可以离线使用。可以用来学习各种前端框架，后端SSR框架，Node。看起来还是很不错的。</p>
 <p>在stackblitz的博客中说到 它的一个特性是 “secure by default”。 因为代码的执行全是在浏览器的sandbox中，所以是更加安全的。看到这里，笔者就在思考语言的安全到底是什么意思？一般可以通过什么方式去是实现呢？</p>
 <p>之后，想起ry 曾经的演讲 <a href="https://www.youtube.com/watch?v=M3BM9TB-8yA">我对Node.js遗憾的十件事</a></p>
-<p><img src="https://i.loli.net/2021/05/28/OqIge5XPux4arok.png" alt="截屏2021-05-28 上午12.49.36.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/810f325295f732d69678780dbefcbeb3/92345/v8-recurity.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 50%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAABYlAAAWJQFJUiTwAAABdUlEQVQoz22R2W7CQAxF8/9/UvFW8diWVZSsLKqKupKdTCYBgcoawq3sEApVHo6uZ7Hn2qNYugW1p+Lt9Q2TlwmG5hCWMUAiEiAHjvsj8kN+gdbZLmOtQlnOlwjcAKTzZAEpEiRxitVihd16h+3P9oayGGl2LnL9gEKXqFgapxChKArLOcfxLEYUCshIIgoiZr/ZF8Uq4ILUBo4oyK/0dNZrTsApO1VSOlXWqzW7KyE3BDlMRMqzJKd/e8mNc8qJAsHjYIeHXQbP9vE++YDz7cCzPUw/pxzbXzbcqcszDr2QW575M177jo/ADVk9x+dRUbfKYXNAPJOcLM6vUgIll4nUBX1Q1SeV0BnNVyH7ZHuRzJHKom36FILXsmhbCnnR/5T7cRRDGQ/HGJgD6KoOy7BgaAbHumpA62scG5rJqj6rfE6Yusn3SbW+DkM1MLJGUHqdHur3ddTuamg8NNBpdtButJnWU+uG5mPzEpd3CNon7ba6+AWy5+UXNK73YAAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="v8 security in ry&#39;s talk"
+        title="v8 security in ry&#39;s talk"
+        src="/static/810f325295f732d69678780dbefcbeb3/f058b/v8-recurity.png"
+        srcset="/static/810f325295f732d69678780dbefcbeb3/c26ae/v8-recurity.png 158w,
+/static/810f325295f732d69678780dbefcbeb3/6bdcf/v8-recurity.png 315w,
+/static/810f325295f732d69678780dbefcbeb3/f058b/v8-recurity.png 630w,
+/static/810f325295f732d69678780dbefcbeb3/40601/v8-recurity.png 945w,
+/static/810f325295f732d69678780dbefcbeb3/78612/v8-recurity.png 1260w,
+/static/810f325295f732d69678780dbefcbeb3/92345/v8-recurity.png 2398w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <p>根据ry的说法，node可以随意调用system call，可以访问系统的文件，这在机器上可能会有 安全问题。你无法控制node不让其访问某些文件（这可以通过类似于docker这样的容器来实现隔离？）。ry在介绍deno的时候，谈到deno如何修复这个问题的</p>
-<p><img src="https://i.loli.net/2021/05/28/HcEg1okVKdX9PfR.png" alt="security in deno"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/1786fa68df3cf9669b14605a9f845338/3c2d4/deno-security.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 60.75949367088608%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAACXBIWXMAABYlAAAWJQFJUiTwAAAB10lEQVQoz2VT2XLaQBDU/39KCiTwSyq+qoIBAzqwH2KsmNhggSTEoQOMOQyd6hELjvPQ1XNtz8xKq9mmg9ZtC27nNxyrjWqlhq7bhWM6YO7euYf74GK/3WO72uJj/fEPvsa0LM4QDkPMxjPEkxi+52M2icUe+SNBFERSvHnf/AcKfoa2elthnswRDAIk0wTTaIrJaCKCxDgciyBztAnmWc9mu81OplfQqMpOi3QhhSyiEIUpRCYopOKs40Yql8dzX1O7r5drpLNUpqV4lsxPdpyJTVY1aZzJ1PS55XK+FBwnpMOJ1EoK9EdBdFxz0B8gCsdy1+qauDaHImvqDiiaHbqSiUX6lk8zS5FMU1ntlFsAewA7yPnjV+YBThEMQuk4fB2K7fU8mTj3A/kThq++MMGYf4gTbMBr00I/hD/w4fU99P70BP3nPl66L8K959xXua8+68jBMEQURtCe3CcQnV8dWC0LZtOEbdpi52zDbtlo3jYl1mqYx1zbbkvOsRw8PjyKjsaA1bTktVR/VlG/qQsTtUrtxJVDrpL7jXpDXtGdcyesdLTri2tcXVzh/Ps5ynpZYBQMFL8VcWacQS8YMIoGykYeL+lllIolYb2gH2p0XP64BLX+Ai1VbABrjeSnAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="security in deno"
+        title="security in deno"
+        src="/static/1786fa68df3cf9669b14605a9f845338/f058b/deno-security.png"
+        srcset="/static/1786fa68df3cf9669b14605a9f845338/c26ae/deno-security.png 158w,
+/static/1786fa68df3cf9669b14605a9f845338/6bdcf/deno-security.png 315w,
+/static/1786fa68df3cf9669b14605a9f845338/f058b/deno-security.png 630w,
+/static/1786fa68df3cf9669b14605a9f845338/40601/deno-security.png 945w,
+/static/1786fa68df3cf9669b14605a9f845338/78612/deno-security.png 1260w,
+/static/1786fa68df3cf9669b14605a9f845338/3c2d4/deno-security.png 2092w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <p>通过一些flag可以控制运行时的权限从而保证security。</p>
 <p>另外，常常听到rust说自己是一门安全的语言，是不是也是想表达类似的意思呢？由于笔者在这方面没什么研究，所以这个问题就先搁置了。。</p></section><hr/><footer><div class="bio"><div data-gatsby-image-wrapper="" style="width:50px;height:50px" class="gatsby-image-wrapper bio-avatar"><div aria-hidden="true" data-placeholder-image="" style="opacity:1;transition:opacity 500ms linear;background-color:#f8f8f8;width:50px;height:50px;position:relative"></div><picture><source type="image/avif" data-srcset="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/d4bf4/avatar.avif 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/ee81f/avatar.avif 100w" sizes="50px"/><source type="image/webp" data-srcset="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/3faea/avatar.webp 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/6a679/avatar.webp 100w" sizes="50px"/><img data-gatsby-image-ssr="" layout="fixed" data-main-image="" style="opacity:0" sizes="50px" decoding="async" loading="lazy" data-src="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e5610/avatar.png" data-srcset="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e5610/avatar.png 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e9b55/avatar.png 100w" alt="Profile picture"/></picture><noscript><picture><source type="image/avif" srcSet="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/d4bf4/avatar.avif 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/ee81f/avatar.avif 100w" sizes="50px"/><source type="image/webp" srcSet="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/3faea/avatar.webp 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/6a679/avatar.webp 100w" sizes="50px"/><img data-gatsby-image-ssr="" layout="fixed" data-main-image="" style="opacity:0" sizes="50px" decoding="async" loading="lazy" src="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e5610/avatar.png" srcSet="/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e5610/avatar.png 50w,/static/b7087dd1fbcbfb10f6eeaf13f51331aa/e9b55/avatar.png 100w" alt="Profile picture"/></picture></noscript><script type="module">const t="undefined"!=typeof HTMLImageElement&&"loading"in HTMLImageElement.prototype;if(t){const t=document.querySelectorAll("img[data-main-image]");for(let e of t){e.dataset.src&&(e.setAttribute("src",e.dataset.src),e.removeAttribute("data-src")),e.dataset.srcset&&(e.setAttribute("srcset",e.dataset.srcset),e.removeAttribute("data-srcset"));const t=e.parentNode.querySelectorAll("source[data-srcset]");for(let e of t)e.setAttribute("srcset",e.dataset.srcset),e.removeAttribute("data-srcset");e.complete&&(e.style.opacity=1,e.parentNode.parentNode.querySelector("[data-placeholder-image]").style.opacity=0)}}</script></div><p>Written by <strong>Colgin</strong> <!-- -->who lives and works in China, focus on web development.<!-- --> <a href="https://github.com/colgin/colgin.github.io/issues/new?body=%23%23+context+%0A%0A+%5B%E4%BB%8Estackblitz%E7%9C%8Bsecurity%5D%28undefined%29+%0A%0A+%23%23+description+%0A%0A+write+something+here" target="_blank" rel="noreferrer">You can comment on github</a></p></div></footer></article><nav class="blog-post-nav"><ul style="display:flex;flex-wrap:wrap;justify-content:space-between;list-style:none;padding:0"><li><a rel="prev" href="/promise-in-another-way/">← <!-- -->封装Promise，让他更好用一些</a></li><li><a rel="next" href="/type-challenges/">type-challenges<!-- --> →</a></li></ul></nav></main></div></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/security-in-language/";window.___webpackCompilationHash="e5213d29e0e57a711644";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"polyfill":["/polyfill-67664a8ccc6c9f02b880.js"],"app":["/app-e5a81ed15cd3afa6489c.js"],"component---src-pages-404-js":["/component---src-pages-404-js-27981ca7dd461cb4280e.js"],"component---src-pages-index-js":["/component---src-pages-index-js-0cfaeeffcb942e249934.js"],"component---src-pages-using-typescript-tsx":["/component---src-pages-using-typescript-tsx-2f9b97cf148785549d09.js"],"component---src-templates-blog-post-js":["/component---src-templates-blog-post-js-c85e92099f099d70c03c.js"]};/*]]>*/</script><script src="/polyfill-67664a8ccc6c9f02b880.js" nomodule=""></script><script src="/app-e5a81ed15cd3afa6489c.js" async=""></script><script src="/framework-20708a169de42a473112.js" async=""></script><script src="/webpack-runtime-943dc5132cc65ecdea14.js" async=""></script></body></html>

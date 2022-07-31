@@ -6,7 +6,39 @@
 <h2>bundle, module, chunk</h2>
 <h3>module</h3>
 <p>module 是最好理解的，我们通常会把webpack 描述为 <strong>module bundler</strong>。在webpack中，一切资源都是模块，其实webpack本身智能处理js module，但是通过loader，可以处理不同类型的module，比较常见的比如css，图片，字体。</p>
-<p><img src="https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png" alt="https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/e4085c9afd93aeaa16a1fc7449baf9d6/c9d77/webpack.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 46.202531645569614%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAABYlAAAWJQFJUiTwAAABkUlEQVQoz22SzU7CUBCFeReVSAul0CL0h1LaW0opP0EXJG50Q9CQuNEQ9QHcmJi4cGdMSNywcGOi8T2MceO7HDNDIQ26OLmd27nnfjNzM3lboNgIIZsepJoLyWiyKJaTVUqUt3zIZvIv0Sp/pYzitLDXGiBvCahuGxTLpp8keMjVXMiGC7nqYKdsLM03LkwrU6gH0PwuU9baQ+hBH7roMg2p1AgxvXvC5P4Z/ckFV7G6kAyKTshnVzBMaMUHbFoJetBFD2Y0BLViu2xgdHaF2esXTl++cT5/R7EuUHRaUJM2lZoR1GbEEPTNhEwmuqiGA96stPrcgi21iqPrG1x+/GC8+MT0YQHF8pZEjXBZQTNilb0OSi4Z2gEHJOql5scwO/ucTOWJ0TFObh8xm79BHI6R1S0UbLEegu7HfIaANK+zJKyIHjQvhhENIZNRqvFZ3caubkGxfOSqznqy6aGUvJgl8VBswaVSGWROxEyXEPBTIbN/Jrs2TnJ4yrSputSDmKWLPhQnXCdLxt93t7mffru/w8U7yJa0tVcAAAAASUVORK5CYII='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="webpack"
+        title="webpack"
+        src="/static/e4085c9afd93aeaa16a1fc7449baf9d6/f058b/webpack.png"
+        srcset="/static/e4085c9afd93aeaa16a1fc7449baf9d6/c26ae/webpack.png 158w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/6bdcf/webpack.png 315w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/f058b/webpack.png 630w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/40601/webpack.png 945w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/78612/webpack.png 1260w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/c9d77/webpack.png 1964w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <p>可以看到左边这个就是不同类型的module。</p>
 <p>在webpack官网针对module 还有专门的介绍，简而言之，通过各种语法对各种资源的引用让webpack能够建立起一个依赖树。比如</p>
 <ul>
@@ -62,7 +94,37 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 <li>Dynamic import</li>
 </ul>
 <p>在webpack打包结果中会说明每一个文件来自与哪个chunk</p>
-<p><img src="https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png" alt="https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/647b62e73e87d669b86114a6ad20d915/1cfc2/bundle-result.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 16.455696202531648%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAADCAYAAACTWi8uAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAxUlEQVQI1z3Oy06DQABAUT7GAAqkQAFb5RWgjIUyvKalxpiYRhf9/w+4Bhcu7vbkaqafE3yOZLcFe1cR7QSDXIieBYv6IC5PbK6S8DbjzR3B10Two/DrBtld2CcN4V5gOhmGnaJ5oiG+X/HfB17qjuZtpp7P2MkB71XgHk+E9zPht8IpBXZW41QCKypwtyW6lfLwGP+Ba9o2qhGHkb670LSKouzJh4m4n6iOJe1Y4CnJRraYbo5uxOhmgvGUolvJP7TerYe/iV1o/2gVQvAAAAAASUVORK5CYII='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="打包结果"
+        title="打包结果"
+        src="/static/647b62e73e87d669b86114a6ad20d915/f058b/bundle-result.png"
+        srcset="/static/647b62e73e87d669b86114a6ad20d915/c26ae/bundle-result.png 158w,
+/static/647b62e73e87d669b86114a6ad20d915/6bdcf/bundle-result.png 315w,
+/static/647b62e73e87d669b86114a6ad20d915/f058b/bundle-result.png 630w,
+/static/647b62e73e87d669b86114a6ad20d915/1cfc2/bundle-result.png 900w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <h2>contenthash, chunkhash</h2>
 <p>官网上对chunkhash 的解释是 The hash of chunk content, 对contenthash的解释是 The hash of the content of a file。</p>
 <p>而且还特地标注了，如果使用ExtracTextWebpackPlugin的时候，用contenthash ，不要使用chunkhash。</p>
@@ -128,7 +190,37 @@ console<span class="token punctuation">.</span><span class="token function">log<
 <li>如果二者都是用chunkhash</li>
 </ol>
 <p>A, B 两种情况都会导致打包出来的文件发生变化，而且，二者文件名都是一样的（前提占位符一样）。</p>
-<p><img src="https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png" alt="https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png"></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/a4507725c5884056a6f871c64e92b5a6/748b0/bundle-result-2.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 27.21518987341772%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAABYlAAAWJQFJUiTwAAABE0lEQVQY012OwW6CQAAF+ZkWC6goisXoAorAgi4giETbSxsvvfTYz58mNCZtD5N3epPRzHHILMqQTUsQF8y9hETWxOkRmTec2xdcXzLyY4zFFnMZYQUxxipi4sWksiaMih7dEmj6UODcatzPDkumLJ7TXhhuFFN3R540jFSG93VlfmuYXkrcjxbnvcbZSuK4wrRDBkO/RxsvIlaHElEd8dIDaXJkvVN4bYUpIoZ+hN1VTLuiL9NNweNgjf607osejJ+9o40mm76mKjuUOpPII+GuYKcaNlnJRa3IVcjs7cSkOTCwg/54L/qPZo4DliIn2zd03StFeWa/P5HJmpWvyEJBJWbYB4VzLTHmG3Tjl9D6K/wGVFuu0+ZEQWsAAAAASUVORK5CYII='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="bundle result"
+        title="bundle result"
+        src="/static/a4507725c5884056a6f871c64e92b5a6/f058b/bundle-result-2.png"
+        srcset="/static/a4507725c5884056a6f871c64e92b5a6/c26ae/bundle-result-2.png 158w,
+/static/a4507725c5884056a6f871c64e92b5a6/6bdcf/bundle-result-2.png 315w,
+/static/a4507725c5884056a6f871c64e92b5a6/f058b/bundle-result-2.png 630w,
+/static/a4507725c5884056a6f871c64e92b5a6/748b0/bundle-result-2.png 868w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
 <ol start="2">
 <li>如果二者都是用contenthash</li>
 </ol>

@@ -215,7 +215,7 @@ res<span class="token punctuation">.</span><span class="token function-variable 
 <li>添加 Expires 和 Cache-Control 到报文头</li>
 <li>配置 Etags</li>
 <li>让 Ajax 缓存
-通常来说，POST、DELETE、PUT 这类行为性的请求操作不做缓存，大多数缓存只应用在 GET 请求中。<img src="https://i.loli.net/2018/03/11/5aa53a3c334a7.png" alt="缓存"></li>
+通常来说，POST、DELETE、PUT 这类行为性的请求操作不做缓存，大多数缓存只应用在 GET 请求中。![缓存][1]</li>
 </ul>
 <p>关于是否可用查询。浏览器如果不能确认这份本地文件可以直接使用，会想服务器发送一次条件请求。有两种方式，时间戳和 ETag</p>
 <ul>
@@ -331,7 +331,7 @@ Content-Length:58812</em>。其中 boundary 是随机生成的一段字符串，
 <p>url 路径和网站目录一直，无须转换，非常直观。通过 url 直接请求静态源文件，通过 url 找到对应脚本，web 服务器根据文件后缀去好脚本解析器，并传入 http 上下文，执行脚本，发出响应。</p>
 <h3>MVC</h3>
 <p>用户请求的 URL 和具体脚本所在路径没有任何关系
-<img src="http://ww2.sinaimg.cn/large/0060lm7Tly1flxt8gnykgj30fj07f0su.jpg" alt="MVC"></p>
+![MVC][2]</p>
 <ul>
 <li>控制器（Controller）,一组行为的集合</li>
 <li>模型（Model），数据相关的操作和封装</li>
@@ -396,7 +396,7 @@ exports<span class="token punctuation">.</span><span class="token function-varia
 <p>REST:Representational State Transfer,表现层状态转移。符合 REST 设计叫做 RESTful。设计哲学在于将服务器提供的内容实体看做一个资源，并变现在 URL 上，对这个资源的操作体现在 HTTP 请求上（POST,DELETE,PUT,GET 增删改查，之前是 GET，POST 方法传入在 URL 上传递 action）。对于资源的具体变现形态也不同于过去一样表现在 URL 的后缀上，而是有请求报头的 Accept 字段和服务器支持情况来决定。如<em>Accept:application/json,application/xml</em>。服务器可以根据这个字段做出响应，并且在响应报文中的 Content-Type 字段中告知。总之就是通过 URL 设计资源、请求方法定义资源操作，通过 Accept 决定资源的表现形式。</p>
 <h2>中间件</h2>
 <p>使用中间件来隔离基础设施与业务逻辑中间的细节，让开发者能够关注在业务的开发上。由于 Node 异步运行机制的问题，需要一种机制来实现，在当前中间件处理完成后，通知下一个中间件执行。（例如尾触发）</p>
-<p><img src="http://ww2.sinaimg.cn/large/0060lm7Tly1flxwgrijt5j30jx03dglo.jpg" alt="中间件"></p>
+<p>![中间件][3]</p>
 <div class="gatsby-highlight" data-language="javascript"><pre class="language-javascript"><code class="language-javascript"><span class="token comment">//querystring解析中间件</span>
 <span class="token keyword">var</span> <span class="token function-variable function">querystring</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   req<span class="token punctuation">.</span>query <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>url<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span>

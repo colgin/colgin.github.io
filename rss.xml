@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[A personal blog to record what I meeting in my daily job.]]></description><link>https://colgin.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 26 Jul 2022 03:49:49 GMT</lastBuildDate><item><title><![CDATA[如何处理composition api的动态参数]]></title><description><![CDATA[之前笔者写过一篇文章composition api 的参数传递 讲到过在 vue composition api 中应该如何处理动态的参数，建议读者在阅读本文前，先阅读之前的那篇文章。 起因在看到 vueuse 的issue…]]></description><link>https://colgin.github.io/reactive-params-in-composition-api/</link><guid isPermaLink="false">https://colgin.github.io/reactive-params-in-composition-api/</guid><pubDate>Sun, 17 Jul 2022 19:00:00 GMT</pubDate><content:encoded>&lt;p&gt;之前笔者写过一篇文章&lt;a href=&quot;/dynamic-params-in-composition-api/&quot;&gt;composition api 的参数传递&lt;/a&gt; 讲到过在 vue composition api 中应该如何处理动态的参数，建议读者在阅读本文前，先阅读之前的那篇文章。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[A personal blog to record what I meeting in my daily job.]]></description><link>https://colgin.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 31 Jul 2022 10:34:11 GMT</lastBuildDate><item><title><![CDATA[如何处理composition api的动态参数]]></title><description><![CDATA[之前笔者写过一篇文章composition api 的参数传递 讲到过在 vue composition api 中应该如何处理动态的参数，建议读者在阅读本文前，先阅读之前的那篇文章。 起因在看到 vueuse 的issue…]]></description><link>https://colgin.github.io/reactive-params-in-composition-api/</link><guid isPermaLink="false">https://colgin.github.io/reactive-params-in-composition-api/</guid><pubDate>Sun, 17 Jul 2022 19:00:00 GMT</pubDate><content:encoded>&lt;p&gt;之前笔者写过一篇文章&lt;a href=&quot;/dynamic-params-in-composition-api/&quot;&gt;composition api 的参数传递&lt;/a&gt; 讲到过在 vue composition api 中应该如何处理动态的参数，建议读者在阅读本文前，先阅读之前的那篇文章。&lt;/p&gt;
 &lt;p&gt;起因在看到 &lt;a href=&quot;https://github.com/vueuse/vueuse/issues/1812&quot;&gt;vueuse 的issue&lt;/a&gt;， 笔者认领了一个 &lt;code class=&quot;language-text&quot;&gt;useAverage&lt;/code&gt; 的需求，然后开始编码。这个函数的功能很简单，就是根据参数算一个平均值。最开始的代码大概如下&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;useAverage&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;array&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; MaybeRef&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token builtin&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
   &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; arr &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;unref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;array&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
@@ -2447,108 +2447,7 @@ state&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value &lt;spa
 		isPending
 	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;watchEffect&lt;/code&gt; 会自动收集effect中的依赖，并且 &lt;code class=&quot;language-text&quot;&gt;watchEffect&lt;/code&gt; 执行时，effect 必会执行一次（效果与 watch 的 immediate: true 一样)。在上面的实现中，在&lt;code class=&quot;language-text&quot;&gt;watchEffect&lt;/code&gt;中 会调用 getUrl 函数，在这个函数中，会访问 &lt;code class=&quot;language-text&quot;&gt;props.name&lt;/code&gt;, 由于 &lt;code class=&quot;language-text&quot;&gt;props&lt;/code&gt; 时 &lt;code class=&quot;language-text&quot;&gt;shallowReactive&lt;/code&gt; 的，所以会被收集依赖，当 &lt;code class=&quot;language-text&quot;&gt;props.name&lt;/code&gt; 改变时，effect 会执行一次。这样就能轻松实现 &lt;code class=&quot;language-text&quot;&gt;props.name&lt;/code&gt; 改变时自动请求的需求了。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[renderer]]></title><description><![CDATA[React 和 Vue 都使用vdom 来描述ui，这使得基于他们来实现跨平台就显得十分简单。比如React 使用react-dom将ui渲染到 dom上，使用react-native 将 ui渲染到 android / iOS 这样的原生平台上。Vue…]]></description><link>https://colgin.github.io/new-beginnings/</link><guid isPermaLink="false">https://colgin.github.io/new-beginnings/</guid><pubDate>Sat, 12 Jun 2021 01:40:04 GMT</pubDate><content:encoded>&lt;p&gt;React 和 Vue 都使用vdom 来描述ui，这使得基于他们来实现跨平台就显得十分简单。比如React 使用react-dom将ui渲染到 dom上，使用react-native 将 ui渲染到 android / iOS 这样的原生平台上。&lt;!-- more --&gt;Vue2的实现中没有将平台相关的逻辑抽离出来，而Vue3则将平台无关的代码与平台相关的代码彻底分割开了，可以通过自定义渲染器将Vue3 渲染到任意平台。&lt;/p&gt;
-&lt;p&gt;Vue的渲染器 设计，可以看以前的&lt;a href=&quot;https://colgin.github.io/2020/11/14/vue3-renderer/#more&quot;&gt;文章&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;React 的渲染器是怎么设计的呢？我们知道 React通过 reconciler 来 决定如何更新host tree，reconciler 决定了是重新生成dom还是在现有内容上做一些修改。&lt;/p&gt;
-&lt;p&gt;react-reconciler 有两个工作模式&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;mutation mode: 所有的 host instance 都是可以被修改的。react-dom就是这样的&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jsx&quot;&gt;&lt;pre class=&quot;language-jsx&quot;&gt;&lt;code class=&quot;language-jsx&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; view &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createView&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token function&quot;&gt;updateView&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;view&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;color&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;red&apos;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;ul&gt;
-&lt;li&gt;persistent mode: 整个host tree都是 immutable的，更新就是重建一棵树&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jsx&quot;&gt;&lt;pre class=&quot;language-jsx&quot;&gt;&lt;code class=&quot;language-jsx&quot;&gt;view &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createView&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-view &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;cloneView&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;view&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;color&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;red&apos;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;一个渲染器包含了两部分内容。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;built-in component: dom 平台的 div, h1, react-native平台的 View, Text&lt;/li&gt;
-&lt;li&gt;host config: 与host 相关的一些api，比如创建host instance等&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;此处我们仅仅讨论 渲染器的 host config部分。&lt;/p&gt;
-&lt;p&gt;在接口上，一个React渲染器只需要实现一个 供 Reconciler 调用的对象接口。&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jsx&quot;&gt;&lt;pre class=&quot;language-jsx&quot;&gt;&lt;code class=&quot;language-jsx&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; ReactDOMRenderer &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Reconciler&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ReactDOMHostConfig&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;这个 ReactDOMHostConfig 就是一系列 与平台相关的 基础接口。在这里&lt;a href=&quot;https://github.com/facebook/react/blob/master/packages/react-reconciler/src/forks/ReactFiberHostConfig.custom.js&quot;&gt;react&lt;/a&gt;中可以看到完整的。&lt;/p&gt;
-&lt;p&gt;比如下面这个例子就实现了一个简单的dom 渲染器&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jsx&quot;&gt;&lt;pre class=&quot;language-jsx&quot;&gt;&lt;code class=&quot;language-jsx&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; ReactReconciler &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;react-reconciler&apos;&lt;/span&gt;
-
-&lt;span class=&quot;token function&quot;&gt;ReactReconciler&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;token comment&quot;&gt;// hostConfig&lt;/span&gt;
-	&lt;span class=&quot;token literal-property property&quot;&gt;supportsMutation&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;// mutation mode&lt;/span&gt;
-	
-	&lt;span class=&quot;token function&quot;&gt;createInstance&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;type&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; props&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; rootContainerInstance&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; hostContext&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; internalInstanceHandle&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;token comment&quot;&gt;// 这里的type就是原生dom了，组件的处理已经在react 被处理完了&lt;/span&gt;
-		&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; el &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; document&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;type&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-		&lt;span class=&quot;token comment&quot;&gt;// 简单处理&lt;/span&gt;
-		&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;alt&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;className&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;href&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;rel&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;src&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;target&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;forEatch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;props&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;k&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; el&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;k&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; props&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;k&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-		&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-
-		&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;props&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;onClick&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-			el&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;addEventListener&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;click&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; props&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;onClick&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-		&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-		&lt;span class=&quot;token comment&quot;&gt;// react 是平台无关的，这个返回值不是给react使用的，而是给hostConfig其他函数用的&lt;/span&gt;
-		&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; el
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;createTextInstance&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;text&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; rootContianerInstance&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; hostContext&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; internalInstanceHandle&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; document&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;createTextNode&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;text&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-
-	&lt;span class=&quot;token function&quot;&gt;apendChildToContainer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;container&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		container&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;appendChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;appendChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;container&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		container&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;appendChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;appendInitialChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;container&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		container&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;appendChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;removeChildFromContainer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;container&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		container&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;removeChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;removeChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;container&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		container&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;removeChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;insertInContainerBefore&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;container&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; before&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		container&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;inserBefore&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; before&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;insertBefore&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;container&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; before&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		container&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;inserBefore&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; before&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-	&lt;span class=&quot;token comment&quot;&gt;// called in render phase&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;prepareUpdate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;instance&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; type&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; oldProps&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; newProps&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; rootContainerInstance&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; currentHostContext&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; payload
-		&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;oldProps&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;bgColor &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; newProps&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;bgColor&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-			payload &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;newBgColor&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; newProps&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;bgColor &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-		&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-		&lt;span class=&quot;token comment&quot;&gt;// 返回一个diff 结果，这个结果react 并不关心，是给下一个函数使用的&lt;/span&gt;
-		&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; payload
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-	&lt;span class=&quot;token comment&quot;&gt;// called in commit phase&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;commitUpdate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;instance&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; updatePayload&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; type&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; oldProps&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; newProps&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; rootContainerInstance&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; currentHostContext&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;updatePayload&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;newBgColor&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-			instance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;style&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;backgroundColor &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; updatePayload&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;newBgColor
-		&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; ReactDomMini &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;token function&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;comp&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;token comment&quot;&gt;// disabled concurrent mode and hydration&lt;/span&gt;
-		&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; container &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; reconciler&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;createContainer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;target&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-		reconciler&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;updateContainer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;comp&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; contaienr&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;以上代码参考自 &lt;a href=&quot;youtube.com/watch?v=CGpMlWVcHok&quot;&gt;Building a Custom React Renderer | Sophie Alpert&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;其实可以看到React 和 Vue3的渲染器api设计有一些不同，react是将参数丢给 reconciler，由 reconciler来实现调度。而Vue3则是没有 reconciler这一层，直接由hostConfig 生成 一套通用的 api，vue runtime 调用这一套通用的api实现渲染。&lt;/p&gt;
-&lt;p&gt;参考&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;youtube.com/watch?v=CGpMlWVcHok&quot;&gt;Building a Custom React Renderer | Sophie Alpert&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://agent-hunt.medium.com/hello-world-custom-react-renderer-9a95b7cd04bc&quot;&gt;Hello World Custom React Renderer&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;ttps://github.com/facebook/react/blob/master/packages/react-dom/src/client/ReactDOMHostConfig.js&quot;&gt;react-dom&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://saul-mirone.github.io/zh-hans/the-essence-of-react-component/&quot;&gt;React组件的本质&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[renderer]]></title><description><![CDATA[React 和 Vue 都使用vdom 来描述ui，这使得基于他们来实现跨平台就显得十分简单。比如React 使用react-dom将ui渲染到 dom上，使用react-native 将 ui渲染到 android / iOS 这样的原生平台上。Vue…]]></description><link>https://colgin.github.io/renderer/</link><guid isPermaLink="false">https://colgin.github.io/renderer/</guid><pubDate>Sat, 12 Jun 2021 01:40:04 GMT</pubDate><content:encoded>&lt;p&gt;React 和 Vue 都使用vdom 来描述ui，这使得基于他们来实现跨平台就显得十分简单。比如React 使用react-dom将ui渲染到 dom上，使用react-native 将 ui渲染到 android / iOS 这样的原生平台上。&lt;!-- more --&gt;Vue2的实现中没有将平台相关的逻辑抽离出来，而Vue3则将平台无关的代码与平台相关的代码彻底分割开了，可以通过自定义渲染器将Vue3 渲染到任意平台。&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;watchEffect&lt;/code&gt; 会自动收集effect中的依赖，并且 &lt;code class=&quot;language-text&quot;&gt;watchEffect&lt;/code&gt; 执行时，effect 必会执行一次（效果与 watch 的 immediate: true 一样)。在上面的实现中，在&lt;code class=&quot;language-text&quot;&gt;watchEffect&lt;/code&gt;中 会调用 getUrl 函数，在这个函数中，会访问 &lt;code class=&quot;language-text&quot;&gt;props.name&lt;/code&gt;, 由于 &lt;code class=&quot;language-text&quot;&gt;props&lt;/code&gt; 时 &lt;code class=&quot;language-text&quot;&gt;shallowReactive&lt;/code&gt; 的，所以会被收集依赖，当 &lt;code class=&quot;language-text&quot;&gt;props.name&lt;/code&gt; 改变时，effect 会执行一次。这样就能轻松实现 &lt;code class=&quot;language-text&quot;&gt;props.name&lt;/code&gt; 改变时自动请求的需求了。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[renderer]]></title><description><![CDATA[React 和 Vue 都使用vdom 来描述ui，这使得基于他们来实现跨平台就显得十分简单。比如React 使用react-dom将ui渲染到 dom上，使用react-native 将 ui渲染到 android / iOS 这样的原生平台上。Vue…]]></description><link>https://colgin.github.io/renderer/</link><guid isPermaLink="false">https://colgin.github.io/renderer/</guid><pubDate>Sat, 12 Jun 2021 01:40:04 GMT</pubDate><content:encoded>&lt;p&gt;React 和 Vue 都使用vdom 来描述ui，这使得基于他们来实现跨平台就显得十分简单。比如React 使用react-dom将ui渲染到 dom上，使用react-native 将 ui渲染到 android / iOS 这样的原生平台上。&lt;!-- more --&gt;Vue2的实现中没有将平台相关的逻辑抽离出来，而Vue3则将平台无关的代码与平台相关的代码彻底分割开了，可以通过自定义渲染器将Vue3 渲染到任意平台。&lt;/p&gt;
 &lt;p&gt;Vue的渲染器 设计，可以看以前的&lt;a href=&quot;https://colgin.github.io/2020/11/14/vue3-renderer/#more&quot;&gt;文章&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;React 的渲染器是怎么设计的呢？我们知道 React通过 reconciler 来 决定如何更新host tree，reconciler 决定了是重新生成dom还是在现有内容上做一些修改。&lt;/p&gt;
 &lt;p&gt;react-reconciler 有两个工作模式&lt;/p&gt;
@@ -3433,9 +3332,73 @@ obj&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=
 &lt;p&gt;stackblitz这个功能配合PWA，完全可以离线使用。可以用来学习各种前端框架，后端SSR框架，Node。看起来还是很不错的。&lt;/p&gt;
 &lt;p&gt;在stackblitz的博客中说到 它的一个特性是 “secure by default”。 因为代码的执行全是在浏览器的sandbox中，所以是更加安全的。看到这里，笔者就在思考语言的安全到底是什么意思？一般可以通过什么方式去是实现呢？&lt;/p&gt;
 &lt;p&gt;之后，想起ry 曾经的演讲 &lt;a href=&quot;https://www.youtube.com/watch?v=M3BM9TB-8yA&quot;&gt;我对Node.js遗憾的十件事&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2021/05/28/OqIge5XPux4arok.png&quot; alt=&quot;截屏2021-05-28 上午12.49.36.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/810f325295f732d69678780dbefcbeb3/92345/v8-recurity.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 50%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAABYlAAAWJQFJUiTwAAABdUlEQVQoz22R2W7CQAxF8/9/UvFW8diWVZSsLKqKupKdTCYBgcoawq3sEApVHo6uZ7Hn2qNYugW1p+Lt9Q2TlwmG5hCWMUAiEiAHjvsj8kN+gdbZLmOtQlnOlwjcAKTzZAEpEiRxitVihd16h+3P9oayGGl2LnL9gEKXqFgapxChKArLOcfxLEYUCshIIgoiZr/ZF8Uq4ILUBo4oyK/0dNZrTsApO1VSOlXWqzW7KyE3BDlMRMqzJKd/e8mNc8qJAsHjYIeHXQbP9vE++YDz7cCzPUw/pxzbXzbcqcszDr2QW575M177jo/ADVk9x+dRUbfKYXNAPJOcLM6vUgIll4nUBX1Q1SeV0BnNVyH7ZHuRzJHKom36FILXsmhbCnnR/5T7cRRDGQ/HGJgD6KoOy7BgaAbHumpA62scG5rJqj6rfE6Yusn3SbW+DkM1MLJGUHqdHur3ddTuamg8NNBpdtButJnWU+uG5mPzEpd3CNon7ba6+AWy5+UXNK73YAAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;v8 security in ry&amp;#39;s talk&quot;
+        title=&quot;v8 security in ry&amp;#39;s talk&quot;
+        src=&quot;/static/810f325295f732d69678780dbefcbeb3/f058b/v8-recurity.png&quot;
+        srcset=&quot;/static/810f325295f732d69678780dbefcbeb3/c26ae/v8-recurity.png 158w,
+/static/810f325295f732d69678780dbefcbeb3/6bdcf/v8-recurity.png 315w,
+/static/810f325295f732d69678780dbefcbeb3/f058b/v8-recurity.png 630w,
+/static/810f325295f732d69678780dbefcbeb3/40601/v8-recurity.png 945w,
+/static/810f325295f732d69678780dbefcbeb3/78612/v8-recurity.png 1260w,
+/static/810f325295f732d69678780dbefcbeb3/92345/v8-recurity.png 2398w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;根据ry的说法，node可以随意调用system call，可以访问系统的文件，这在机器上可能会有 安全问题。你无法控制node不让其访问某些文件（这可以通过类似于docker这样的容器来实现隔离？）。ry在介绍deno的时候，谈到deno如何修复这个问题的&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2021/05/28/HcEg1okVKdX9PfR.png&quot; alt=&quot;security in deno&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/1786fa68df3cf9669b14605a9f845338/3c2d4/deno-security.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 60.75949367088608%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAACXBIWXMAABYlAAAWJQFJUiTwAAAB10lEQVQoz2VT2XLaQBDU/39KCiTwSyq+qoIBAzqwH2KsmNhggSTEoQOMOQyd6hELjvPQ1XNtz8xKq9mmg9ZtC27nNxyrjWqlhq7bhWM6YO7euYf74GK/3WO72uJj/fEPvsa0LM4QDkPMxjPEkxi+52M2icUe+SNBFERSvHnf/AcKfoa2elthnswRDAIk0wTTaIrJaCKCxDgciyBztAnmWc9mu81OplfQqMpOi3QhhSyiEIUpRCYopOKs40Yql8dzX1O7r5drpLNUpqV4lsxPdpyJTVY1aZzJ1PS55XK+FBwnpMOJ1EoK9EdBdFxz0B8gCsdy1+qauDaHImvqDiiaHbqSiUX6lk8zS5FMU1ntlFsAewA7yPnjV+YBThEMQuk4fB2K7fU8mTj3A/kThq++MMGYf4gTbMBr00I/hD/w4fU99P70BP3nPl66L8K959xXua8+68jBMEQURtCe3CcQnV8dWC0LZtOEbdpi52zDbtlo3jYl1mqYx1zbbkvOsRw8PjyKjsaA1bTktVR/VlG/qQsTtUrtxJVDrpL7jXpDXtGdcyesdLTri2tcXVzh/Ps5ynpZYBQMFL8VcWacQS8YMIoGykYeL+lllIolYb2gH2p0XP64BLX+Ai1VbABrjeSnAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;security in deno&quot;
+        title=&quot;security in deno&quot;
+        src=&quot;/static/1786fa68df3cf9669b14605a9f845338/f058b/deno-security.png&quot;
+        srcset=&quot;/static/1786fa68df3cf9669b14605a9f845338/c26ae/deno-security.png 158w,
+/static/1786fa68df3cf9669b14605a9f845338/6bdcf/deno-security.png 315w,
+/static/1786fa68df3cf9669b14605a9f845338/f058b/deno-security.png 630w,
+/static/1786fa68df3cf9669b14605a9f845338/40601/deno-security.png 945w,
+/static/1786fa68df3cf9669b14605a9f845338/78612/deno-security.png 1260w,
+/static/1786fa68df3cf9669b14605a9f845338/3c2d4/deno-security.png 2092w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;通过一些flag可以控制运行时的权限从而保证security。&lt;/p&gt;
 &lt;p&gt;另外，常常听到rust说自己是一门安全的语言，是不是也是想表达类似的意思呢？由于笔者在这方面没什么研究，所以这个问题就先搁置了。。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[封装Promise，让他更好用一些]]></title><description><![CDATA[看到标题，很多人要说了， 不就原生支持的  嘛，还有啥好封装的？或者说你要封装还不如直接使用 async , await 不就行了。如果你是这么想的，那么请继续阅读下去。  笔者最近在设计 API…]]></description><link>https://colgin.github.io/promise-in-another-way/</link><guid isPermaLink="false">https://colgin.github.io/promise-in-another-way/</guid><pubDate>Sat, 15 May 2021 15:51:35 GMT</pubDate><content:encoded>&lt;p&gt;看到标题，很多人要说了，&lt;code class=&quot;language-text&quot;&gt;Promise&lt;/code&gt; 不就原生支持的 &lt;code class=&quot;language-text&quot;&gt;Promise&lt;/code&gt; 嘛，还有啥好封装的？或者说你要封装&lt;code class=&quot;language-text&quot;&gt;Promise&lt;/code&gt;还不如直接使用 async , await 不就行了。如果你是这么想的，那么请继续阅读下去。 &lt;!-- more --&gt;&lt;/p&gt;
 &lt;p&gt;笔者最近在设计 API 的时候，遇到这么一个很常见的场景。需要通过传入一个外部函数来控制代码的执行流程，比如在文件 上传之前，调用传入的函数来检查文件是否符合要求，只有符合要求的情况才会上传，否则就会中断。这个函数可能是异步的，也可能是是同步的，只有当结果是 &lt;code class=&quot;language-text&quot;&gt;Promise.reolve(true)&lt;/code&gt;或者 &lt;code class=&quot;language-text&quot;&gt;true&lt;/code&gt;的时候，才算符合要求。不符合要求的时候要提示一下，而且文件上传错误的时候也要提示。&lt;/p&gt;
@@ -4664,7 +4627,39 @@ const rendererOptions = extend(&lt;/span&gt;&lt;span class=&quot;token punctuati
 &lt;h2&gt;bundle, module, chunk&lt;/h2&gt;
 &lt;h3&gt;module&lt;/h3&gt;
 &lt;p&gt;module 是最好理解的，我们通常会把webpack 描述为 &lt;strong&gt;module bundler&lt;/strong&gt;。在webpack中，一切资源都是模块，其实webpack本身智能处理js module，但是通过loader，可以处理不同类型的module，比较常见的比如css，图片，字体。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png&quot; alt=&quot;https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/e4085c9afd93aeaa16a1fc7449baf9d6/c9d77/webpack.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 46.202531645569614%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAABYlAAAWJQFJUiTwAAABkUlEQVQoz22SzU7CUBCFeReVSAul0CL0h1LaW0opP0EXJG50Q9CQuNEQ9QHcmJi4cGdMSNywcGOi8T2MceO7HDNDIQ26OLmd27nnfjNzM3lboNgIIZsepJoLyWiyKJaTVUqUt3zIZvIv0Sp/pYzitLDXGiBvCahuGxTLpp8keMjVXMiGC7nqYKdsLM03LkwrU6gH0PwuU9baQ+hBH7roMg2p1AgxvXvC5P4Z/ckFV7G6kAyKTshnVzBMaMUHbFoJetBFD2Y0BLViu2xgdHaF2esXTl++cT5/R7EuUHRaUJM2lZoR1GbEEPTNhEwmuqiGA96stPrcgi21iqPrG1x+/GC8+MT0YQHF8pZEjXBZQTNilb0OSi4Z2gEHJOql5scwO/ucTOWJ0TFObh8xm79BHI6R1S0UbLEegu7HfIaANK+zJKyIHjQvhhENIZNRqvFZ3caubkGxfOSqznqy6aGUvJgl8VBswaVSGWROxEyXEPBTIbN/Jrs2TnJ4yrSputSDmKWLPhQnXCdLxt93t7mffru/w8U7yJa0tVcAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;webpack&quot;
+        title=&quot;webpack&quot;
+        src=&quot;/static/e4085c9afd93aeaa16a1fc7449baf9d6/f058b/webpack.png&quot;
+        srcset=&quot;/static/e4085c9afd93aeaa16a1fc7449baf9d6/c26ae/webpack.png 158w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/6bdcf/webpack.png 315w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/f058b/webpack.png 630w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/40601/webpack.png 945w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/78612/webpack.png 1260w,
+/static/e4085c9afd93aeaa16a1fc7449baf9d6/c9d77/webpack.png 1964w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;可以看到左边这个就是不同类型的module。&lt;/p&gt;
 &lt;p&gt;在webpack官网针对module 还有专门的介绍，简而言之，通过各种语法对各种资源的引用让webpack能够建立起一个依赖树。比如&lt;/p&gt;
 &lt;ul&gt;
@@ -4720,7 +4715,37 @@ module&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports &lt;
 &lt;li&gt;Dynamic import&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;在webpack打包结果中会说明每一个文件来自与哪个chunk&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png&quot; alt=&quot;https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/647b62e73e87d669b86114a6ad20d915/1cfc2/bundle-result.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 16.455696202531648%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAADCAYAAACTWi8uAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAxUlEQVQI1z3Oy06DQABAUT7GAAqkQAFb5RWgjIUyvKalxpiYRhf9/w+4Bhcu7vbkaqafE3yOZLcFe1cR7QSDXIieBYv6IC5PbK6S8DbjzR3B10Two/DrBtld2CcN4V5gOhmGnaJ5oiG+X/HfB17qjuZtpp7P2MkB71XgHk+E9zPht8IpBXZW41QCKypwtyW6lfLwGP+Ba9o2qhGHkb670LSKouzJh4m4n6iOJe1Y4CnJRraYbo5uxOhmgvGUolvJP7TerYe/iV1o/2gVQvAAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;打包结果&quot;
+        title=&quot;打包结果&quot;
+        src=&quot;/static/647b62e73e87d669b86114a6ad20d915/f058b/bundle-result.png&quot;
+        srcset=&quot;/static/647b62e73e87d669b86114a6ad20d915/c26ae/bundle-result.png 158w,
+/static/647b62e73e87d669b86114a6ad20d915/6bdcf/bundle-result.png 315w,
+/static/647b62e73e87d669b86114a6ad20d915/f058b/bundle-result.png 630w,
+/static/647b62e73e87d669b86114a6ad20d915/1cfc2/bundle-result.png 900w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;h2&gt;contenthash, chunkhash&lt;/h2&gt;
 &lt;p&gt;官网上对chunkhash 的解释是 The hash of chunk content, 对contenthash的解释是 The hash of the content of a file。&lt;/p&gt;
 &lt;p&gt;而且还特地标注了，如果使用ExtracTextWebpackPlugin的时候，用contenthash ，不要使用chunkhash。&lt;/p&gt;
@@ -4786,7 +4811,37 @@ console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;li&gt;如果二者都是用chunkhash&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;A, B 两种情况都会导致打包出来的文件发生变化，而且，二者文件名都是一样的（前提占位符一样）。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png&quot; alt=&quot;https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/a4507725c5884056a6f871c64e92b5a6/748b0/bundle-result-2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 27.21518987341772%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAABYlAAAWJQFJUiTwAAABE0lEQVQY012OwW6CQAAF+ZkWC6goisXoAorAgi4giETbSxsvvfTYz58mNCZtD5N3epPRzHHILMqQTUsQF8y9hETWxOkRmTec2xdcXzLyY4zFFnMZYQUxxipi4sWksiaMih7dEmj6UODcatzPDkumLJ7TXhhuFFN3R540jFSG93VlfmuYXkrcjxbnvcbZSuK4wrRDBkO/RxsvIlaHElEd8dIDaXJkvVN4bYUpIoZ+hN1VTLuiL9NNweNgjf607osejJ+9o40mm76mKjuUOpPII+GuYKcaNlnJRa3IVcjs7cSkOTCwg/54L/qPZo4DliIn2zd03StFeWa/P5HJmpWvyEJBJWbYB4VzLTHmG3Tjl9D6K/wGVFuu0+ZEQWsAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;bundle result&quot;
+        title=&quot;bundle result&quot;
+        src=&quot;/static/a4507725c5884056a6f871c64e92b5a6/f058b/bundle-result-2.png&quot;
+        srcset=&quot;/static/a4507725c5884056a6f871c64e92b5a6/c26ae/bundle-result-2.png 158w,
+/static/a4507725c5884056a6f871c64e92b5a6/6bdcf/bundle-result-2.png 315w,
+/static/a4507725c5884056a6f871c64e92b5a6/f058b/bundle-result-2.png 630w,
+/static/a4507725c5884056a6f871c64e92b5a6/748b0/bundle-result-2.png 868w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;ol start=&quot;2&quot;&gt;
 &lt;li&gt;如果二者都是用contenthash&lt;/li&gt;
 &lt;/ol&gt;
@@ -5163,7 +5218,36 @@ console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;p&gt;可以在&lt;a href=&quot;https://codesandbox.io/s/vue-key-yd5lp&quot;&gt;codesandbox&lt;/a&gt;查看具体效果&lt;/p&gt;
 &lt;p&gt;之后的讨论只在上面的代码基础上修改Child组件上key的值。&lt;/p&gt;
 &lt;p&gt;首先将key绑定为下标索引值。渲染出来是没有毛病的，但是前面我们看到key作用的时间是在diff的时候，当数据发生变化的时候，vnode节点树就会重新生成，之后通过diff找到修改的地方，然后把修改的地方通过dom方法修改（diff算法可以看看&lt;a href=&quot;https://github.com/vuejs/vue/blob/dev/src/core/vdom/patch.js&quot;&gt;vue源码&lt;/a&gt;或者&lt;a href=&quot;https://github.com/snabbdom/snabbdom&quot;&gt;snabbdom&lt;/a&gt;，二者都采用了双端比较的算法，此处不讨论过多细节），所以，可以先可以在input里输入一些文字，这些文字是存在组件内部state的，然后，点击第二个Chlld的删除，此时却发现，只有外部的info显示更新了，而input里面的文字竟然没有更新&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2020/07/01/EJarH1Nf9ZL4uWe.png&quot; alt=&quot;https://i.loli.net/2020/07/01/EJarH1Nf9ZL4uWe.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 476px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/e7468f7b8414b7adbd7a5aaa91960303/f2205/index-key.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 34.177215189873415%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAABYlAAAWJQFJUiTwAAAA+0lEQVQoz42RQWuEMBCF/f+/x4t6EQ/tweLSSo9FVylEXYgaNTEmeWWybE8u7cBjhjDMfHkTaK2hlPJalgXHcWDbNp+fS8NaB4p93yGV8rVzDkFRFIjjGFmWIYoiMMZQ1/Vvw5mMsei6DpfiDW1zRd8x32+tRdD3PTjnGMcRwzB4UU20D/IzTbNAw0bcZg0uNIQQfmiQ5znCMESSJEjT1NO2bYuqqk4praOvOvDV4fOrx2t+wct7g4+yvA8kD8gz2jDPM6Zp8pm8NcacemjMAakOfN8krkyg4wr7fvcxWNcVZVmCvCSy/4R79k5HIZIHnZTSG/vsGH+JCH8AGQsaHg9Qvs0AAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;use index as key&quot;
+        title=&quot;use index as key&quot;
+        src=&quot;/static/e7468f7b8414b7adbd7a5aaa91960303/f2205/index-key.png&quot;
+        srcset=&quot;/static/e7468f7b8414b7adbd7a5aaa91960303/c26ae/index-key.png 158w,
+/static/e7468f7b8414b7adbd7a5aaa91960303/6bdcf/index-key.png 315w,
+/static/e7468f7b8414b7adbd7a5aaa91960303/f2205/index-key.png 476w&quot;
+        sizes=&quot;(max-width: 476px) 100vw, 476px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;这是为什么呢？让我们回想一下当点击删除的时候发生了什么。首先是数据更新，数据更新之后会触发重新生成vnode，然后进行diff，diff完之后会修改dom。这个diff过程就是key作用的地方，两次的vnode结果大概如下&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jsx&quot;&gt;&lt;pre class=&quot;language-jsx&quot;&gt;&lt;code class=&quot;language-jsx&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 前&lt;/span&gt;
 &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
@@ -5309,16 +5393,105 @@ console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;p&gt;看到这里，应该可以知道，前后两次vnode的第二个Child节点，由于tag一样，key都是1，所以这里会复用原来的组件实例，然后调用patchVnode去更新，比如这里就是新vnode与旧版的vnode的name不一样，这些将会通过更新来实现。至于为什么input输入框里的内容没有变，原因是Child组件被复用了，input里的内容受到组件内部state的影响，既然组件没有被销毁，那么就说明了state没有被修改，&lt;strong&gt;这种情况的复用和修改一个组件的props效果是一样的，这也就是文档上所说的就地复用/修改&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;其实还可以通过count来观察到组件是否是新建的实例，每新建一个实例count就会加1，而key为index，删除了第二条元素，发现最后面的count还是之前的2。这说明了这个Child实例就是之前三个user渲染出来的第二项。&lt;/p&gt;
 &lt;p&gt;如果key是user.id的话，删除任意一个元素，sameVnode由于key不相等，不会想之前那样简单复用了，而是根据key去找在旧的children里与当前key相等的元素进行复用，找不到就会创建新的实例，这种情况input 和 后面的count都准确渲染了&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2020/07/02/AZnW8yIF5qCv2JU.png&quot; alt=&quot;https://i.loli.net/2020/07/02/AZnW8yIF5qCv2JU.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 580px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/b6272/id-as-key.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 31.645569620253163%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAGCAYAAADDl76dAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAuElEQVQY05WQyQqEMBBE/f/v8igKuSi4oEKUoCIKGtBoSQVmiMocpqBIk+Wlur08z5EkCYQQ6Pse4zjiPE8cx/HyPM9QStl727aB4l1XHoFFUSCOY3Rdh2masO+7fcDVrQmq6xrrumJZli/EhXpRFCEIAoRhCN/3kaYphmGwh8aYmykpJcqytNZav4FM1LYtmqax7fJnpmGLTyDNdDRTf0A3IOeSZRmqqrrN4jmbX3rN0N1g/a+fCS8FVdHHwPlnRwAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;use id as key&quot;
+        title=&quot;use id as key&quot;
+        src=&quot;/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/b6272/id-as-key.png&quot;
+        srcset=&quot;/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/c26ae/id-as-key.png 158w,
+/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/6bdcf/id-as-key.png 315w,
+/static/a2d51d7ddcf9ffe8849ed679dc9a90e6/b6272/id-as-key.png 580w&quot;
+        sizes=&quot;(max-width: 580px) 100vw, 580px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;如果不传key，每次sameVnode中比较&lt;code class=&quot;language-text&quot;&gt;undefined === undefined&lt;/code&gt;都是成立的，复用也会出现前面说到的和使用索引作为key一样的问题。&lt;/p&gt;
 &lt;p&gt;按照上面的分析，可以很快的分析出插入时候的情况。插入是将第二个删除，插入第四个。&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token function&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
 	&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;users&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;splice&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;four&apos;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;使用索引作为key时，&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2020/07/02/TYtBVCvr7DkHEuG.png&quot; alt=&quot;https://i.loli.net/2020/07/02/TYtBVCvr7DkHEuG.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/1243f5eb2f1cd360718060644d6a28b0/6af66/index.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 41.139240506329116%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAAA6ElEQVQoz4WQbWuDMBSF8/9/ml/cOltNQQQ12xQnmtZ3zSknUGhrtl04hLzc55xcMY4j2rZFXdfo+x7cb9u20zzP9r7rOqzrCpYxBq8lsiyD7/vwPA95nlswAcuyPElrjSRJ7D3hd+ArVCilIKVEEASI4xhN0+yATMR0NE/T1ML/THg8BpAyQhiGoME0TbuEPCvLElVV2ZWmLqhQn184RWeE0Rnvhw8olWMYBtvAZBSBbCSIYymK4tc5ilIbHGSGt0hBj3iazaPuiR7L+eXrsOK7uqD4uaKf2GScD11GzoRuV+NM+R+MwBuuI25Rk24i1QAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;index&quot;
+        title=&quot;index&quot;
+        src=&quot;/static/1243f5eb2f1cd360718060644d6a28b0/f058b/index.png&quot;
+        srcset=&quot;/static/1243f5eb2f1cd360718060644d6a28b0/c26ae/index.png 158w,
+/static/1243f5eb2f1cd360718060644d6a28b0/6bdcf/index.png 315w,
+/static/1243f5eb2f1cd360718060644d6a28b0/f058b/index.png 630w,
+/static/1243f5eb2f1cd360718060644d6a28b0/6af66/index.png 640w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;使用user.id作为key时&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2020/07/02/rdL29i5n8ywSCHX.png&quot; alt=&quot;https://i.loli.net/2020/07/02/rdL29i5n8ywSCHX.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/374ac/id.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 39.87341772151899%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAAA6klEQVQoz42QiwrCMAxF9/+/NlAmKjrGqu0ebFQ3N92je1xJoVKcAy+EpCQ5TeLUdQ0pJbIsA8Vt22KaJozjqL0xpZTOV1WFeZ5BMt6WE4YhPM+D67pIkgRFUWgYAYZh+BiBgiDQefrAAL+hDmMMvu9riBHFNozeTdNACIE4jlGW5fqElwvD8bAH51cIwSHlDV3XLaB93yNNU+R5rm11woBxbHYnuNs9NltPNxGQCu0bkujWURRp4NodHS4VDv4Vu3OCl8KnyIbZUFs/V362I+6PBkXVQQ1UQGvgp8yK9qqLCb9aFk3/QGzgGwlmbzzseXtQAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;id&quot;
+        title=&quot;id&quot;
+        src=&quot;/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/f058b/id.png&quot;
+        srcset=&quot;/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/c26ae/id.png 158w,
+/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/6bdcf/id.png 315w,
+/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/f058b/id.png 630w,
+/static/bbe8d0d47a93d3c5d0fd6ca8d4599085/374ac/id.png 634w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;可以看到这里count增加了，说明是创建了新的实例。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[package.json里的main字段]]></title><description><![CDATA[package.json是一个JavaScript的项目描述文件，其中main字段是非常重要的一个字段，它描述了程序的入口。本文将分析作为一个模块（不是应用）的main字段。 main vs module main字段是程序的入口，在[npm官网](The main field…]]></description><link>https://colgin.github.io/main-field-in-package-json/</link><guid isPermaLink="false">https://colgin.github.io/main-field-in-package-json/</guid><pubDate>Sun, 07 Jun 2020 00:10:03 GMT</pubDate><content:encoded>&lt;p&gt;package.json是一个JavaScript的项目描述文件，其中main字段是非常重要的一个字段，它描述了程序的入口。本文将分析作为一个模块（不是应用）的main字段。&lt;/p&gt;
 &lt;!--more--&gt;
 &lt;h2&gt;main vs module&lt;/h2&gt;
@@ -5606,7 +5779,36 @@ indent_style &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; tab&lt;
 &lt;li&gt;Expressive HTTP middleware framework for node.js to make web applications and APIs more enjoyable to write. Koa’s middleware stack flows in a stack-like manner, allowing you to perform actions downstream then filter and manipulate the response upstream&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;koa提供了一个web框架的核心部分，不包含路由处理，静态文件处理（这些都是通过中间件来实现），我们经常会把这种叫做洋葱模型。&lt;/p&gt;
-&lt;p&gt;!&lt;img src=&quot;https://i.loli.net/2020/05/23/FBRVDXMQpwJny6e.png&quot; alt=&quot;2892151181-5ab48de7b5013_articlex.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 478px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/62c210d99d9af8aaa2e1eccf88f9a426/50978/core-of-koa.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 91.13924050632912%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAACXBIWXMAAAsTAAALEwEAmpwYAAADFUlEQVQ4y4VU20uTYRzev1EQBd0U9CcUdF1UdFOWiAeKLryTJhNBWrSau6q8sKHRMpmhsBNuU+YBNvG0DY+bZzc3z6dN8bzpE89PvrVZ0Qu/8b17fzzf83ue5/1UZ2dnYHGlUilEo1GMjY2hubkZRqMRVVVV0Gq1cLvd0pPd/7eluvjH1NQUrFYrXC4XJicnMTQ0BJ1Oh9LSUqytrUnP6enpvwGXlpZweHiIk5MTYbi/v4+Dg4OcpoWFBWg0Gvj9/gwgS2GbXSqn0wm73S6Menp6wP329nYOIPcVFRXwer3/Z8gfstvZ2RGGrGygWCwmepIh5eA6OjpCKBQSCTY2NrC+vi61uroKlSLw1/p67O3tyfPExAQcDocYwSLz7u5uDAwMyDkl6uvrk/+Vybj3eDxQpdNpaTJ80CPgD8Dc1ISGhgaMjIwII2rMN8/OzqK1tfUPfTnd8fHx75EVQJvFipLiYng6PFhZWcHMzIyMRAAyX15eFhb9/f05gJ8/fkI0EpFnYmUAaUzek6dYXFxEJBIRVru7u0gmk+I8taTbCku+rKSwCK9evDw3Kn3uukpx7UdjI/LznuHWjZsIBgJIpdPY3NyUkbg4Fl8eDAbx9o0WVy5dxvWr1xCPxXKcF0CORN16e3tRWFCAB/fuw+10SZPP64XDbsdPcxPev9Oh4Hk+Hj98hLu378iZcsMUczOxMZlMiMfjSCSTCIfCYhCvYflrNUqKiqApL8f3byYYvxjFccpwccnICtWWlhb4fD4BoT48pJ6dnZ0IBALwdHTIOYPf1tYmrKjz1taWZFBxOgNIV+vq6jIfBzYRkHeZug0ODkqYa2pq0NXVhfn5eckro8X+ubk5AVVlC0oH29vbBTwcDktUhoeHhSE/FAy7Xq8XxwnAbI6OjkpW6YPERhGTTTabDWq1WkZisAlCMGpmNptRXV2N8fFxGZWTEJB7Mmd2ZWQFkFrU1tairKwMlZWVMBgMoiuLY1osFsknpSBzTjE9PS2TUBbuhaHijrIYZorPO6p8eQjABCisqB/BqB9HTyQSmSv5C6r7860EfxLZAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;core of koa&quot;
+        title=&quot;core of koa&quot;
+        src=&quot;/static/62c210d99d9af8aaa2e1eccf88f9a426/50978/core-of-koa.png&quot;
+        srcset=&quot;/static/62c210d99d9af8aaa2e1eccf88f9a426/c26ae/core-of-koa.png 158w,
+/static/62c210d99d9af8aaa2e1eccf88f9a426/6bdcf/core-of-koa.png 315w,
+/static/62c210d99d9af8aaa2e1eccf88f9a426/50978/core-of-koa.png 478w&quot;
+        sizes=&quot;(max-width: 478px) 100vw, 478px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;实际使用中使用use来给koa应用注册中间件，中间件按照注册顺序按序调用，前面的中间件可以调用next()来控制下一个中间件的执行。&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jsx&quot;&gt;&lt;pre class=&quot;language-jsx&quot;&gt;&lt;code class=&quot;language-jsx&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; Koa &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;koa&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; app &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Koa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
@@ -5831,7 +6033,7 @@ app&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=
 
 	&lt;span class=&quot;token comment&quot;&gt;// assertion&lt;/span&gt;
 	&lt;span class=&quot;token literal-property property&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; httpAssert&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-	
+
 	&lt;span class=&quot;token comment&quot;&gt;// throw error&lt;/span&gt;
 	&lt;span class=&quot;token keyword&quot;&gt;throw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;arg&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
 		&lt;span class=&quot;token keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createError&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;args&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
@@ -5934,7 +6136,7 @@ module&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports &lt;
 		&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;method
 	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
 	&lt;span class=&quot;token keyword&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;method &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; val	
+		&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;method &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; val
 	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
 	&lt;span class=&quot;token keyword&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
 		&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; str &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;querystring&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
@@ -5951,10 +6153,10 @@ module&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports &lt;
 	&lt;span class=&quot;token keyword&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;querystring&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
 		&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; url &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
 		&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;search &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;str&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-		
+
 		url&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;search &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; str
 		url&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;patch &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
-		
+
 		&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;url &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;stringify&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
 	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
 	&lt;span class=&quot;token keyword&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
@@ -7161,7 +7363,7 @@ res&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=
 &lt;li&gt;添加 Expires 和 Cache-Control 到报文头&lt;/li&gt;
 &lt;li&gt;配置 Etags&lt;/li&gt;
 &lt;li&gt;让 Ajax 缓存
-通常来说，POST、DELETE、PUT 这类行为性的请求操作不做缓存，大多数缓存只应用在 GET 请求中。&lt;img src=&quot;https://i.loli.net/2018/03/11/5aa53a3c334a7.png&quot; alt=&quot;缓存&quot;&gt;&lt;/li&gt;
+通常来说，POST、DELETE、PUT 这类行为性的请求操作不做缓存，大多数缓存只应用在 GET 请求中。![缓存][1]&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;关于是否可用查询。浏览器如果不能确认这份本地文件可以直接使用，会想服务器发送一次条件请求。有两种方式，时间戳和 ETag&lt;/p&gt;
 &lt;ul&gt;
@@ -7277,7 +7479,7 @@ Content-Length:58812&lt;/em&gt;。其中 boundary 是随机生成的一段字符
 &lt;p&gt;url 路径和网站目录一直，无须转换，非常直观。通过 url 直接请求静态源文件，通过 url 找到对应脚本，web 服务器根据文件后缀去好脚本解析器，并传入 http 上下文，执行脚本，发出响应。&lt;/p&gt;
 &lt;h3&gt;MVC&lt;/h3&gt;
 &lt;p&gt;用户请求的 URL 和具体脚本所在路径没有任何关系
-&lt;img src=&quot;http://ww2.sinaimg.cn/large/0060lm7Tly1flxt8gnykgj30fj07f0su.jpg&quot; alt=&quot;MVC&quot;&gt;&lt;/p&gt;
+![MVC][2]&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;控制器（Controller）,一组行为的集合&lt;/li&gt;
 &lt;li&gt;模型（Model），数据相关的操作和封装&lt;/li&gt;
@@ -7342,7 +7544,7 @@ exports&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;p&gt;REST:Representational State Transfer,表现层状态转移。符合 REST 设计叫做 RESTful。设计哲学在于将服务器提供的内容实体看做一个资源，并变现在 URL 上，对这个资源的操作体现在 HTTP 请求上（POST,DELETE,PUT,GET 增删改查，之前是 GET，POST 方法传入在 URL 上传递 action）。对于资源的具体变现形态也不同于过去一样表现在 URL 的后缀上，而是有请求报头的 Accept 字段和服务器支持情况来决定。如&lt;em&gt;Accept:application/json,application/xml&lt;/em&gt;。服务器可以根据这个字段做出响应，并且在响应报文中的 Content-Type 字段中告知。总之就是通过 URL 设计资源、请求方法定义资源操作，通过 Accept 决定资源的表现形式。&lt;/p&gt;
 &lt;h2&gt;中间件&lt;/h2&gt;
 &lt;p&gt;使用中间件来隔离基础设施与业务逻辑中间的细节，让开发者能够关注在业务的开发上。由于 Node 异步运行机制的问题，需要一种机制来实现，在当前中间件处理完成后，通知下一个中间件执行。（例如尾触发）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;http://ww2.sinaimg.cn/large/0060lm7Tly1flxwgrijt5j30jx03dglo.jpg&quot; alt=&quot;中间件&quot;&gt;&lt;/p&gt;
+&lt;p&gt;![中间件][3]&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;//querystring解析中间件&lt;/span&gt;
 &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;querystring&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;req&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; res&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; next&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
   req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;query &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; url&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
@@ -7764,7 +7966,37 @@ self&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class
 &lt;p&gt;脚本的获取是异步的，执行时同步的。脚本加载不阻塞页面解析，脚本在获取完之后并不立即执行，而是等到DOMready之后才开始执行。延迟加载就是为了解决这个问题，将JS切分成许多模块，页面初始化时只加载需要立即执行的JS，然后其它JS的加载延迟到第一次需要用到的时候再加载，类似图片的延迟加载。&lt;/p&gt;
 &lt;h5&gt;异步脚本（async）&lt;/h5&gt;
 &lt;p&gt;脚本的获取是异步的，执行是同步的。和defer的不同点在于脚本获取之后会立即执行，这就会造成脚本的执行顺序和页面上脚本的排放顺序不一样，可能会造成脚本依赖问题&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2017/11/23/5a16d71516884.jpg&quot; alt=&quot;script.jpg&quot;&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[异步编程]]></title><description><![CDATA[函数式编程 高阶函数：JavaScript…]]></description><link>https://colgin.github.io/async-programming/</link><guid isPermaLink="false">https://colgin.github.io/async-programming/</guid><pubDate>Sat, 18 Nov 2017 16:11:41 GMT</pubDate><content:encoded>&lt;ul&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/284aec5bb7f16b3ef4e7482110c5ddbb/86056/async-defer-script.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 16.455696202531648%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAADABQDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAEF/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/2gAMAwEAAhADEAAAAd2EUJ//xAAUEAEAAAAAAAAAAAAAAAAAAAAQ/9oACAEBAAEFAn//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAUEAEAAAAAAAAAAAAAAAAAAAAQ/9oACAEBAAY/An//xAAUEAEAAAAAAAAAAAAAAAAAAAAQ/9oACAEBAAE/IX//2gAMAwEAAgADAAAAEHvf/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPxA//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPxA//8QAGRAAAgMBAAAAAAAAAAAAAAAAASEAEBGx/9oACAEBAAE/EBzYGzX/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;async and defer script&quot;
+        title=&quot;async and defer script&quot;
+        src=&quot;/static/284aec5bb7f16b3ef4e7482110c5ddbb/828fb/async-defer-script.jpg&quot;
+        srcset=&quot;/static/284aec5bb7f16b3ef4e7482110c5ddbb/ff44c/async-defer-script.jpg 158w,
+/static/284aec5bb7f16b3ef4e7482110c5ddbb/a6688/async-defer-script.jpg 315w,
+/static/284aec5bb7f16b3ef4e7482110c5ddbb/828fb/async-defer-script.jpg 630w,
+/static/284aec5bb7f16b3ef4e7482110c5ddbb/86056/async-defer-script.jpg 689w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[异步编程]]></title><description><![CDATA[函数式编程 高阶函数：JavaScript…]]></description><link>https://colgin.github.io/async-programming/</link><guid isPermaLink="false">https://colgin.github.io/async-programming/</guid><pubDate>Sat, 18 Nov 2017 16:11:41 GMT</pubDate><content:encoded>&lt;ul&gt;
 &lt;li&gt;
 &lt;h2&gt;函数式编程&lt;/h2&gt;
 &lt;ul&gt;
