@@ -108,7 +108,7 @@ export default {
 
 首先将key绑定为下标索引值。渲染出来是没有毛病的，但是前面我们看到key作用的时间是在diff的时候，当数据发生变化的时候，vnode节点树就会重新生成，之后通过diff找到修改的地方，然后把修改的地方通过dom方法修改（diff算法可以看看[vue源码](https://github.com/vuejs/vue/blob/dev/src/core/vdom/patch.js)或者[snabbdom](https://github.com/snabbdom/snabbdom)，二者都采用了双端比较的算法，此处不讨论过多细节），所以，可以先可以在input里输入一些文字，这些文字是存在组件内部state的，然后，点击第二个Chlld的删除，此时却发现，只有外部的info显示更新了，而input里面的文字竟然没有更新
 
-![https://i.loli.net/2020/07/01/EJarH1Nf9ZL4uWe.png](https://i.loli.net/2020/07/01/EJarH1Nf9ZL4uWe.png)
+![use index as key](index-key.png)
 
 这是为什么呢？让我们回想一下当点击删除的时候发生了什么。首先是数据更新，数据更新之后会触发重新生成vnode，然后进行diff，diff完之后会修改dom。这个diff过程就是key作用的地方，两次的vnode结果大概如下
 
@@ -270,7 +270,7 @@ function sameVnode (a, b) {
 
 如果key是user.id的话，删除任意一个元素，sameVnode由于key不相等，不会想之前那样简单复用了，而是根据key去找在旧的children里与当前key相等的元素进行复用，找不到就会创建新的实例，这种情况input 和 后面的count都准确渲染了
 
-![https://i.loli.net/2020/07/02/AZnW8yIF5qCv2JU.png](https://i.loli.net/2020/07/02/AZnW8yIF5qCv2JU.png)
+![use id as key](./id-as-key.png)
 
 如果不传key，每次sameVnode中比较`undefined === undefined`都是成立的，复用也会出现前面说到的和使用索引作为key一样的问题。
 
@@ -282,14 +282,12 @@ insert() {
 }
 ```
 
-
-
 使用索引作为key时，
 
-![https://i.loli.net/2020/07/02/TYtBVCvr7DkHEuG.png](https://i.loli.net/2020/07/02/TYtBVCvr7DkHEuG.png)
+![index](index.png)
 
 使用user.id作为key时
 
-![https://i.loli.net/2020/07/02/rdL29i5n8ywSCHX.png](https://i.loli.net/2020/07/02/rdL29i5n8ywSCHX.png)
+![id](id.png)
 
 可以看到这里count增加了，说明是创建了新的实例。

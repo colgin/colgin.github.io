@@ -493,9 +493,6 @@ REST:Representational State Transfer,表现层状态转移。符合 REST 设计�
 
 ![中间件][3]
 
-[1]: https://i.loli.net/2018/03/11/5aa53a3c334a7.png
-[2]: http://ww2.sinaimg.cn/large/0060lm7Tly1flxt8gnykgj30fj07f0su.jpg
-[3]: http://ww2.sinaimg.cn/large/0060lm7Tly1flxwgrijt5j30jx03dglo.jpg
 
 ```javascript
 //querystring解析中间件

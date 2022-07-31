@@ -250,7 +250,7 @@ this.response = Object.create(response);
 
 koa提供了一个web框架的核心部分，不包含路由处理，静态文件处理（这些都是通过中间件来实现），我们经常会把这种叫做洋葱模型。
 
-!![2892151181-5ab48de7b5013_articlex.png](https://i.loli.net/2020/05/23/FBRVDXMQpwJny6e.png)
+![core of koa](core-of-koa.png)
 
 实际使用中使用use来给koa应用注册中间件，中间件按照注册顺序按序调用，前面的中间件可以调用next()来控制下一个中间件的执行。
 
@@ -516,7 +516,7 @@ const proto = module.exports = {
 
 	// assertion
 	assert: httpAssert,
-	
+
 	// throw error
 	throw(...arg) {
 		throw createError(...args)
@@ -624,7 +624,7 @@ module.exports = {
 		return this.req.method
 	},
 	set method(val) {
-		this.req.method = val	
+		this.req.method = val
 	},
 	get query() {
 		const str = this.querystring;
@@ -641,10 +641,10 @@ module.exports = {
 	set querystring() {
 		const url = parse(this.req)
 		if (url.search === `?${str}`) return;
-		
+
 		url.search = str
 		url.patch = null
-		
+
 		this.url = stringify(url)
 	},
 	get socket() {

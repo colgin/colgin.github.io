@@ -12,11 +12,11 @@ stackblitz这个功能配合PWA，完全可以离线使用。可以用来学习�
 
 之后，想起ry 曾经的演讲 [我对Node.js遗憾的十件事](https://www.youtube.com/watch?v=M3BM9TB-8yA)
 
-![截屏2021-05-28 上午12.49.36.png](https://i.loli.net/2021/05/28/OqIge5XPux4arok.png)
+![v8 security in ry's talk](./v8-recurity.png)
 
 根据ry的说法，node可以随意调用system call，可以访问系统的文件，这在机器上可能会有 安全问题。你无法控制node不让其访问某些文件（这可以通过类似于docker这样的容器来实现隔离？）。ry在介绍deno的时候，谈到deno如何修复这个问题的
 
-![security in deno](https://i.loli.net/2021/05/28/HcEg1okVKdX9PfR.png)
+![security in deno](./deno-security.png)
 
 通过一些flag可以控制运行时的权限从而保证security。
 

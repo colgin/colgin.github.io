@@ -14,7 +14,7 @@ description: webpack中的概念一定是不容易记住的，而且不好理解
 
 module 是最好理解的，我们通常会把webpack 描述为 **module bundler**。在webpack中，一切资源都是模块，其实webpack本身智能处理js module，但是通过loader，可以处理不同类型的module，比较常见的比如css，图片，字体。
 
-![https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png](https://i.loli.net/2020/07/23/P9kn6mBFYI4feqH.png)
+![webpack](./webpack.png)
 
 可以看到左边这个就是不同类型的module。
 
@@ -81,7 +81,7 @@ module.exports = "utility3";
 
 在webpack打包结果中会说明每一个文件来自与哪个chunk
 
-![https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png](https://i.loli.net/2020/07/24/x69fHqaJjbngL13.png)
+![打包结果](./bundle-result.png)
 
 ## contenthash, chunkhash
 
@@ -161,7 +161,7 @@ export const abs = (value) => (value > 0 ? val
 
 A, B 两种情况都会导致打包出来的文件发生变化，而且，二者文件名都是一样的（前提占位符一样）。
 
-![https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png](https://i.loli.net/2020/07/24/cUNtJHzVl4dxLD5.png)
+![bundle result](./bundle-result-2.png)
 
 2. 如果二者都是用contenthash
 
