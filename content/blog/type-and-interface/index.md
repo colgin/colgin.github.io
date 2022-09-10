@@ -70,7 +70,7 @@ const n: MyTypeN = {type: 'xyz'} // error property data is requires in MyTypeN
 const n: MyTypeN = {type: 'xyz', data: {name: 3}, other: 'xx'} // error 'other' doesn't exist in MyTypeN
 ```
 
-而将 `m`, `n` 传递给 `foo` 的时候，其实是将一个 具体的 类型赋值给一个宽泛的类型。ts 中的 interface 有一个特点就是，不可以将具体的类型赋值给更宽泛的类型(A specific interface cannot be saved into a more generic interface)。而 ts 中的 type 是允许将更具体的类型赋值给更宽泛的类型。
+而将 `m`, `n` 传递给 `foo` 的时候，其实是将一个 具体的 类型赋值给一个宽泛的类型。**ts 中的 interface 有一个特点就是，不可以将具体的类型赋值给更宽泛的类型(A specific interface cannot be saved into a more generic interface)。而 ts 中的 type 是允许将更具体的类型赋值给更宽泛的类型**。
 
 ```ts
 type MoreGenric = {
@@ -105,7 +105,7 @@ generic = specific // ok
 
 通过 type 类型，可以将更具体类型赋值给更宽泛的类型，上面的例子中 `MoreGeneric`使用type 定义的，用 interface 定义也是一样的结果。
 
-我们再次回到最开始的场景，也就是说，可以用 type 不要 interface 来让代码不报错。那如果硬是要使用interface 类型呢（有时候变量类型不是开发能够修改的），可以使用扩展运算符
+我们再次回到最开始的场景，也就是说，可以用 type 取代 interface 来让代码不报错。那如果硬是要使用interface 类型呢（有时候变量类型不是开发能够修改的），可以使用扩展运算符
 
 ```ts
 type MyTypeN = PayloadN<'xyz', {name: number}>
